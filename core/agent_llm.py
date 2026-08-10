@@ -1,15 +1,16 @@
 import os
 import openai
 import configparser
+from core.logger import logger
 
 BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 config = configparser.ConfigParser()
 config.read(os.path.join(BASE_PATH, "config.ini"),encoding="utf-8-sig")
 
-llm_base_url = config.get("llllm_api_aliyun","base_url")
-llm_api_key = config.get("llllm_api_aliyun","api_key")
-llm_model = config.get("llllm_api_aliyun","model")
+llm_base_url = config.get("llm_api_aliyun","base_url")
+llm_api_key = config.get("llm_api_aliyun","api_key")
+llm_model = config.get("llm_api_aliyun","model")
 
 # 自定义大模型客户端
 class AgentLLM():
