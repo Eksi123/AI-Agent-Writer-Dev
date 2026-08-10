@@ -1,4 +1,8 @@
-# Agent Demo实现
+'''
+AI Agent Demo实现，重点介绍Agent-Loop，工具注册和调用等实现原理
+Agent-Loop:思考 -> 行动 ->反馈
+Tool_call:tool定义 -> tool注册 -> tool调用 -> tool执行
+'''
 
 import json
 import openai
@@ -6,7 +10,7 @@ import openai
 # 1. 大模型封装
 class LLM:
     """
-    # OpenAI的response 是一个 ChatCompletion 对象
+    # OpenAI的模型 response 是一个 ChatCompletion 对象
     response = client.chat.completions.create(...)
 
     response.id                 # "chatcmpl-abc123"
@@ -108,7 +112,7 @@ register_tool(
 
 # 4. Agent-Loop简单实现
 def execute_tool(tool_name: str, tool_args: dict) -> str:
-    """执行工具调用"""
+    """执行调用的工具"""
     if tool_name not in tool_registry_list:
         return f"错误：工具 {tool_name} 不存在"
     
@@ -122,11 +126,11 @@ def agent_loop(user_input: str, max_iterations: int = 5):
         {"role": "system", "content": "你是一个智能助手，可以使用工具来帮助用户完成任务。"},
         {"role": "user", "content": user_input}
     ]
-    
+
     tools = get_tools_schema()
     
     for _ in range(max_iterations):
-        # 1. 思考：调用LLM决策
+        # 1. LLM思考决策
         response = llm.chat(messages, tools=tools)
         
         # 2. 判断是否需要调用工具
