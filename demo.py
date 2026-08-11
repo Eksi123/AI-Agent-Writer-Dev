@@ -120,7 +120,7 @@ def execute_tool(tool_name: str, tool_args: dict) -> str:
     return tool_func(**tool_args)
 
 def agent_loop(user_input: str, max_iterations: int = 5):
-    """Agent-Loop：思考 -> 行动 -> 反馈"""
+    """Agent-Loop：思考 -> 行动 -> 观察"""
     
     messages = [
         {"role": "system", "content": "你是一个智能助手，可以使用工具来帮助用户完成任务。"},
@@ -163,7 +163,7 @@ def agent_loop(user_input: str, max_iterations: int = 5):
     return "抱歉，处理过程超出循环次数，请重新尝试。"
 
 
-# Agent_Loop 启动   
+# Agent 启动   
 if __name__ == "__main__":
     print("\n" + "=" * 50)
     print("AI Agent Demo演示")
