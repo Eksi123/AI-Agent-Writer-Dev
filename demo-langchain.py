@@ -7,7 +7,7 @@ import json
 from configparser import ConfigParser
 from langchain_openai import ChatOpenAI
 from langchain_core.tools import tool
-from langchain.agents import create_react_agent, AgentExecutor
+from langchain.agents import create_agent
 
 # 1. 读取配置
 config = ConfigParser()
@@ -42,14 +42,12 @@ def get_weather(city: str) -> str:
 
 # 4. 创建Agent
 tools = [get_weather]
-prompt = "你是一个智能助手，可以使用工具来帮助用户完成任务。"
+chat_history = []
 
-agent = create_react_agent(llm, tools, prompt)
-agent_executor = AgentExecutor(
-    agent=agent,
+agent = create_agent(
+    model=llm,
     tools=tools,
-    verbose=True,  # 显示执行过程
-    max_iterations=5
+    system_prompt="你是一个智能助手，可以使用工具来帮助用户完成任务。"
 )
 
 # 5. 运行交互循环
@@ -60,9 +58,6 @@ if __name__ == "__main__":
     print("输入'exit'或'quit'退出，'clear'清空对话历史")
     print("=" * 50 + "\n")
     
-    # 对话历史
-    chat_history = []
-    
     while True:
         try:
             user_input = input("用户: ").strip()
@@ -71,26 +66,24 @@ if __name__ == "__main__":
                 print("拜拜！祝您有美好的一天！")
                 break
             
-            if user_input.lower() in ["clear", "清空"]:
-                chat_history = []
-                print("对话历史已清空。\n")
-                continue
-            
             if not user_input:
                 print("请输入有效指令或问题。")
                 continue
             
             # 调用Agent，传入对话历史
-            response = agent_executor.invoke({
-                "input": user_input,
-                "chat_history": chat_history
-            })
+            response = agent.invoke(
+                {"messages": chat_history + [("user", user_input)]},
+                # recursion_limit 控制最大迭代次数
+                config={"recursion_limit": 10} 
+            )
+            
+            # LangGraph返回格式：response["messages"][-1] 是最后一条消息
+            ai_message = response["messages"][-1]
             
             # 更新对话历史
             chat_history.append(("user", user_input))
-            chat_history.append(("ai", response['output']))
-            
-            print(f"\nAgent: {response['output']}\n")
+            chat_history.append(("assistant", ai_message.content))
+            print(f"\nAgent: {ai_message.content}\n")
             
         except KeyboardInterrupt:
             print("\n再见！")
