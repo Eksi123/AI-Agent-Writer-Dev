@@ -15,9 +15,7 @@ from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode
 
 
-# ============================================================
 # 1. 读取配置
-# ============================================================
 config = ConfigParser()
 config.read('config.ini')
 api_key = config.get('llm_api_aliyun', 'api_key')
@@ -25,9 +23,7 @@ base_url = config.get('llm_api_aliyun', 'base_url')
 model_name = config.get('llm_api_aliyun', 'model')
 
 
-# ============================================================
 # 2. 创建LLM实例
-# ============================================================
 llm = ChatOpenAI(
     api_key=api_key,
     base_url=base_url,
@@ -37,9 +33,7 @@ llm = ChatOpenAI(
 )
 
 
-# ============================================================
 # 3. 定义工具（使用@tool装饰器）
-# ============================================================
 @tool
 def get_weather(city: str) -> str:
     """查询指定城市的天气信息"""
@@ -58,27 +52,21 @@ def get_weather(city: str) -> str:
 tools = [get_weather]
 
 
-# ============================================================
-# 4. 定义Agent状态（State）—— 图的"数据载体"
-# ============================================================
+# 4. Agent定义
+
+# 4.1 定义Agent状态（State）
 class AgentState(TypedDict):
     """
     AgentState 定义了图中每个节点共享的状态数据。
-    messages 字段使用 add_messages 注解，表示新消息会追加到列表中，
-    而不是覆盖 —— 这是 LangGraph 实现消息累积的关键机制。
+    messages 字段使用 add_messages 注解，表示新消息会追加到列表中
     """
     messages: Annotated[list, add_messages]
 
 
-# ============================================================
-# 5. 定义图的节点（Node）
-# ============================================================
+# 4.2 定义图的节点（Node）
+llm_with_tools = llm.bind_tools(tools) # # 绑定工具到LLM，使其具备 tool_call 能力
 
-# 绑定工具到LLM，使其具备 tool_call 能力
-llm_with_tools = llm.bind_tools(tools)
-
-
-def agent_node(state: AgentState) -> dict:
+def llm_node(state: AgentState) -> dict:
     """
     Agent节点：负责"思考" —— 调用LLM进行推理决策。
     LLM会根据当前消息历史决定：
@@ -89,7 +77,6 @@ def agent_node(state: AgentState) -> dict:
     response = llm_with_tools.invoke([system_prompt] + state["messages"])
     # 返回新消息，LangGraph 会自动通过 add_messages 追加到 state["messages"]
     return {"messages": [response]}
-
 
 def tool_node(state: AgentState) -> dict:
     """
@@ -125,12 +112,10 @@ def tool_node(state: AgentState) -> dict:
     return {"messages": results}
 
 
-# ============================================================
-# 6. 定义条件边（Conditional Edge）—— 图的"路由决策"
-# ============================================================
+# 4.3 定义图的条件边（Conditional Edge）
 def should_continue(state: AgentState) -> Literal["tools", "end"]:
     """
-    条件路由函数：决定Agent节点的下一步走向。
+    路由函数：决定Agent节点的下一步走向。
     - 如果LLM的响应中包含 tool_calls → 路由到 "tools" 节点执行工具
     - 否则 → 路由到 END，结束循环，输出最终回答
     这就是 Agent-Loop 中"思考 -> 行动 / 结束"的核心分支逻辑。
@@ -141,9 +126,7 @@ def should_continue(state: AgentState) -> Literal["tools", "end"]:
     return "end"
 
 
-# ============================================================
-# 7. 构建LangGraph状态图（StateGraph）
-# ============================================================
+# 4.4 基于LangGraph构建Agent状态图（StateGraph）
 def build_graph():
     """
     构建Agent的状态图，结构如下：
@@ -152,7 +135,7 @@ def build_graph():
           │
           ▼
        ┌──────┐
-       │agent │◄─────────┐
+       │llm │◄─────────┐
        └──┬───┘          │
           │              │
      should_continue     │
@@ -163,32 +146,32 @@ def build_graph():
     └───┬───┘            │
         │                │
         └────────────────┘
-            (回到agent)
+            (回到llm)
 
     节点：
-      - agent：LLM思考决策
+      - llm：LLM思考决策
       - tools：工具执行
     边：
-      - START → agent：入口
-      - agent → should_continue(条件边)：根据是否有tool_calls决定走向
-      - tools → agent：工具执行完毕后回到agent继续思考
-      - agent → END：无工具调用时结束
+      - START → llm：入口
+      - llm → should_continue：根据是否有tool_calls决定走向
+      - tools → llm：工具执行完毕后回到llm继续思考
+      - llm → END：无工具调用时结束
     """
     # 创建状态图，指定状态类型
     graph = StateGraph(AgentState)
 
     # 添加节点
-    graph.add_node("agent", agent_node)
+    graph.add_node("llm", llm_node)
     graph.add_node("tools", tool_node)
 
     # 添加边
-    graph.add_edge(START, "agent")                    # 入口：START → agent
-    graph.add_conditional_edges(                       # 条件边：agent → tools | END
-        "agent",
+    graph.add_edge(START, "llm")                    # 入口：START → llm
+    graph.add_conditional_edges(                       # 条件边：llm → tools | END
+        "llm",
         should_continue,
         {"tools": "tools", "end": END}
     )
-    graph.add_edge("tools", "agent")                   # 工具执行后回到agent
+    graph.add_edge("tools", "llm")                   # 工具执行后回到llm
 
     # 编译图
     return graph.compile()
@@ -198,9 +181,7 @@ def build_graph():
 agent_graph = build_graph()
 
 
-# ============================================================
-# 8. 运行交互循环
-# ============================================================
+# 5. 运行交互循环
 if __name__ == "__main__":
     print("\n" + "=" * 50)
     print("AI Agent Demo - LangGraph版本（支持多轮对话）")
@@ -217,11 +198,6 @@ if __name__ == "__main__":
             if user_input.lower() in ["quit", "exit", "q", "byebye", "拜拜", "再见"]:
                 print("拜拜！祝您有美好的一天！")
                 break
-
-            if user_input.lower() == "clear":
-                chat_history = []
-                print("[对话历史已清空]\n")
-                continue
 
             if not user_input:
                 print("请输入有效指令或问题。\n")

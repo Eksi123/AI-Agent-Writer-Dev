@@ -7,6 +7,7 @@ import json
 from configparser import ConfigParser
 from langchain_openai import ChatOpenAI
 from langchain_core.tools import tool
+from langchain_core.messages import HumanMessage
 from langchain.agents import create_agent
 
 # 1. 读取配置
@@ -70,19 +71,22 @@ if __name__ == "__main__":
                 print("请输入有效指令或问题。")
                 continue
             
+            # 将用户输入加入历史
+            chat_history.append(HumanMessage(content=user_input))
+
             # 调用Agent，传入对话历史
             response = agent.invoke(
-                {"messages": chat_history + [("user", user_input)]},
+                {"messages": chat_history},
                 # recursion_limit 控制最大迭代次数
-                config={"recursion_limit": 10} 
+                config={"recursion_limit": 10}
             )
-            
-            # LangGraph返回格式：response["messages"][-1] 是最后一条消息
+
+            # 获取最终AI回复
             ai_message = response["messages"][-1]
-            
-            # 更新对话历史
-            chat_history.append(("user", user_input))
-            chat_history.append(("assistant", ai_message.content))
+
+            # 更新对话历史（替换为完整的消息列表）
+            chat_history = response["messages"]
+
             print(f"\nAgent: {ai_message.content}\n")
             
         except KeyboardInterrupt:
