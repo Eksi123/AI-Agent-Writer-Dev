@@ -61,7 +61,9 @@ temperature = 0.7
 ### 4. 启动服务
 
 ```bash
-python main.py
+python web/app.py
+或
+python main.py --web
 ```
 
 服务启动后会自动打开浏览器加载 Web 界面。

@@ -48,6 +48,9 @@ class AgentGraph:
         # 构建工具映射表（用于快速查找）
         self.tool_map = {tool.name: tool for tool in tools}
         
+        # 思考过程记录
+        self.thought_process = []
+        
         # 构建并编译图
         self.graph = self._build_graph()
     
@@ -62,6 +65,13 @@ class AgentGraph:
         
         # 调用 LLM
         response = self.llm_with_tools.invoke(messages)
+        
+        # 记录思考过程
+        if response.content:
+            self.thought_process.append({
+                "type": "thinking",
+                "content": response.content
+            })
         
         # 返回新消息（LangGraph 会自动追加到 state["messages"]）
         return {"messages": [response]}
@@ -81,13 +91,33 @@ class AgentGraph:
             
             logger.debug(f"调用工具: {tool_name}({tool_args})")
             
+            # 记录工具调用
+            self.thought_process.append({
+                "type": "tool_call",
+                "tool": tool_name,
+                "args": tool_args
+            })
+            
             # 查找并执行工具
             if tool_name in self.tool_map:
                 tool_result = self.tool_map[tool_name].invoke(tool_args)
                 logger.debug(f"工具结果: {tool_result[:100]}...")
+                
+                # 记录工具结果
+                self.thought_process.append({
+                    "type": "tool_result",
+                    "tool": tool_name,
+                    "result": tool_result[:500] if len(tool_result) > 500 else tool_result
+                })
             else:
                 tool_result = f"错误: 工具 {tool_name} 不存在"
                 logger.warning(f"工具不存在: {tool_name}")
+                
+                self.thought_process.append({
+                    "type": "tool_error",
+                    "tool": tool_name,
+                    "error": tool_result
+                })
             
             # 构造 ToolMessage
             results.append(ToolMessage(
@@ -146,23 +176,33 @@ class AgentGraph:
         # 编译图
         return graph.compile()
     
-    def invoke(self, messages: List[dict], max_iterations: int = 10) -> dict:
+    def invoke(self, messages: List[dict], max_iterations: int = 30) -> dict:
         """
         运行 Agent 图
         
         Args:
             messages: 消息列表
             max_iterations: 最大迭代次数（防止无限循环）
+                           默认30次，子任务限制
+                           传入0表示不限制（任务进行中）
         
         Returns:
-            最终状态，包含 messages 列表
+            最终状态，包含 messages 列表和思考过程
         """
+        # 清空思考过程
+        self.thought_process = []
+        
         # 构造初始状态
         initial_state = {"messages": messages}
         
         # 运行图
-        config = {"recursion_limit": max_iterations}
+        # max_iterations=0 表示不限制，设置为极大值
+        recursion_limit = max_iterations if max_iterations > 0 else 9999
+        config = {"recursion_limit": recursion_limit}
         final_state = self.graph.invoke(initial_state, config)
+        
+        # 添加思考过程到返回结果
+        final_state["thought_process"] = self.thought_process
         
         return final_state
     
@@ -193,7 +233,7 @@ def create_agent_graph(
     tools: List[BaseTool],
     system_prompt: str,
     temperature: float = 0.7,
-    max_tokens: int = 4000
+    max_tokens: int = 128000
 ) -> AgentGraph:
     """
     工厂函数：创建 Agent 图实例

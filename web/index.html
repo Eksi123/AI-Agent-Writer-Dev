@@ -68,12 +68,15 @@
         }
 
         .project-item {
-            padding: 12px 15px;
+            padding: 10px 12px;
             margin-bottom: 8px;
             background: #f9f9f9;
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .project-item:hover {
@@ -83,6 +86,77 @@
         .project-item.active {
             background: #007bff;
             color: white;
+        }
+
+        .project-item .project-icon {
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .project-item .project-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .project-item .btn-more {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .project-item:hover .btn-more {
+            opacity: 0.7;
+        }
+
+        .project-item .btn-more:hover {
+            opacity: 1;
+            background: rgba(0,0,0,0.1);
+        }
+
+        .project-item.active .btn-more {
+            color: white;
+        }
+
+        /* 更多操作下拉菜单 */
+        .project-menu {
+            position: absolute;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 100;
+            min-width: 120px;
+        }
+
+        .project-menu-item {
+            padding: 8px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .project-menu-item:hover {
+            background: #f0f0f0;
+        }
+
+        .project-menu-item.danger {
+            color: #dc3545;
+        }
+
+        .project-menu-item.danger:hover {
+            background: #fef0f0;
         }
 
         .btn-group {
@@ -209,6 +283,110 @@
         .message.user .message-content {
             background: #007bff;
             color: white;
+        }
+
+        /* 思考过程折叠框 */
+        .thought-process {
+            margin-bottom: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #f8f9fa;
+            overflow: hidden;
+        }
+
+        .thought-header {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            cursor: pointer;
+            background: #f1f3f5;
+            border-bottom: 1px solid #e0e0e0;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        .thought-header:hover {
+            background: #e9ecef;
+        }
+
+        .thought-icon {
+            font-size: 14px;
+            margin-right: 6px;
+        }
+
+        .thought-title {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .thought-toggle {
+            font-size: 12px;
+            color: #6c757d;
+            transition: transform 0.2s;
+        }
+
+        .thought-content {
+            display: none;
+            padding: 10px 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 13px;
+        }
+
+        .thought-content.expanded {
+            display: block;
+        }
+
+        .thought-item {
+            margin-bottom: 10px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            background: #fff;
+            border: 1px solid #eee;
+        }
+
+        .thought-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .thought-item-header {
+            font-size: 12px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 4px;
+        }
+
+        .thought-item-content {
+            font-size: 12px;
+            color: #6c757d;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        .thought-item-content pre {
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-family: inherit;
+            margin: 0;
+            font-size: 12px;
+        }
+
+        .thought-item.thinking {
+            border-left: 3px solid #6c757d;
+        }
+
+        .thought-item.tool-call {
+            border-left: 3px solid #007bff;
+        }
+
+        .thought-item.tool-result {
+            border-left: 3px solid #28a745;
+        }
+
+        .thought-item.tool-error {
+            border-left: 3px solid #dc3545;
         }
 
         /* Agent 指令栏 */
@@ -349,10 +527,11 @@
 
         .panel-content {
             flex: 1;
-            overflow-y: auto;
+            overflow: hidden;
             padding: 15px;
             display: flex;
             flex-direction: column;
+            min-height: 0;
         }
 
         .outline-content, .chapters-content {
@@ -361,6 +540,7 @@
             display: flex;
             flex-direction: column;
             min-height: 0;
+            overflow: hidden;
         }
 
         /* 章节目录树 */
@@ -503,12 +683,37 @@
         /* 编辑模式工具栏 */
         .panel-toolbar {
             display: flex;
-            justify-content: flex-end;
             align-items: center;
             padding: 6px 0;
             margin-bottom: 8px;
             border-bottom: 1px solid #e0e0e0;
             gap: 6px;
+        }
+
+        .panel-toolbar .toolbar-left {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .panel-toolbar .toolbar-right {
+            margin-left: auto;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .btn-refresh {
+            padding: 4px 10px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-refresh:hover {
+            background: #f0f0f0;
         }
 
         .btn-mode-toggle {
@@ -559,6 +764,14 @@
             font-size: 13px;
             line-height: 1.6;
             resize: none;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .markdown-content {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
         }
 
         .edit-textarea:focus {
@@ -786,8 +999,8 @@
             </div>
             <div class="sidebar-content">
                 <div class="btn-group">
-                    <button class="btn-new-project" onclick="createProject()">+ 新建项目</button>
-                    <button class="btn-import-project" onclick="importProject()">📥 导入项目</button>
+                    <button class="btn-new-project" onclick="createProject()">+ 新建小说</button>
+                    <button class="btn-import-project" onclick="importProject()">📥 导入大纲</button>
                 </div>
                 <ul class="project-list" id="projectList">
                     <!-- 项目列表将在这里动态生成 -->
@@ -811,7 +1024,7 @@
                         <div class="message">
                             <div class="message-avatar">AI</div>
                             <div class="message-content">
-                                我是 AI Agent Writer，一个专注于小说创作的智能写作助手。我可以帮助你创建大纲、逐章写作、润色内容、生成汇总信息等。请先在左侧创建或导入项目开始创作。
+                                我是 AI Agent Writer，一个专注于小说创作的智能写作助手。我可以帮助你创建大纲、逐章写作、润色内容、生成汇总信息等。请先在左侧新建小说或导入大纲开始创作。
                             </div>
                         </div>
                     </div>
@@ -855,9 +1068,14 @@
                         <div id="outlinePanel" class="outline-content">
                             <!-- 工具栏 -->
                             <div class="panel-toolbar">
-                                <button class="btn-mode-toggle" id="btnOutlinePreview" onclick="switchOutlineMode('preview')">预览</button>
-                                <button class="btn-mode-toggle" id="btnOutlineEdit" onclick="switchOutlineMode('edit')">编辑</button>
-                                <button class="btn-save" id="btnOutlineSave" onclick="saveOutline()">💾 保存</button>
+                                <div class="toolbar-left">
+                                    <button class="btn-refresh" onclick="refreshOutline()" title="刷新">🔄 刷新</button>
+                                </div>
+                                <div class="toolbar-right">
+                                    <button class="btn-mode-toggle" id="btnOutlinePreview" onclick="switchOutlineMode('preview')">预览</button>
+                                    <button class="btn-mode-toggle" id="btnOutlineEdit" onclick="switchOutlineMode('edit')">编辑</button>
+                                    <button class="btn-save" id="btnOutlineSave" onclick="saveOutline()">💾 保存</button>
+                                </div>
                             </div>
                             <!-- 目录导航 -->
                             <div class="toc-nav" id="outlineToc" style="display: none;">
@@ -876,7 +1094,14 @@
                         </div>
                         <!-- 章节面板 -->
                         <div id="chaptersPanel" class="chapters-content" style="display: none;">
-                            请先选择项目
+                            <!-- 工具栏 -->
+                            <div class="panel-toolbar">
+                                <div class="toolbar-left">
+                                    <button class="btn-refresh" onclick="refreshChapters()" title="刷新">🔄 刷新</button>
+                                </div>
+                                <div class="toolbar-right"></div>
+                            </div>
+                            <div id="chaptersContent">请先选择项目</div>
                         </div>
                     </div>
                 </div>
@@ -1038,7 +1263,11 @@
             projects.forEach(project => {
                 const li = document.createElement('li');
                 li.className = 'project-item' + (project === currentProjectName ? ' active' : '');
-                li.textContent = project;
+                li.innerHTML = `
+                    <span class="project-icon">📖</span>
+                    <span class="project-name">${project}</span>
+                    <button class="btn-more" onclick="event.stopPropagation(); toggleProjectMenu(event, '${project}')">⋮</button>
+                `;
                 li.onclick = () => switchProject(project);
                 list.appendChild(li);
             });
@@ -1052,9 +1281,119 @@
             }
         }
 
-        // 创建新项目
+        // 切换项目菜单
+        function toggleProjectMenu(event, projectName) {
+            event.stopPropagation();
+            
+            // 关闭已打开的菜单
+            const existingMenu = document.querySelector('.project-menu');
+            if (existingMenu) {
+                existingMenu.remove();
+                return;
+            }
+            
+            // 创建新菜单
+            const menu = document.createElement('div');
+            menu.className = 'project-menu';
+            menu.innerHTML = `
+                <div class="project-menu-item" onclick="exportProject('${projectName}')">📤 导出项目</div>
+                <div class="project-menu-item danger" onclick="deleteProject('${projectName}')">🗑️ 删除项目</div>
+            `;
+            
+            // 定位菜单
+            const rect = event.target.getBoundingClientRect();
+            menu.style.left = rect.left + 'px';
+            menu.style.top = (rect.bottom + 5) + 'px';
+            menu.style.position = 'fixed';
+            
+            document.body.appendChild(menu);
+            
+            // 点击其他地方关闭菜单
+            setTimeout(() => {
+                document.addEventListener('click', function closeMenu() {
+                    menu.remove();
+                    document.removeEventListener('click', closeMenu);
+                }, { once: true });
+            }, 0);
+        }
+
+        // 导出项目
+        async function exportProject(projectName) {
+            try {
+                const response = await fetch(`/api/projects/${projectName}/export`);
+                
+                if (!response.ok) {
+                    throw new Error('导出失败');
+                }
+                
+                // 获取ZIP文件并下载
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${projectName}.zip`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                addMessage('system', `✓ 项目 ${projectName} 已导出为ZIP`);
+            } catch (error) {
+                console.error('导出项目失败:', error);
+                alert('导出失败: ' + error.message);
+            }
+        }
+
+        // 删除项目
+        async function deleteProject(projectName) {
+            if (!confirm(`确定要删除项目 "${projectName}" 吗？\n此操作不可恢复，所有数据将被永久删除！`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/projects/${projectName}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    addMessage('system', `✓ 项目 ${projectName} 已删除`);
+                    
+                    // 如果删除的是当前项目，清空显示
+                    if (currentProject === projectName) {
+                        currentProject = null;
+                        document.getElementById('currentProject').textContent = '未选择项目';
+                        document.getElementById('outlinePreview').innerHTML = '请先选择项目';
+                        document.getElementById('chaptersContent').innerHTML = '请先选择项目';
+                    }
+                    
+                    await loadProjects();
+                } else {
+                    alert('删除失败: ' + result.error);
+                }
+            } catch (error) {
+                console.error('删除项目失败:', error);
+                alert('删除失败: ' + error.message);
+            }
+        }
+
+        // 刷新大纲
+        async function refreshOutline() {
+            if (!currentProject) return;
+            await loadOutline();
+            addMessage('system', '✓ 大纲已刷新');
+        }
+
+        // 刷新章节
+        async function refreshChapters() {
+            if (!currentProject) return;
+            await loadChapterTree();
+            addMessage('system', '✓ 章节列表已刷新');
+        }
+
+        // 创建新小说
         async function createProject() {
-            const name = prompt('请输入项目名称:');
+            const name = prompt('请输入小说名称:');
             if (!name) return;
 
             try {
@@ -1068,17 +1407,17 @@
                 
                 if (result.success) {
                     await loadProjects();
-                    addMessage('system', `✓ 项目 ${name} 已创建（大纲已用模板初始化）`);
+                    addMessage('system', `✓ 小说 ${name} 已创建（大纲已用模板初始化）`);
                 } else {
                     alert('创建失败: ' + result.error);
                 }
             } catch (error) {
-                console.error('创建项目失败:', error);
+                console.error('创建小说失败:', error);
                 alert('创建失败: ' + error.message);
             }
         }
 
-        // 导入项目
+        // 导入大纲
         function importProject() {
             document.getElementById('fileInput').click();
         }
@@ -1101,12 +1440,12 @@
                 
                 if (result.success) {
                     await loadProjects();
-                    addMessage('system', `✓ 项目 ${result.data.name} 已导入`);
+                    addMessage('system', `✓ 大纲 ${result.data.name} 已导入`);
                 } else {
                     alert('导入失败: ' + result.error);
                 }
             } catch (error) {
-                console.error('导入项目失败:', error);
+                console.error('导入大纲失败:', error);
                 alert('导入失败: ' + error.message);
             }
 
@@ -1202,8 +1541,9 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    // 添加 AI 回复
-                    addMessage('assistant', result.data.response);
+                    // 添加 AI 回复，包含思考过程
+                    const thoughtProcess = result.data.thought_process || [];
+                    addMessage('assistant', result.data.response, thoughtProcess);
                     
                     // 如果是写作工作流，刷新章节列表
                     if (result.data.workflow) {
@@ -1223,20 +1563,90 @@
         }
 
         // 添加消息到聊天区域
-        function addMessage(role, content) {
+        function addMessage(role, content, thoughtProcess = []) {
             const messagesDiv = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${role}`;
             
             const avatar = role === 'user' ? '你' : (role === 'system' ? '⚙' : 'AI');
             
+            // 构建思考过程 HTML
+            let thoughtHtml = '';
+            if (role === 'assistant' && thoughtProcess.length > 0) {
+                const thoughtId = 'thought-' + Date.now();
+                thoughtHtml = `
+                    <div class="thought-process">
+                        <div class="thought-header" onclick="toggleThought('${thoughtId}')">
+                            <span class="thought-icon">💭</span>
+                            <span class="thought-title">思考过程</span>
+                            <span class="thought-toggle" id="${thoughtId}-toggle">▼</span>
+                        </div>
+                        <div class="thought-content" id="${thoughtId}">
+                            ${renderThoughtProcess(thoughtProcess)}
+                        </div>
+                    </div>
+                `;
+            }
+            
             messageDiv.innerHTML = `
                 <div class="message-avatar">${avatar}</div>
-                <div class="message-content markdown-content">${renderMarkdown(content)}</div>
+                <div class="message-content">
+                    ${thoughtHtml}
+                    <div class="markdown-content">${renderMarkdown(content)}</div>
+                </div>
             `;
             
             messagesDiv.appendChild(messageDiv);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        // 切换思考过程展开/折叠
+        function toggleThought(thoughtId) {
+            const content = document.getElementById(thoughtId);
+            const toggle = document.getElementById(thoughtId + '-toggle');
+            
+            if (content.classList.contains('expanded')) {
+                content.classList.remove('expanded');
+                toggle.textContent = '▼';
+            } else {
+                content.classList.add('expanded');
+                toggle.textContent = '▲';
+            }
+        }
+        
+        // 渲染思考过程
+        function renderThoughtProcess(thoughtProcess) {
+            return thoughtProcess.map(item => {
+                if (item.type === 'thinking') {
+                    return `<div class="thought-item thinking">
+                        <div class="thought-item-header">🧠 思考</div>
+                        <div class="thought-item-content">${escapeHtml(item.content)}</div>
+                    </div>`;
+                } else if (item.type === 'tool_call') {
+                    return `<div class="thought-item tool-call">
+                        <div class="thought-item-header">🔧 调用工具: ${escapeHtml(item.tool)}</div>
+                        <div class="thought-item-content"><pre>${escapeHtml(JSON.stringify(item.args, null, 2))}</pre></div>
+                    </div>`;
+                } else if (item.type === 'tool_result') {
+                    return `<div class="thought-item tool-result">
+                        <div class="thought-item-header">✅ 工具结果: ${escapeHtml(item.tool)}</div>
+                        <div class="thought-item-content"><pre>${escapeHtml(item.result)}</pre></div>
+                    </div>`;
+                } else if (item.type === 'tool_error') {
+                    return `<div class="thought-item tool-error">
+                        <div class="thought-item-header">❌ 工具错误: ${escapeHtml(item.tool)}</div>
+                        <div class="thought-item-content"><pre>${escapeHtml(item.error)}</pre></div>
+                    </div>`;
+                }
+                return '';
+            }).join('');
+        }
+        
+        // HTML 转义
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         // ==================== 右侧面板 ====================
@@ -1424,7 +1834,7 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    const chaptersDiv = document.getElementById('chaptersPanel');
+                    const chaptersDiv = document.getElementById('chaptersContent');
                     const tree = result.data.tree;
                     
                     if (tree.length > 0) {
@@ -1454,7 +1864,7 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    const chaptersDiv = document.getElementById('chaptersPanel');
+                    const chaptersDiv = document.getElementById('chaptersContent');
                     const content = result.data.content || '';
                     
                     chaptersDiv.innerHTML = `

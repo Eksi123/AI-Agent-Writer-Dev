@@ -137,7 +137,8 @@ class AgentWriter:
         
         # 普通对话
         if actual_input:
-            return self.current_agent.chat(actual_input)
+            result = self.current_agent.chat(actual_input)
+            return result['response']
         else:
             return f"已切换到 {agent_name} Agent，请输入具体内容。"
     
@@ -211,8 +212,8 @@ def main():
                 continue
             
             # 普通对话
-            response = writer.chat(user_input)
-            print(f"\nAgent: {response}")
+            result = writer.chat(user_input)
+            print(f"\nAgent: {result['response']}")
             
         except KeyboardInterrupt:
             print("\n再见！")

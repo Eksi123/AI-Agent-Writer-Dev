@@ -3,6 +3,22 @@
 """
 import os
 from langchain_core.tools import tool
+from typing import Optional
+
+
+# 全局变量，用于存储当前允许的项目目录
+_allowed_project_dir: Optional[str] = None
+
+
+def set_allowed_project_dir(project_dir: str):
+    """设置当前允许写入的项目目录"""
+    global _allowed_project_dir
+    _allowed_project_dir = os.path.abspath(project_dir)
+
+
+def get_allowed_project_dir() -> Optional[str]:
+    """获取当前允许的项目目录"""
+    return _allowed_project_dir
 
 
 @tool
@@ -21,6 +37,13 @@ def write_file(file_path: str, content: str, overwrite: bool = False) -> str:
     try:
         # 规范化路径
         abs_path = os.path.abspath(file_path)
+        
+        # 检查是否在允许的项目目录内
+        allowed_dir = get_allowed_project_dir()
+        if allowed_dir:
+            # 确保路径在允许的项目目录内
+            if not abs_path.startswith(allowed_dir + os.sep) and abs_path != allowed_dir:
+                return f"错误: 不允许写入项目目录外的文件。允许目录: {allowed_dir}，尝试写入: {abs_path}"
         
         # 确保目录存在
         dir_path = os.path.dirname(abs_path)

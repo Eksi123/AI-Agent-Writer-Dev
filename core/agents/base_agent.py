@@ -61,24 +61,30 @@ class BaseAgent:
         
         logger.debug(f"Agent 已初始化: {self.name}")
     
-    def chat(self, user_input: str) -> str:
+    def chat(self, user_input: str, max_iterations: int = 30) -> dict:
         """
         与 Agent 对话
         
         Args:
             user_input: 用户输入
+            max_iterations: 最大迭代次数
+                           默认30次（子任务限制）
+                           传入0表示不限制（任务进行中）
         
         Returns:
-            Agent 回复内容
+            包含回复内容和思考过程的字典
         """
         # 添加用户消息到历史
         self.chat_history.append({"role": "user", "content": user_input})
         
         # 运行 Agent 图
-        result = self.agent_graph.invoke(self.chat_history)
+        result = self.agent_graph.invoke(self.chat_history, max_iterations=max_iterations)
         
         # 提取最后一条 AI 回复
         response = self.agent_graph.get_last_response(result)
+        
+        # 获取思考过程
+        thought_process = result.get("thought_process", [])
         
         # 更新对话历史
         self.chat_history = result["messages"]
@@ -86,7 +92,10 @@ class BaseAgent:
         logger.debug(f"[{self.name}] 用户: {user_input[:50]}...")
         logger.debug(f"[{self.name}] Agent: {response[:50]}...")
         
-        return response
+        return {
+            "response": response,
+            "thought_process": thought_process
+        }
     
     def clear_history(self) -> None:
         """清空对话历史"""

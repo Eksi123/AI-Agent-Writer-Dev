@@ -56,7 +56,21 @@ class AgentWriter:
         self.current_project = None
         self.current_project_name = None
         
+        # 自动加载第一个存在的项目（如果有）
+        self._auto_load_project()
+        
         logger.info("Web Agent Writer 已初始化")
+    
+    def _auto_load_project(self) -> None:
+        """自动加载第一个存在的项目"""
+        try:
+            projects = self.project_manager.list_projects()
+            if projects:
+                first_project = projects[0]
+                self.set_project(first_project)
+                logger.info(f"已自动加载项目: {first_project}")
+        except Exception as e:
+            logger.warning(f"自动加载项目失败: {e}")
     
     def parse_command(self, user_input: str) -> tuple:
         """解析用户输入，提取 @指令"""
@@ -142,15 +156,17 @@ class AgentWriter:
         
         # 普通对话
         if actual_input:
-            response = self.current_agent.chat(actual_input)
+            result = self.current_agent.chat(actual_input)
             return {
-                'response': response,
+                'response': result['response'],
+                'thought_process': result['thought_process'],
                 'agent': agent_name,
                 'workflow': False
             }
         else:
             return {
-                'response': f"已切换到 {agent_name} Agent，请输入具体内容。",
+                'response': f'已切换到 {agent_name} Agent，请输入具体内容。',
+                'thought_process': [],
                 'agent': agent_name,
                 'workflow': False
             }
@@ -228,6 +244,8 @@ def api_create_project():
         if os.path.exists(template_path):
             with open(template_path, 'r', encoding='utf-8') as f:
                 template_content = f.read()
+            # 将模板中的"小说名称"替换为实际的小说名
+            template_content = template_content.replace('# 小说名称', f'# {project_name}')
             project.write_outline(template_content)
         
         # 设置为当前项目
@@ -300,6 +318,71 @@ def api_switch_project(project_name):
     
     except Exception as e:
         logger.error(f"切换项目错误: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/projects/<project_name>', methods=['DELETE'])
+def api_delete_project(project_name):
+    """删除项目"""
+    try:
+        import shutil
+        
+        project_dir = os.path.join(agent_writer.project_manager.base_dir, project_name)
+        
+        if not os.path.exists(project_dir):
+            return jsonify({'error': f'项目不存在: {project_name}'}), 404
+        
+        # 删除整个项目目录
+        shutil.rmtree(project_dir)
+        
+        logger.info(f"已删除项目: {project_name}")
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'message': f'项目 {project_name} 已删除'
+            }
+        })
+    
+    except Exception as e:
+        logger.error(f"删除项目错误: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/projects/<project_name>/export', methods=['GET'])
+def api_export_project(project_name):
+    """导出整个项目目录为ZIP"""
+    try:
+        import zipfile
+        import tempfile
+        from flask import send_file
+        
+        project = agent_writer.project_manager.load_project(project_name)
+        if not project:
+            return jsonify({'error': f'项目不存在: {project_name}'}), 404
+        
+        # 创建临时ZIP文件
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.zip')
+        temp_file.close()
+        
+        # 打包整个项目目录
+        with zipfile.ZipFile(temp_file.name, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            for root, dirs, files in os.walk(project.base_dir):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    arcname = os.path.relpath(file_path, project.base_dir)
+                    zipf.write(file_path, arcname)
+        
+        # 返回ZIP文件
+        return send_file(
+            temp_file.name,
+            mimetype='application/zip',
+            as_attachment=True,
+            download_name=f'{project_name}.zip'
+        )
+    
+    except Exception as e:
+        logger.error(f"导出项目错误: {e}")
         return jsonify({'error': str(e)}), 500
 
 

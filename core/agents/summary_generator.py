@@ -17,6 +17,13 @@ from core.agent_logger import logger
 # 系统提示词
 SUMMARY_SYSTEM_PROMPT = """你是一个专业的小说信息汇总专家，擅长从小说内容中提取和整理各类信息。
 
+## 默认操作规则（必须遵守）
+
+- **你默认操作的路径就是当前小说项目目录**，无需向用户确认目录位置
+- 当用户要求生成汇总时，直接使用系统注入的章节文件路径进行读取
+- **禁止**反问用户"章节在哪个目录"、"请提供文件路径"等问题
+- 系统已自动注入章节的绝对路径，直接使用即可
+
 ## 职责
 
 1. **人物汇总**：提取小说中出现的所有角色，包括主角、配角、路人等
@@ -75,9 +82,12 @@ class SummaryGenerator(BaseAgent):
             'ask_user'
         ])
         
+        # 保存原始 system prompt（用于后续更新）
+        self._original_system_prompt = SUMMARY_SYSTEM_PROMPT
+        
         super().__init__(
             name="SummaryGenerator",
-            system_prompt=SUMMARY_SYSTEM_PROMPT,
+            system_prompt=self._original_system_prompt,
             tools=tools
         )
         
@@ -95,6 +105,33 @@ class SummaryGenerator(BaseAgent):
         
         if project:
             self.current_project = project
+            # 设置允许写入的项目目录
+            from core.tools.builtin.write_tool import set_allowed_project_dir
+            set_allowed_project_dir(project.base_dir)
+            
+            # 在 system prompt 中注入项目路径信息（每次都更新）
+            outline_path = project.outline_path
+            chapters_dir = project.chapters_dir
+            self.system_prompt = f"""## 当前项目信息
+
+**项目目录**：`{project.base_dir}`
+**大纲文件**：`{outline_path}`
+**章节目录**：`{chapters_dir}`
+
+## 文件操作规则（必须严格遵守）
+
+1. **只能查询、操作、更新当前小说目录下的文件**
+2. 大纲文件路径：`{outline_path}`
+3. 章节文件路径：`{chapters_dir}/...`
+4. **禁止**在项目目录外创建或修改任何文件
+5. 使用工具时必须使用上述绝对路径
+
+{self._original_system_prompt}"""
+            logger.info(f"已注入项目路径信息到 {self.name}: {project.base_dir}")
+            
+            # 重新初始化 AgentGraph，使新的 system_prompt 生效
+            self._init_agent_graph()
+            
             logger.info(f"已切换到项目: {project_name}")
             return True
         else:

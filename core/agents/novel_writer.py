@@ -32,9 +32,12 @@ class NovelWriter(BaseAgent):
             'ask_user'
         ])
         
+        # 保存原始 system prompt（用于后续更新）
+        self._original_system_prompt = get_prompt(WRITER_PROMPT)
+        
         super().__init__(
             name="NovelWriter",
-            system_prompt=get_prompt(WRITER_PROMPT),
+            system_prompt=self._original_system_prompt,
             tools=tools
         )
         
@@ -60,6 +63,33 @@ class NovelWriter(BaseAgent):
         
         if project:
             self.current_project = project
+            # 设置允许写入的项目目录
+            from core.tools.builtin.write_tool import set_allowed_project_dir
+            set_allowed_project_dir(project.base_dir)
+            
+            # 在 system prompt 中注入项目路径信息（每次都更新）
+            outline_path = project.outline_path
+            chapters_dir = project.chapters_dir
+            self.system_prompt = f"""## 当前项目信息
+
+**项目目录**：`{project.base_dir}`
+**大纲文件**：`{outline_path}`
+**章节目录**：`{chapters_dir}`
+
+## 文件操作规则（必须严格遵守）
+
+1. **只能查询、操作、更新当前小说目录下的文件**
+2. 大纲文件路径：`{outline_path}`
+3. 章节文件路径：`{chapters_dir}/...`
+4. **禁止**在项目目录外创建或修改任何文件
+5. 使用工具时必须使用上述绝对路径
+
+{self._original_system_prompt}"""
+            logger.info(f"已注入项目路径信息到 {self.name}: {project.base_dir}")
+            
+            # 重新初始化 AgentGraph，使新的 system_prompt 生效
+            self._init_agent_graph()
+            
             logger.info(f"已切换到项目: {project_name}")
             return True
         else:

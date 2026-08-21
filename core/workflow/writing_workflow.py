@@ -172,10 +172,10 @@ class WritingWorkflow:
 4. 直接输出正文，使用 Markdown 格式
 """
         
-        # 调用写作 Agent
-        response = self.writer.chat(prompt)
+        # 调用写作 Agent（任务进行中，不限制循环次数）
+        result = self.writer.chat(prompt, max_iterations=0)
         
-        return response
+        return result['response']
     
     def _get_all_previous_chapters(self, volume: int, chapter: int) -> List[str]:
         """获取前面所有章节的内容"""

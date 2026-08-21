@@ -3,6 +3,7 @@
 """
 import os
 from langchain_core.tools import tool
+from core.tools.builtin.write_tool import get_allowed_project_dir
 
 
 @tool
@@ -22,6 +23,13 @@ def edit_file(file_path: str, old_text: str, new_text: str, replace_all: bool = 
     try:
         # 规范化路径
         abs_path = os.path.abspath(file_path)
+        
+        # 检查是否在允许的项目目录内
+        allowed_dir = get_allowed_project_dir()
+        if allowed_dir:
+            # 确保路径在允许的项目目录内
+            if not abs_path.startswith(allowed_dir + os.sep) and abs_path != allowed_dir:
+                return f"错误: 不允许编辑项目目录外的文件。允许目录: {allowed_dir}，尝试编辑: {abs_path}"
         
         if not os.path.exists(abs_path):
             return f"错误: 文件不存在 - {abs_path}"

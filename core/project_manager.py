@@ -27,7 +27,8 @@ class NovelProject:
         """
         self.name = project_name
         self.base_dir = base_dir
-        self.outline_path = os.path.join(base_dir, "outline.md")
+        # 大纲文件名与小说名称一致
+        self.outline_path = os.path.join(base_dir, f"{project_name}.md")
         self.chapters_dir = os.path.join(base_dir, "chapters")
     
     def ensure_dirs(self) -> None:

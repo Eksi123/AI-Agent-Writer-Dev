@@ -49,7 +49,7 @@ class LLMClient:
         self,
         messages: List[Dict[str, Any]],
         tools: Optional[List[Dict[str, Any]]] = None,
-        max_tokens: int = 2000,
+        max_tokens: int = 128000,
         temperature: float = 0.7,
         stream: bool = False
     ) -> Dict[str, Any]:
