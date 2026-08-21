@@ -1,0 +1,1324 @@
+[2026-08-21 10:34:35,710][config.py 37][DEBUG]: 配置文件已加载: e:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 10:34:35,792][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 10:34:35,793][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 10:34:35,811][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 10:34:35,811][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 10:34:35,843][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 10:34:35,844][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 10:34:35,870][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 10:34:35,870][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 10:34:35,895][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 10:34:35,895][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 10:34:35,915][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 10:34:35,916][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 10:34:35,936][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 10:34:35,937][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 10:34:35,959][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 10:34:35,959][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 10:34:35,959][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 10:34:35,985][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 10:34:35,985][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 10:34:35,985][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 10:34:36,007][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 10:34:36,007][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 10:34:36,007][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 10:34:36,008][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 10:34:40,340][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 10:34:40,340][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 10:34:40,343][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 10:34:40,359][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 10:34:40,362][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 10:34:40,365][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 10:34:40,371][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 10:34:40,375][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 10:34:40,377][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 10:34:40,385][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 10:34:40,387][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 10:34:40,395][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 10:34:40,398][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 10:34:40,403][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 10:34:40,407][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 10:34:40,409][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 10:34:40,411][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 10:34:40,412][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 10:34:40,415][main.py 46][INFO]: Agent Writer 已初始化
+[2026-08-21 10:35:01,362][main.py 80][INFO]: 已切换到 Agent: chat
+[2026-08-21 10:35:05,854][base_agent.py 86][DEBUG]: [ChatAgent] 用户: /project...
+[2026-08-21 10:35:05,855][base_agent.py 87][DEBUG]: [ChatAgent] Agent: 你好！看起来你想了解或操作项目相关的内容。
+
+请问你想要做什么呢？我可以帮你：
+
+- 📝 开始新的小...
+[2026-08-21 10:35:13,276][main.py 80][INFO]: 已切换到 Agent: chat
+[2026-08-21 10:35:15,398][base_agent.py 86][DEBUG]: [ChatAgent] 用户: 拜拜...
+[2026-08-21 10:35:15,399][base_agent.py 87][DEBUG]: [ChatAgent] Agent: 拜拜！祝你今天过得愉快！如果以后有任何关于小说创作的问题，或者需要找灵感、查资料，随时欢迎回来找我哦...
+[2026-08-21 13:15:16,454][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 13:15:16,491][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 13:15:16,492][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 13:15:16,503][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 13:15:16,504][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 13:15:16,517][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 13:15:16,518][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 13:15:16,530][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 13:15:16,530][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 13:15:16,541][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 13:15:16,541][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 13:15:16,551][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 13:15:16,552][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 13:15:16,563][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 13:15:16,563][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 13:15:16,572][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 13:15:16,572][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 13:15:16,573][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 13:15:16,591][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 13:15:16,591][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 13:15:16,591][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 13:15:16,606][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 13:15:16,607][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 13:15:16,607][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 13:15:16,607][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 13:15:21,971][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 13:15:21,972][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 13:15:21,976][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 13:15:21,990][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 13:15:21,993][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 13:15:21,998][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 13:15:22,007][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 13:15:22,011][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 13:15:22,017][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 13:15:22,023][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 13:15:22,027][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 13:15:22,032][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 13:15:22,035][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 13:15:22,041][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 13:15:22,043][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 13:15:22,045][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 13:15:22,046][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 13:15:22,046][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 13:15:22,049][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 13:15:22,053][app.py 322][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 13:15:33,383][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 13:15:33,409][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 13:15:33,411][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 13:15:33,423][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 13:15:33,424][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 13:15:33,440][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 13:15:33,441][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 13:15:33,459][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 13:15:33,463][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 13:15:33,488][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 13:15:33,492][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 13:15:33,511][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 13:15:33,518][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 13:15:33,547][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 13:15:33,548][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 13:15:33,558][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 13:15:33,559][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 13:15:33,559][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 13:15:33,582][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 13:15:33,583][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 13:15:33,583][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 13:15:33,596][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 13:15:33,597][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 13:15:33,598][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 13:15:33,599][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 13:15:36,636][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 13:15:36,636][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 13:15:36,638][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 13:15:36,653][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 13:15:36,657][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 13:15:36,659][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 13:15:36,667][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 13:15:36,671][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 13:15:36,674][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 13:15:36,682][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 13:15:36,686][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 13:15:36,692][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 13:15:36,695][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 13:15:36,701][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 13:15:36,704][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 13:15:36,706][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 13:15:36,707][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 13:15:36,708][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 13:15:36,711][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 13:15:36,716][app.py 322][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 13:52:45,281][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 13:52:45,302][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 13:52:45,302][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 13:52:45,313][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 13:52:45,313][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 13:52:45,332][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 13:52:45,333][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 13:52:45,341][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 13:52:45,342][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 13:52:45,350][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 13:52:45,351][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 13:52:45,360][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 13:52:45,361][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 13:52:45,369][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 13:52:45,369][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 13:52:45,380][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 13:52:45,381][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 13:52:45,381][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 13:52:45,393][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 13:52:45,393][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 13:52:45,394][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 13:52:45,404][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 13:52:45,405][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 13:52:45,405][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 13:52:45,406][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 13:52:50,239][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 13:52:50,239][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 13:52:50,243][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 13:52:50,260][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 13:52:50,263][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 13:52:50,269][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 13:52:50,280][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 13:52:50,283][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 13:52:50,289][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 13:52:50,296][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 13:52:50,299][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 13:52:50,307][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 13:52:50,310][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 13:52:50,316][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 13:52:50,318][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 13:52:50,321][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 13:52:50,323][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 13:52:50,323][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 13:52:50,328][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 13:52:50,338][app.py 538][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 13:52:59,608][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 13:52:59,648][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 13:52:59,654][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 13:52:59,664][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 13:52:59,670][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 13:52:59,690][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 13:52:59,691][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 13:52:59,698][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 13:52:59,708][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 13:52:59,728][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 13:52:59,733][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 13:52:59,741][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 13:52:59,746][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 13:52:59,757][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 13:52:59,809][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 13:52:59,826][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 13:52:59,836][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 13:52:59,844][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 13:52:59,869][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 13:52:59,875][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 13:52:59,980][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 13:53:00,060][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 13:53:00,065][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 13:53:00,067][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 13:53:00,070][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 13:53:02,555][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 13:53:02,555][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 13:53:02,556][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 13:53:02,570][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 13:53:02,573][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 13:53:02,574][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 13:53:02,582][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 13:53:02,585][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 13:53:02,586][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 13:53:02,593][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 13:53:02,598][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 13:53:02,603][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 13:53:02,606][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 13:53:02,614][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 13:53:02,617][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 13:53:02,618][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 13:53:02,620][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 13:53:02,620][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 13:53:02,622][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 13:53:02,635][app.py 538][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 13:53:26,751][project_manager.py 170][INFO]: 项目已创建: 我的小说示例版
+[2026-08-21 13:53:26,803][project_manager.py 54][INFO]: 大纲已更新: E:\git\ai-agent-writer-dev\output\我的小说示例版\outline.md
+[2026-08-21 13:53:26,804][novel_writer.py 63][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 13:53:26,805][outline_polisher.py 54][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 13:53:26,814][content_polisher.py 55][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 13:53:26,820][summary_generator.py 98][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 13:53:26,826][info_query.py 84][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 13:53:26,832][app.py 98][INFO]: 已设置项目: 我的小说示例版
+[2026-08-21 13:55:26,622][app.py 527][ERROR]: 测试连接错误: Error code: 401 - {'error': {'message': 'Incorrect API key provided. For details, see: https://help.aliyun.com/zh/model-studio/error-code#apikey-error', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}, 'request_id': '7d1f95c7-6aaa-95ba-a496-2bc226faaf5a'}
+[2026-08-21 14:00:49,656][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 14:00:49,681][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 14:00:49,681][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 14:00:49,690][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 14:00:49,690][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 14:00:49,705][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 14:00:49,705][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 14:00:49,711][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 14:00:49,712][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 14:00:49,719][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 14:00:49,720][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 14:00:49,726][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 14:00:49,726][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 14:00:49,733][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 14:00:49,733][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 14:00:49,739][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 14:00:49,739][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 14:00:49,739][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 14:00:49,751][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 14:00:49,751][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 14:00:49,752][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 14:00:49,759][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 14:00:49,759][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 14:00:49,761][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 14:00:49,761][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 14:00:59,571][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 14:00:59,572][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 14:00:59,575][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 14:00:59,591][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 14:00:59,596][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 14:00:59,598][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 14:00:59,606][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 14:00:59,612][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 14:00:59,615][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 14:00:59,623][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 14:00:59,629][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 14:00:59,641][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 14:00:59,643][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 14:00:59,654][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 14:00:59,657][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 14:00:59,660][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 14:00:59,664][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 14:00:59,664][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 14:00:59,667][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 14:00:59,686][app.py 541][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 14:01:08,607][novel_writer.py 63][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:01:08,637][outline_polisher.py 54][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:01:08,656][content_polisher.py 55][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:01:08,677][summary_generator.py 98][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:01:08,680][info_query.py 84][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:01:08,683][app.py 98][INFO]: 已设置项目: 我的小说示例版
+[2026-08-21 14:01:10,098][novel_writer.py 63][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:01:10,103][outline_polisher.py 54][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:01:10,105][content_polisher.py 55][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:01:10,111][summary_generator.py 98][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:01:10,124][info_query.py 84][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:01:10,139][app.py 98][INFO]: 已设置项目: 我的小说示例版
+[2026-08-21 14:01:43,383][app.py 530][ERROR]: 测试连接错误: Connection error.
+[2026-08-21 14:01:44,337][app.py 530][ERROR]: 测试连接错误: Connection error.
+[2026-08-21 14:02:08,499][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 14:02:08,513][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 14:02:08,514][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 14:02:08,523][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 14:02:08,523][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 14:02:08,538][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 14:02:08,538][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 14:02:08,548][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 14:02:08,548][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 14:02:08,558][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 14:02:08,559][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 14:02:08,567][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 14:02:08,568][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 14:02:08,576][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 14:02:08,576][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 14:02:08,585][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 14:02:08,586][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 14:02:08,586][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 14:02:08,596][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 14:02:08,596][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 14:02:08,596][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 14:02:08,606][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 14:02:08,607][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 14:02:08,607][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 14:02:08,608][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 14:13:14,960][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 14:13:14,975][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 14:13:14,975][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 14:13:14,981][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 14:13:14,981][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 14:13:14,993][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 14:13:14,993][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 14:13:15,000][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 14:13:15,000][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 14:13:15,007][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 14:13:15,008][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 14:13:15,015][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 14:13:15,015][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 14:13:15,021][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 14:13:15,021][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 14:13:15,029][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 14:13:15,029][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 14:13:15,030][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 14:13:15,039][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 14:13:15,040][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 14:13:15,040][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 14:13:15,048][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 14:13:15,049][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 14:13:15,049][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 14:13:15,050][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 14:13:17,892][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 14:13:17,892][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 14:13:17,896][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 14:13:17,916][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 14:13:17,919][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 14:13:17,922][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 14:13:17,931][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 14:13:17,934][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 14:13:17,937][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 14:13:17,945][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 14:13:17,948][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 14:13:17,958][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 14:13:17,960][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 14:13:17,968][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 14:13:17,972][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 14:13:17,974][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 14:13:17,976][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 14:13:17,976][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 14:13:17,981][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 14:13:17,991][app.py 538][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 14:13:27,262][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 14:13:27,283][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 14:13:27,283][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 14:13:27,290][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 14:13:27,290][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 14:13:27,300][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 14:13:27,300][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 14:13:27,310][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 14:13:27,311][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 14:13:27,316][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 14:13:27,316][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 14:13:27,324][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 14:13:27,324][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 14:13:27,331][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 14:13:27,332][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 14:13:27,340][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 14:13:27,341][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 14:13:27,341][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 14:13:27,350][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 14:13:27,350][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 14:13:27,350][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 14:13:27,360][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 14:13:27,360][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 14:13:27,360][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 14:13:27,361][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 14:13:29,882][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 14:13:29,882][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 14:13:29,885][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 14:13:29,897][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 14:13:29,901][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 14:13:29,904][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 14:13:29,913][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 14:13:29,919][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 14:13:29,923][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 14:13:29,929][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 14:13:29,932][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 14:13:29,940][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 14:13:29,943][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 14:13:29,950][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 14:13:29,954][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 14:13:29,956][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 14:13:29,957][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 14:13:29,958][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 14:13:29,961][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 14:13:29,968][app.py 538][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 14:18:20,140][app.py 527][ERROR]: 测试连接错误: Connection error.
+[2026-08-21 14:18:27,863][app.py 86][INFO]: 已切换到 Agent: chat
+[2026-08-21 14:18:31,794][base_agent.py 86][DEBUG]: [ChatAgent] 用户: 你好...
+[2026-08-21 14:18:31,794][base_agent.py 87][DEBUG]: [ChatAgent] Agent: 你好呀！😊 很高兴见到你！
+
+我是你的 AI 写作助手，专门陪你一起搞小说创作的～不管你是正在构思新...
+[2026-08-21 14:18:56,688][app.py 527][ERROR]: 测试连接错误: Connection error.
+[2026-08-21 14:19:52,557][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 14:19:52,589][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 14:19:52,590][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 14:19:52,602][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 14:19:52,603][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 14:19:52,622][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 14:19:52,622][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 14:19:52,633][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 14:19:52,634][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 14:19:52,644][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 14:19:52,644][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 14:19:52,654][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 14:19:52,655][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 14:19:52,666][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 14:19:52,667][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 14:19:52,676][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 14:19:52,676][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 14:19:52,677][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 14:19:52,699][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 14:19:52,703][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 14:19:52,707][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 14:19:52,742][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 14:19:52,746][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 14:19:52,751][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 14:19:52,755][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 14:19:56,762][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 14:19:56,763][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 14:19:56,767][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 14:19:56,794][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 14:19:56,805][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 14:19:56,811][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 14:19:56,827][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 14:19:56,831][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 14:19:56,835][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 14:19:56,846][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 14:19:56,851][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 14:19:56,862][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 14:19:56,866][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 14:19:56,876][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 14:19:56,880][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 14:19:56,883][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 14:19:56,886][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 14:19:56,887][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 14:19:56,891][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 14:19:56,906][app.py 542][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 14:20:08,873][app.py 531][ERROR]: 测试连接错误: Connection error.
+[2026-08-21 14:20:28,738][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 14:20:28,753][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 14:20:28,753][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 14:20:28,758][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 14:20:28,759][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 14:20:28,768][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 14:20:28,768][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 14:20:28,774][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 14:20:28,774][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 14:20:28,781][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 14:20:28,782][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 14:20:28,788][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 14:20:28,789][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 14:20:28,793][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 14:20:28,793][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 14:20:28,801][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 14:20:28,801][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 14:20:28,801][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 14:20:28,808][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 14:20:28,809][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 14:20:28,809][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 14:20:28,815][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 14:20:28,815][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 14:20:28,815][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 14:20:28,817][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 14:20:30,782][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 14:20:30,782][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 14:20:30,784][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 14:20:30,794][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 14:20:30,797][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 14:20:30,799][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 14:20:30,805][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 14:20:30,810][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 14:20:30,813][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 14:20:30,820][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 14:20:30,823][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 14:20:30,831][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 14:20:30,833][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 14:20:30,838][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 14:20:30,841][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 14:20:30,844][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 14:20:30,845][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 14:20:30,846][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 14:20:30,849][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 14:20:30,855][app.py 542][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 14:20:38,880][app.py 531][ERROR]: 测试连接错误: Connection error.
+[2026-08-21 14:20:40,159][app.py 531][ERROR]: 测试连接错误: Connection error.
+[2026-08-21 14:20:45,713][app.py 531][ERROR]: 测试连接错误: Connection error.
+[2026-08-21 14:20:58,178][novel_writer.py 63][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:20:58,179][outline_polisher.py 54][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:20:58,180][content_polisher.py 55][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:20:58,181][summary_generator.py 98][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:20:58,182][info_query.py 84][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:20:58,183][app.py 98][INFO]: 已设置项目: 我的小说示例版
+[2026-08-21 14:45:35,985][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 14:45:36,006][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 14:45:36,007][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 14:45:36,016][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 14:45:36,016][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 14:45:36,032][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 14:45:36,033][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 14:45:36,042][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 14:45:36,042][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 14:45:36,053][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 14:45:36,055][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 14:45:36,062][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 14:45:36,066][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 14:45:36,077][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 14:45:36,080][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 14:45:36,097][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 14:45:36,098][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 14:45:36,098][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 14:45:36,113][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 14:45:36,113][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 14:45:36,114][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 14:45:36,128][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 14:45:36,129][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 14:45:36,129][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 14:45:36,130][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 14:45:41,040][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 14:45:41,041][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 14:45:41,044][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 14:45:41,075][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 14:45:41,083][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 14:45:41,086][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 14:45:41,100][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 14:45:41,106][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 14:45:41,110][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 14:45:41,128][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 14:45:41,133][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 14:45:41,147][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 14:45:41,155][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 14:45:41,172][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 14:45:41,180][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 14:45:41,183][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 14:45:41,185][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 14:45:41,186][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 14:45:41,192][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 14:45:41,219][app.py 602][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 14:46:10,203][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 14:46:10,409][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 14:46:10,424][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 14:46:10,443][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 14:46:10,443][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 14:46:10,460][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 14:46:10,467][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 14:46:10,476][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 14:46:10,478][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 14:46:10,490][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 14:46:10,515][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 14:46:10,708][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 14:46:10,725][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 14:46:10,760][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 14:46:10,769][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 14:46:10,792][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 14:46:10,793][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 14:46:10,913][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 14:46:10,948][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 14:46:10,951][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 14:46:10,951][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 14:46:10,970][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 14:46:10,971][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 14:46:10,971][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 14:46:10,972][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 14:46:17,001][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 14:46:17,002][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 14:46:17,005][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 14:46:17,032][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 14:46:17,037][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 14:46:17,043][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 14:46:17,179][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 14:46:17,215][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 14:46:17,239][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 14:46:17,269][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 14:46:17,277][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 14:46:17,305][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 14:46:17,309][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 14:46:17,327][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 14:46:17,333][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 14:46:17,337][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 14:46:17,339][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 14:46:17,340][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 14:46:17,343][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 14:46:17,358][app.py 602][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 14:46:19,249][novel_writer.py 63][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,258][outline_polisher.py 54][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,259][novel_writer.py 63][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,261][content_polisher.py 55][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,262][outline_polisher.py 54][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,264][summary_generator.py 98][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,266][content_polisher.py 55][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,267][novel_writer.py 63][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,270][info_query.py 84][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,273][novel_writer.py 63][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,274][summary_generator.py 98][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,275][outline_polisher.py 54][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,277][info_query.py 84][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,277][novel_writer.py 63][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,280][novel_writer.py 63][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,281][outline_polisher.py 54][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,283][outline_polisher.py 54][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,284][content_polisher.py 55][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,285][app.py 98][INFO]: 已设置项目: 我的小说示例版
+[2026-08-21 14:46:19,286][outline_polisher.py 54][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,289][app.py 98][INFO]: 已设置项目: 我的小说示例版
+[2026-08-21 14:46:19,290][content_polisher.py 55][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,291][content_polisher.py 55][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,291][summary_generator.py 98][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,297][content_polisher.py 55][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,311][summary_generator.py 98][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,358][summary_generator.py 98][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,378][novel_writer.py 63][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,471][info_query.py 84][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,474][summary_generator.py 98][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,474][info_query.py 84][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,475][info_query.py 84][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,476][outline_polisher.py 54][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,476][app.py 98][INFO]: 已设置项目: 我的小说示例版
+[2026-08-21 14:46:19,494][novel_writer.py 63][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,495][app.py 98][INFO]: 已设置项目: 我的小说示例版
+[2026-08-21 14:46:19,505][project_manager.py 186][WARNING]: 项目不存在: null
+[2026-08-21 14:46:19,514][content_polisher.py 55][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,515][project_manager.py 186][WARNING]: 项目不存在: null
+[2026-08-21 14:46:19,519][info_query.py 84][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,524][outline_polisher.py 54][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,524][app.py 98][INFO]: 已设置项目: 我的小说示例版
+[2026-08-21 14:46:19,533][summary_generator.py 98][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,616][info_query.py 84][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,620][app.py 98][INFO]: 已设置项目: 我的小说示例版
+[2026-08-21 14:46:19,627][content_polisher.py 55][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,642][app.py 98][INFO]: 已设置项目: 我的小说示例版
+[2026-08-21 14:46:19,775][summary_generator.py 98][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,781][info_query.py 84][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:46:19,791][app.py 98][INFO]: 已设置项目: 我的小说示例版
+[2026-08-21 14:46:26,502][project_manager.py 54][INFO]: 大纲已更新: E:\git\ai-agent-writer-dev\output\我的小说示例版\outline.md
+[2026-08-21 14:46:26,502][app.py 342][INFO]: 大纲已保存: 我的小说示例版
+[2026-08-21 14:47:03,588][project_manager.py 54][INFO]: 大纲已更新: E:\git\ai-agent-writer-dev\output\我的小说示例版\outline.md
+[2026-08-21 14:47:03,595][app.py 342][INFO]: 大纲已保存: 我的小说示例版
+[2026-08-21 14:47:25,173][app.py 591][ERROR]: 测试连接错误: Connection error.
+[2026-08-21 14:54:15,076][project_manager.py 54][INFO]: 大纲已更新: E:\git\ai-agent-writer-dev\output\我的小说示例版\outline.md
+[2026-08-21 14:54:15,080][app.py 342][INFO]: 大纲已保存: 我的小说示例版
+[2026-08-21 14:55:42,852][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 14:55:42,975][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 14:55:42,992][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 14:55:43,039][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 14:55:43,050][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 14:55:43,099][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 14:55:43,099][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 14:55:43,112][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 14:55:43,113][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 14:55:43,126][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 14:55:43,126][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 14:55:43,140][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 14:55:43,140][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 14:55:43,151][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 14:55:43,152][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 14:55:43,161][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 14:55:43,162][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 14:55:43,163][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 14:55:43,174][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 14:55:43,175][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 14:55:43,175][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 14:55:43,187][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 14:55:43,188][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 14:55:43,188][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 14:55:43,191][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 14:55:47,164][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 14:55:47,165][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 14:55:47,167][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 14:55:47,196][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 14:55:47,199][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 14:55:47,205][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 14:55:47,353][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 14:55:47,364][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 14:55:47,369][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 14:55:47,405][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 14:55:47,410][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 14:55:47,422][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 14:55:47,427][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 14:55:47,439][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 14:55:47,441][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 14:55:47,444][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 14:55:47,449][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 14:55:47,450][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 14:55:47,453][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 14:55:47,469][app.py 602][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 14:56:01,715][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 14:56:01,735][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 14:56:01,737][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 14:56:01,751][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 14:56:01,752][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 14:56:01,766][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 14:56:01,767][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 14:56:01,783][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 14:56:01,784][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 14:56:01,795][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 14:56:01,796][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 14:56:01,805][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 14:56:01,807][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 14:56:01,817][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 14:56:01,827][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 14:56:01,847][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 14:56:01,848][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 14:56:01,849][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 14:56:01,984][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 14:56:01,988][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 14:56:01,990][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 14:56:02,001][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 14:56:02,003][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 14:56:02,003][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 14:56:02,004][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 14:56:08,255][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 14:56:08,255][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 14:56:08,258][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 14:56:08,298][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 14:56:08,302][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 14:56:08,304][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 14:56:08,319][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 14:56:08,324][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 14:56:08,335][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 14:56:08,351][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 14:56:08,355][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 14:56:08,368][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 14:56:08,371][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 14:56:08,385][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 14:56:08,387][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 14:56:08,390][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 14:56:08,393][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 14:56:08,393][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 14:56:08,397][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 14:56:08,418][app.py 602][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 14:56:57,140][novel_writer.py 63][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:56:57,141][outline_polisher.py 54][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:56:57,142][content_polisher.py 55][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:56:57,143][summary_generator.py 98][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:56:57,143][info_query.py 84][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 14:56:57,144][app.py 98][INFO]: 已设置项目: 我的小说示例版
+[2026-08-21 15:02:22,154][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 15:02:22,196][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 15:02:22,197][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 15:02:22,232][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 15:02:22,233][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 15:02:22,278][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 15:02:22,278][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 15:02:22,286][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 15:02:22,287][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 15:02:22,296][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 15:02:22,297][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 15:02:22,304][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 15:02:22,305][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 15:02:22,311][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 15:02:22,312][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 15:02:22,321][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 15:02:22,322][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 15:02:22,322][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 15:02:22,333][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 15:02:22,334][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 15:02:22,334][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 15:02:22,346][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 15:02:22,347][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 15:02:22,347][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 15:02:22,348][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 15:02:25,350][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 15:02:25,351][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 15:02:25,354][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 15:02:25,372][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 15:02:25,375][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 15:02:25,377][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 15:02:25,387][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 15:02:25,392][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 15:02:25,395][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 15:02:25,402][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 15:02:25,404][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 15:02:25,415][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 15:02:25,418][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 15:02:25,432][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 15:02:25,435][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 15:02:25,438][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 15:02:25,440][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 15:02:25,441][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 15:02:25,481][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 15:02:25,502][app.py 602][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 15:02:55,319][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 15:02:55,338][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 15:02:55,339][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 15:02:55,352][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 15:02:55,353][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 15:02:55,366][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 15:02:55,367][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 15:02:55,375][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 15:02:55,376][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 15:02:55,387][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 15:02:55,387][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 15:02:55,432][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 15:02:55,433][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 15:02:55,475][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 15:02:55,476][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 15:02:55,483][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 15:02:55,484][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 15:02:55,484][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 15:02:55,495][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 15:02:55,497][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 15:02:55,497][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 15:02:55,506][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 15:02:55,512][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 15:02:55,513][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 15:02:55,514][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 15:02:59,726][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 15:02:59,728][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 15:02:59,731][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 15:02:59,755][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 15:02:59,760][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 15:02:59,765][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 15:02:59,777][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 15:02:59,785][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 15:02:59,790][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 15:02:59,798][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 15:02:59,807][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 15:02:59,816][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 15:02:59,819][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 15:02:59,826][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 15:02:59,831][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 15:02:59,833][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 15:02:59,834][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 15:02:59,835][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 15:02:59,840][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 15:02:59,850][app.py 602][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 15:07:46,111][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 15:07:46,122][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 15:07:46,122][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 15:07:46,130][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 15:07:46,130][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 15:07:46,138][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 15:07:46,138][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 15:07:46,144][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 15:07:46,145][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 15:07:46,150][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 15:07:46,150][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 15:07:46,158][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 15:07:46,158][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 15:07:46,163][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 15:07:46,164][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 15:07:46,173][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 15:07:46,173][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 15:07:46,174][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 15:07:46,179][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 15:07:46,180][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 15:07:46,180][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 15:07:46,187][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 15:07:46,187][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 15:07:46,187][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 15:07:46,187][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 15:07:48,046][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 15:07:48,046][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 15:07:48,048][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 15:07:48,060][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 15:07:48,062][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 15:07:48,064][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 15:07:48,074][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 15:07:48,076][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 15:07:48,078][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 15:07:48,084][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 15:07:48,088][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 15:07:48,094][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 15:07:48,095][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 15:07:48,102][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 15:07:48,106][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 15:07:48,107][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 15:07:48,109][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 15:07:48,109][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 15:07:48,111][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 15:07:48,122][app.py 602][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 15:07:57,634][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 15:07:57,666][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 15:07:57,671][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 15:07:57,681][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 15:07:57,682][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 15:07:57,698][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 15:07:57,699][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 15:07:57,709][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 15:07:57,709][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 15:07:57,717][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 15:07:57,718][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 15:07:57,731][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 15:07:57,732][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 15:07:57,750][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 15:07:57,751][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 15:07:57,761][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 15:07:57,761][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 15:07:57,762][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 15:07:57,772][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 15:07:57,773][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 15:07:57,773][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 15:07:57,784][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 15:07:57,786][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 15:07:57,787][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 15:07:57,789][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 15:08:02,129][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 15:08:02,130][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 15:08:02,132][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 15:08:02,156][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 15:08:02,158][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 15:08:02,163][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 15:08:02,175][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 15:08:02,182][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 15:08:02,184][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 15:08:02,196][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 15:08:02,199][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 15:08:02,209][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 15:08:02,215][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 15:08:02,226][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 15:08:02,233][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 15:08:02,235][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 15:08:02,237][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 15:08:02,238][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 15:08:02,240][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 15:08:02,267][app.py 602][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 15:08:46,891][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 15:08:46,914][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 15:08:46,914][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 15:08:46,950][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 15:08:46,950][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 15:08:46,964][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 15:08:46,964][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 15:08:46,975][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 15:08:46,975][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 15:08:46,985][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 15:08:46,987][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 15:08:46,995][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 15:08:46,995][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 15:08:47,008][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 15:08:47,015][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 15:08:47,045][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 15:08:47,045][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 15:08:47,045][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 15:08:47,057][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 15:08:47,058][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 15:08:47,060][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 15:08:47,069][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 15:08:47,070][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 15:08:47,073][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 15:08:47,074][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 15:08:51,307][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 15:08:51,307][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 15:08:51,309][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 15:08:51,331][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 15:08:51,333][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 15:08:51,337][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 15:08:51,346][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 15:08:51,349][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 15:08:51,351][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 15:08:51,359][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 15:08:51,361][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 15:08:51,371][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 15:08:51,373][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 15:08:51,379][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 15:08:51,384][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 15:08:51,387][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 15:08:51,389][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 15:08:51,390][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 15:08:51,392][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 15:08:51,406][app.py 602][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 15:09:04,256][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 15:09:04,279][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 15:09:04,280][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 15:09:04,291][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 15:09:04,292][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 15:09:04,306][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 15:09:04,306][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 15:09:04,318][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 15:09:04,319][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 15:09:04,328][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 15:09:04,328][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 15:09:04,338][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 15:09:04,339][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 15:09:04,351][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 15:09:04,352][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 15:09:04,364][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 15:09:04,364][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 15:09:04,365][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 15:09:04,376][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 15:09:04,377][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 15:09:04,380][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 15:09:04,389][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 15:09:04,389][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 15:09:04,391][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 15:09:04,392][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 15:09:07,575][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 15:09:07,576][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 15:09:07,578][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 15:09:07,601][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 15:09:07,604][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 15:09:07,609][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 15:09:07,626][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 15:09:07,629][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 15:09:07,631][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 15:09:07,647][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 15:09:07,649][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 15:09:07,663][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 15:09:07,668][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 15:09:07,681][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 15:09:07,684][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 15:09:07,693][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 15:09:07,696][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 15:09:07,697][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 15:09:07,700][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 15:09:07,720][app.py 602][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 15:09:18,572][app.py 86][INFO]: 已切换到 Agent: chat
+[2026-08-21 15:09:24,346][base_agent.py 86][DEBUG]: [ChatAgent] 用户: 213...
+[2026-08-21 15:09:24,347][base_agent.py 87][DEBUG]: [ChatAgent] Agent: 你好！看起来你发送了"213"，请问有什么我可以帮助你的吗？
+
+我可以帮助你：
+- 进行小说创作相关...
+[2026-08-21 15:14:34,887][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 15:14:34,907][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 15:14:34,908][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 15:14:34,923][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 15:14:34,923][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 15:14:34,937][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 15:14:34,939][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 15:14:34,948][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 15:14:34,948][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 15:14:34,957][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 15:14:34,958][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 15:14:34,973][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 15:14:34,974][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 15:14:34,990][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 15:14:34,990][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 15:14:35,001][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 15:14:35,001][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 15:14:35,002][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 15:14:35,013][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 15:14:35,013][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 15:14:35,014][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 15:14:35,037][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 15:14:35,037][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 15:14:35,038][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 15:14:35,039][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 15:14:38,470][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 15:14:38,471][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 15:14:38,473][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 15:14:38,497][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 15:14:38,500][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 15:14:38,510][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 15:14:38,524][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 15:14:38,529][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 15:14:38,532][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 15:14:38,543][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 15:14:38,547][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 15:14:38,557][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 15:14:38,562][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 15:14:38,574][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 15:14:38,577][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 15:14:38,579][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 15:14:38,581][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 15:14:38,582][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 15:14:38,585][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 15:14:38,601][app.py 602][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 15:15:07,121][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 15:15:07,141][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 15:15:07,142][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 15:15:07,152][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 15:15:07,153][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 15:15:07,168][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 15:15:07,168][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 15:15:07,180][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 15:15:07,182][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 15:15:07,190][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 15:15:07,191][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 15:15:07,204][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 15:15:07,205][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 15:15:07,217][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 15:15:07,217][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 15:15:07,232][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 15:15:07,233][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 15:15:07,233][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 15:15:07,243][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 15:15:07,244][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 15:15:07,245][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 15:15:07,255][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 15:15:07,256][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 15:15:07,257][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 15:15:07,257][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 15:15:15,543][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 15:15:15,564][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 15:15:15,587][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 15:15:15,906][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 15:15:15,941][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 15:15:15,955][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 15:15:15,972][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 15:15:15,978][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 15:15:15,982][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 15:15:16,105][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 15:15:16,109][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 15:15:16,147][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 15:15:16,154][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 15:15:16,177][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 15:15:16,305][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 15:15:16,310][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 15:15:16,321][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 15:15:16,326][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 15:15:16,355][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 15:15:16,475][app.py 602][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 15:22:28,889][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 15:22:28,905][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 15:22:28,906][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 15:22:28,914][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 15:22:28,914][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 15:22:28,938][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 15:22:28,938][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 15:22:28,945][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 15:22:28,946][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 15:22:28,953][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 15:22:28,953][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 15:22:28,960][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 15:22:28,961][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 15:22:28,970][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 15:22:28,970][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 15:22:28,982][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 15:22:28,982][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 15:22:28,983][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 15:22:28,993][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 15:22:28,994][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 15:22:28,994][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 15:22:29,006][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 15:22:29,007][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 15:22:29,007][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 15:22:29,008][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 15:22:39,325][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 15:22:39,326][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 15:22:39,332][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 15:22:39,453][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 15:22:39,491][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 15:22:39,540][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 15:22:39,564][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 15:22:39,572][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 15:22:39,579][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 15:22:39,606][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 15:22:39,613][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 15:22:39,723][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 15:22:39,735][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 15:22:39,784][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 15:22:39,801][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 15:22:39,835][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 15:22:39,873][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 15:22:39,902][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 15:22:39,934][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 15:22:39,971][app.py 602][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 15:22:56,553][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 15:22:56,574][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 15:22:56,575][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 15:22:56,583][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 15:22:56,585][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 15:22:56,606][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 15:22:56,607][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 15:22:56,620][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 15:22:56,621][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 15:22:56,634][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 15:22:56,637][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 15:22:56,652][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 15:22:56,653][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 15:22:56,662][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 15:22:56,662][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 15:22:56,671][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 15:22:56,672][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 15:22:56,672][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 15:22:56,682][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 15:22:56,684][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 15:22:56,685][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 15:22:56,695][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 15:22:56,696][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 15:22:56,697][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 15:22:56,700][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 15:23:00,403][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 15:23:00,404][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 15:23:00,407][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 15:23:00,433][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 15:23:00,436][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 15:23:00,440][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 15:23:00,457][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 15:23:00,463][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 15:23:00,466][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 15:23:00,573][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 15:23:00,653][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 15:23:00,706][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 15:23:00,712][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 15:23:00,756][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 15:23:00,762][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 15:23:00,775][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 15:23:00,780][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 15:23:00,781][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 15:23:00,785][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 15:23:00,808][app.py 602][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 15:23:49,400][app.py 86][INFO]: 已切换到 Agent: chat
+[2026-08-21 15:23:55,874][base_agent.py 86][DEBUG]: [ChatAgent] 用户: 你好...
+[2026-08-21 15:23:55,882][base_agent.py 87][DEBUG]: [ChatAgent] Agent: 你好！很高兴和你交流。我是你的 AI 助手，专门协助小说创作相关的工作。
+
+无论你是需要寻找创作灵感...
+[2026-08-21 15:24:07,016][novel_writer.py 63][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 15:24:07,017][outline_polisher.py 54][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 15:24:07,019][content_polisher.py 55][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 15:24:07,020][summary_generator.py 98][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 15:24:07,021][info_query.py 84][INFO]: 已切换到项目: 我的小说示例版
+[2026-08-21 15:24:07,022][app.py 98][INFO]: 已设置项目: 我的小说示例版
+[2026-08-21 15:31:32,150][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 15:31:32,285][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 15:31:32,291][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 15:31:32,542][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 15:31:32,550][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 15:31:32,748][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 15:31:32,753][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 15:31:32,813][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 15:31:32,823][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 15:31:32,852][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 15:31:32,854][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 15:31:32,866][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 15:31:32,870][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 15:31:33,004][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 15:31:33,017][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 15:31:33,050][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 15:31:33,052][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 15:31:33,056][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 15:31:33,087][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 15:31:33,089][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 15:31:33,090][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 15:31:33,108][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 15:31:33,207][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 15:31:33,221][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 15:31:33,226][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 15:31:48,141][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 15:31:48,144][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 15:31:48,258][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 15:31:48,326][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 15:31:48,342][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 15:31:48,348][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 15:31:48,494][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 15:31:48,498][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 15:31:48,515][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 15:31:48,546][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 15:31:48,558][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 15:31:48,695][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 15:31:48,713][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 15:31:48,748][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 15:31:48,762][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 15:31:48,768][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 15:31:48,878][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 15:31:48,890][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 15:31:48,926][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 15:31:49,091][app.py 602][INFO]: 启动 Web 服务器: http://127.0.0.1:5000
+[2026-08-21 15:32:17,175][config.py 37][DEBUG]: 配置文件已加载: E:\git\ai-agent-writer-dev\config.ini
+[2026-08-21 15:32:17,200][__init__.py 32][DEBUG]: 工具已注册: ask_user
+[2026-08-21 15:32:17,202][__init__.py 126][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-21 15:32:17,213][__init__.py 32][DEBUG]: 工具已注册: edit_file
+[2026-08-21 15:32:17,213][__init__.py 126][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-21 15:32:17,341][__init__.py 32][DEBUG]: 工具已注册: glob_search
+[2026-08-21 15:32:17,344][__init__.py 126][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-21 15:32:17,369][__init__.py 32][DEBUG]: 工具已注册: list_directory
+[2026-08-21 15:32:17,370][__init__.py 126][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-21 15:32:17,381][__init__.py 32][DEBUG]: 工具已注册: fetch_url
+[2026-08-21 15:32:17,389][__init__.py 126][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-21 15:32:17,405][__init__.py 32][DEBUG]: 工具已注册: read_file
+[2026-08-21 15:32:17,413][__init__.py 126][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-21 15:32:17,425][__init__.py 32][DEBUG]: 工具已注册: manage_todo
+[2026-08-21 15:32:17,571][__init__.py 126][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-21 15:32:17,612][__init__.py 32][DEBUG]: 工具已注册: write_file
+[2026-08-21 15:32:17,621][__init__.py 126][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-21 15:32:17,628][__init__.py 237][INFO]: 内置工具加载完成，共 8 个工具
+[2026-08-21 15:32:17,653][__init__.py 32][DEBUG]: 工具已注册: file_info
+[2026-08-21 15:32:17,654][__init__.py 214][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-21 15:32:17,657][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-21 15:32:17,676][__init__.py 32][DEBUG]: 工具已注册: word_count
+[2026-08-21 15:32:17,677][__init__.py 214][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-21 15:32:17,678][__init__.py 162][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-21 15:32:17,680][__init__.py 241][INFO]: 所有工具加载完成，共 10 个工具
+[2026-08-21 15:32:22,676][base_agent.py 62][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-21 15:32:22,678][chat_agent.py 58][INFO]: 自由对话 Agent 已初始化
+[2026-08-21 15:32:22,681][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-21 15:32:22,706][base_agent.py 62][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-21 15:32:22,711][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-08-21 15:32:22,717][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-21 15:32:22,732][base_agent.py 62][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-21 15:32:22,736][outline_polisher.py 46][INFO]: 大纲润色 Agent 已初始化
+[2026-08-21 15:32:22,739][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-21 15:32:22,753][base_agent.py 62][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-21 15:32:22,762][content_polisher.py 47][INFO]: 小说润色 Agent 已初始化
+[2026-08-21 15:32:22,773][base_agent.py 62][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-21 15:32:22,778][summary_generator.py 90][INFO]: 汇总说明 Agent 已初始化
+[2026-08-21 15:32:22,790][base_agent.py 62][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-21 15:32:22,794][info_query.py 76][INFO]: 信息查询 Agent 已初始化
+[2026-08-21 15:32:22,797][outline_reviewer.py 34][DEBUG]: 大纲审查器已初始化
+[2026-08-21 15:32:22,799][logic_reviewer.py 34][DEBUG]: 逻辑审查器已初始化
+[2026-08-21 15:32:22,800][writing_workflow.py 36][INFO]: 写作工作流已初始化
+[2026-08-21 15:32:22,804][app.py 59][INFO]: Web Agent Writer 已初始化
+[2026-08-21 15:32:22,827][app.py 602][INFO]: 启动 Web 服务器: http://127.0.0.1:5000

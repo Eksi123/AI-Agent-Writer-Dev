@@ -11,9 +11,12 @@ from langchain_core.messages import HumanMessage
 from langchain.agents import create_agent
 
 # 1. 读取配置
+import os
 config = ConfigParser()
 config.read('config.ini')
-api_key = config.get('llm_api_aliyun', 'api_key')
+api_key = os.environ.get("LLM_API_KEY")
+if not api_key:
+    raise ValueError("环境变量 LLM_API_KEY 未设置，请先设置 API Key")
 base_url = config.get('llm_api_aliyun', 'base_url')
 model = config.get('llm_api_aliyun', 'model')
 

@@ -28,12 +28,17 @@ class LLM:
     message.tool_calls         # 工具调用列表（列表或None）
     """
     def __init__(self):
+        import os
+        api_key = os.environ.get("LLM_API_KEY")
+        if not api_key:
+            raise ValueError("环境变量 LLM_API_KEY 未设置，请先设置 API Key")
+        
         self.client = openai.OpenAI(
-            api_key=xxx,
-            base_url=xxx,
+            api_key=api_key,
+            base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
             timeout=30
         )
-        self.model = xxx
+        self.model = "qwen3.7-plus"
 
     def chat(self, messages, tools=None):
         """调用大模型，支持工具调用"""

@@ -150,9 +150,15 @@ def create_llm_client() -> LLMClient:
     """创建LLM客户端实例"""
     config = ConfigParser()
     config.read(os.path.join(CONFIG_PATH, "setting.ini"), encoding="UTF-8")
+    
+    # 从环境变量读取 API Key
+    api_key = os.environ.get("LLM_API_KEY")
+    if not api_key:
+        raise ValueError("环境变量 LLM_API_KEY 未设置，请先设置 API Key")
+    
     return LLMClient(
         base_url=config['llm_api_aliyun']['base_url'],
-        api_key=config['llm_api_aliyun']['api_key'],
+        api_key=api_key,
         model=config['llm_api_aliyun']['model']
     )
 

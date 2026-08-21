@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent Writer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f5f5f5;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 布局 */
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            width: 280px;
+            background: #fff;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-settings {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .btn-settings:hover {
+            background: #f0f0f0;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .project-list {
+            list-style: none;
+        }
+
+        .project-item {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: #f9f9f9;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .project-item:hover {
+            background: #f0f0f0;
+        }
+
+        .project-item.active {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .btn-new-project, .btn-import-project {
+            flex: 1;
+            padding: 12px;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-new-project {
+            background: #28a745;
+        }
+
+        .btn-new-project:hover {
+            background: #218838;
+        }
+
+        .btn-import-project {
+            background: #17a2b8;
+        }
+
+        .btn-import-project:hover {
+            background: #138496;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 顶部栏 */
+        .top-bar {
+            padding: 15px 20px;
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .current-project {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .current-agent {
+            padding: 6px 12px;
+            background: #e9ecef;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* 内容区域 */
+        .content-area {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* 对话区域 */
+        .chat-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #007bff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .message.user .message-avatar {
+            background: #28a745;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: #f1f3f5;
+            line-height: 1.6;
+        }
+
+        .message.user .message-content {
+            background: #007bff;
+            color: white;
+        }
+
+        /* Agent 指令栏 */
+        .agent-buttons {
+            padding: 8px 20px;
+            border-top: 1px solid #e0e0e0;
+            background: #f9f9f9;
+            display: flex;
+            gap: 6px;
+        }
+
+        .agent-btn {
+            padding: 5px 12px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .agent-btn:hover {
+            background: #f0f0f0;
+            border-color: #007bff;
+        }
+
+        .agent-btn.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .chat-input-area {
+            padding: 0;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 可拖动分隔条 */
+        .resize-handle {
+            height: 6px;
+            background: #f0f0f0;
+            cursor: ns-resize;
+            border-bottom: 1px solid #e0e0e0;
+            position: relative;
+        }
+
+        .resize-handle:hover {
+            background: #e0e0e0;
+        }
+
+        .resize-handle::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 3px;
+            background: #ccc;
+            border-radius: 2px;
+        }
+
+        .resize-handle:hover::after {
+            background: #999;
+        }
+
+        .chat-input-wrapper {
+            padding: 15px 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            resize: none;
+            font-family: inherit;
+            min-height: 40px;
+            max-height: 200px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .btn-send {
+            padding: 12px 24px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-send:hover {
+            background: #0056b3;
+        }
+
+        .btn-send:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* 右侧面板 */
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+        }
+
+        .panel-tabs {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .panel-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .panel-tab.active {
+            border-bottom-color: #007bff;
+            color: #007bff;
+        }
+
+        .panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .outline-content, .chapters-content {
+            line-height: 1.6;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        /* 章节目录树 */
+        .volume-item {
+            margin-bottom: 15px;
+        }
+
+        .volume-title {
+            font-weight: 600;
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 8px;
+            padding: 6px 10px;
+            background: #f1f3f5;
+            border-radius: 4px;
+        }
+
+        .chapter-item {
+            padding: 8px 10px;
+            margin-bottom: 5px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+
+        .chapter-item:hover {
+            background: #e9ecef;
+        }
+
+        .chapter-preview {
+            padding: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .chapter-preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .chapter-preview-header h3 {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn-back {
+            padding: 5px 10px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-back:hover {
+            background: #5a6268;
+        }
+
+        /* 目录导航 */
+        .toc-nav {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 12px;
+        }
+
+        .toc-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toc-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 11px;
+            color: #007bff;
+            padding: 2px 6px;
+        }
+
+        .toc-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .toc-list.collapsed {
+            display: none;
+        }
+
+        .toc-item {
+            padding: 3px 8px;
+            margin: 1px 0;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 12px;
+            color: #555;
+            transition: all 0.2s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .toc-item:hover {
+            background: #e9ecef;
+            color: #007bff;
+        }
+
+        .toc-item.level-1 {
+            padding-left: 8px;
+            font-weight: 500;
+        }
+
+        .toc-item.level-2 {
+            padding-left: 20px;
+        }
+
+        .toc-item.level-3 {
+            padding-left: 32px;
+            font-size: 11px;
+        }
+
+        /* 编辑模式工具栏 */
+        .panel-toolbar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 6px 0;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+            gap: 6px;
+        }
+
+        .btn-mode-toggle {
+            padding: 4px 10px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-mode-toggle:hover {
+            background: #f0f0f0;
+        }
+
+        .btn-mode-toggle.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .btn-save {
+            padding: 4px 10px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            display: none;
+        }
+
+        .btn-save:hover {
+            background: #f0f0f0;
+        }
+
+        .btn-save.visible {
+            display: inline-block;
+        }
+
+        .edit-textarea {
+            width: 100%;
+            flex: 1;
+            min-height: 0;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            resize: none;
+        }
+
+        .edit-textarea:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .btn-close:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 12px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        /* API Key 输入框禁用态 */
+        .form-group input:disabled {
+            background: #e9ecef;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .form-group.hidden {
+            display: none;
+        }
+
+        /* API Key 输入框包装器 */
+        .input-with-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-with-icon input {
+            padding-right: 40px;
+        }
+
+        .btn-toggle-visibility {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #666;
+            padding: 4px;
+            line-height: 1;
+        }
+
+        .btn-toggle-visibility:hover {
+            color: #333;
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Markdown 渲染 - 缩小字体 */
+        .markdown-content h1 {
+            margin: 14px 0 6px 0;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .markdown-content h2 {
+            margin: 12px 0 5px 0;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .markdown-content h3 {
+            margin: 10px 0 4px 0;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .markdown-content p {
+            margin: 6px 0;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .markdown-content ul, .markdown-content ol {
+            margin: 6px 0;
+            padding-left: 20px;
+            font-size: 13px;
+        }
+
+        .markdown-content code {
+            background: #f1f3f5;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        .markdown-content pre {
+            background: #f1f3f5;
+            padding: 10px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 10px 0;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <span>📚 项目管理</span>
+                <button class="btn-settings" onclick="openSettings()" title="设置">⚙</button>
+            </div>
+            <div class="sidebar-content">
+                <div class="btn-group">
+                    <button class="btn-new-project" onclick="createProject()">+ 新建项目</button>
+                    <button class="btn-import-project" onclick="importProject()">📥 导入项目</button>
+                </div>
+                <ul class="project-list" id="projectList">
+                    <!-- 项目列表将在这里动态生成 -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 顶部栏 -->
+            <div class="top-bar">
+                <div class="current-project" id="currentProject">未选择项目</div>
+                <div class="current-agent" id="currentAgent">当前 Agent: ChatAgent</div>
+            </div>
+
+            <!-- 内容区域 -->
+            <div class="content-area">
+                <!-- 对话面板 -->
+                <div class="chat-panel">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message">
+                            <div class="message-avatar">AI</div>
+                            <div class="message-content">
+                                我是 AI Agent Writer，一个专注于小说创作的智能写作助手。我可以帮助你创建大纲、逐章写作、润色内容、生成汇总信息等。请先在左侧创建或导入项目开始创作。
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Agent 指令按钮栏 -->
+                    <div class="agent-buttons">
+                        <button class="agent-btn active" data-agent="chat" onclick="switchAgent('chat')">💬 自由对话</button>
+                        <button class="agent-btn" data-agent="writer" onclick="switchAgent('writer')">✍️ 写作</button>
+                        <button class="agent-btn" data-agent="outline_polisher" onclick="switchAgent('outline_polisher')">📝 大纲润色</button>
+                        <button class="agent-btn" data-agent="content_polisher" onclick="switchAgent('content_polisher')">✨ 小说润色</button>
+                        <button class="agent-btn" data-agent="summary" onclick="switchAgent('summary')">📊 汇总说明</button>
+                        <button class="agent-btn" data-agent="info_query" onclick="switchAgent('info_query')">🔍 信息查询</button>
+                    </div>
+                    <div class="chat-input-area">
+                        <div class="resize-handle" id="resizeHandle"></div>
+                        <div class="chat-input-wrapper">
+                            <textarea 
+                                class="chat-input" 
+                                id="chatInput" 
+                                placeholder="输入消息... (Enter 发送, Shift+Enter 换行)"
+                                rows="1"
+                            ></textarea>
+                            <button class="btn-send" id="btnSend" onclick="sendMessage()">
+                                发送
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧面板 -->
+                <div class="right-panel">
+                    <div class="panel-tabs">
+                        <div class="panel-tab active" onclick="switchPanel('outline', event)">
+                            大纲
+                        </div>
+                        <div class="panel-tab" onclick="switchPanel('chapters', event)">
+                            章节
+                        </div>
+                    </div>
+                    <div class="panel-content">
+                        <!-- 大纲面板 -->
+                        <div id="outlinePanel" class="outline-content">
+                            <!-- 工具栏 -->
+                            <div class="panel-toolbar">
+                                <button class="btn-mode-toggle" id="btnOutlinePreview" onclick="switchOutlineMode('preview')">预览</button>
+                                <button class="btn-mode-toggle" id="btnOutlineEdit" onclick="switchOutlineMode('edit')">编辑</button>
+                                <button class="btn-save" id="btnOutlineSave" onclick="saveOutline()">💾 保存</button>
+                            </div>
+                            <!-- 目录导航 -->
+                            <div class="toc-nav" id="outlineToc" style="display: none;">
+                                <div class="toc-title">
+                                    <span>目录</span>
+                                    <button class="toc-toggle" onclick="toggleToc()">收起</button>
+                                </div>
+                                <ul class="toc-list" id="tocList"></ul>
+                            </div>
+                            <!-- 预览内容 -->
+                            <div id="outlinePreview" class="markdown-content">
+                                请先选择项目
+                            </div>
+                            <!-- 编辑内容 -->
+                            <textarea id="outlineEdit" class="edit-textarea" style="display: none;" placeholder="在此编辑大纲内容..."></textarea>
+                        </div>
+                        <!-- 章节面板 -->
+                        <div id="chaptersPanel" class="chapters-content" style="display: none;">
+                            请先选择项目
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 设置模态框 -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>⚙ LLM 设置</span>
+                <button class="btn-close" onclick="closeSettings()">×</button>
+            </div>
+            <form id="settingsForm" onsubmit="saveSettings(event)">
+                <div class="form-group">
+                    <label>模型类型</label>
+                    <select id="modelType" onchange="onModelTypeChange()">
+                        <option value="online">在线模型</option>
+                        <option value="local">本地模型 (Ollama)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>API URL</label>
+                    <input type="text" id="baseUrl" placeholder="https://api.openai.com/v1">
+                </div>
+                <div class="form-group" id="apiKeyGroup">
+                    <label>API Key</label>
+                    <div class="input-with-icon">
+                        <input type="password" id="apiKey" placeholder="sk-..." readonly>
+                        <button type="button" class="btn-toggle-visibility" onclick="toggleApiKeyVisibility()" title="显示">👁</button>
+                    </div>
+                    <small style="color: #999; font-size: 12px;">清空输入框可输入新的 Key，保存后写入环境变量</small>
+                </div>
+                <div class="form-group">
+                    <label>模型名称</label>
+                    <input type="text" id="modelName" placeholder="gpt-4">
+                </div>
+                <div class="form-group">
+                    <label>Temperature</label>
+                    <input type="number" id="temperature" min="0" max="2" step="0.1" value="0.7">
+                </div>
+                <button type="button" class="btn-secondary" onclick="testConnection()">🔌 测试连接</button>
+                <button type="submit" class="btn-primary">💾 保存设置</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 文件上传隐藏输入 -->
+    <input type="file" id="fileInput" accept=".md" style="display: none;" onchange="handleFileUpload(event)">
+
+    <script>
+        // 全局状态
+        let currentProject = null;
+        let currentPanel = 'outline';
+        let currentAgentName = 'chat';
+
+        // ==================== 初始化 ====================
+        
+        // 页面加载时初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            loadProjects();
+            loadSettings();
+            setupInputHandlers();
+            
+            // 初始化大纲预览模式
+            switchOutlineMode('preview');
+        });
+
+        // 设置输入框事件处理
+        function setupInputHandlers() {
+            const input = document.getElementById('chatInput');
+            
+            // Enter 发送，Shift+Enter 换行
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            // 自动调整高度
+            input.addEventListener('input', () => {
+                input.style.height = 'auto';
+                input.style.height = Math.min(input.scrollHeight, 150) + 'px';
+            });
+
+            // 拖动分隔条调整对话框大小
+            setupResizeHandle();
+        }
+
+        // 设置可拖动分隔条
+        function setupResizeHandle() {
+            const resizeHandle = document.getElementById('resizeHandle');
+            const chatInputArea = document.querySelector('.chat-input-area');
+            const chatPanel = document.querySelector('.chat-panel');
+            
+            let isResizing = false;
+            let startY = 0;
+            let startHeight = 0;
+
+            resizeHandle.addEventListener('mousedown', (e) => {
+                isResizing = true;
+                startY = e.clientY;
+                startHeight = chatInputArea.offsetHeight;
+                document.body.style.cursor = 'ns-resize';
+                document.body.style.userSelect = 'none';
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isResizing) return;
+                
+                // 向上拖动时deltaY为负，输入区域应该变大
+                // 向下拖动时deltaY为正，输入区域应该变小
+                const deltaY = e.clientY - startY;
+                const newHeight = startHeight - deltaY;
+                
+                // 限制最小和最大高度
+                const minHeight = 60;
+                const maxHeight = chatPanel.offsetHeight - 150;
+                
+                if (newHeight >= minHeight && newHeight <= maxHeight) {
+                    chatInputArea.style.height = newHeight + 'px';
+                    chatInputArea.style.flex = 'none';
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isResizing) {
+                    isResizing = false;
+                    document.body.style.cursor = '';
+                    document.body.style.userSelect = '';
+                }
+            });
+        }
+
+        // ==================== 项目管理 ====================
+
+        // 加载项目列表
+        async function loadProjects() {
+            try {
+                const response = await fetch('/api/projects');
+                const result = await response.json();
+                
+                if (result.success) {
+                    renderProjectList(result.data.projects, result.data.current);
+                }
+            } catch (error) {
+                console.error('加载项目失败:', error);
+            }
+        }
+
+        // 渲染项目列表
+        function renderProjectList(projects, currentProjectName) {
+            const list = document.getElementById('projectList');
+            list.innerHTML = '';
+            
+            projects.forEach(project => {
+                const li = document.createElement('li');
+                li.className = 'project-item' + (project === currentProjectName ? ' active' : '');
+                li.textContent = project;
+                li.onclick = () => switchProject(project);
+                list.appendChild(li);
+            });
+
+            // 更新当前项目显示
+            if (currentProjectName) {
+                currentProject = currentProjectName;
+                document.getElementById('currentProject').textContent = currentProjectName;
+                loadOutline();
+                loadChapterTree();
+            }
+        }
+
+        // 创建新项目
+        async function createProject() {
+            const name = prompt('请输入项目名称:');
+            if (!name) return;
+
+            try {
+                const response = await fetch('/api/projects', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    await loadProjects();
+                    addMessage('system', `✓ 项目 ${name} 已创建（大纲已用模板初始化）`);
+                } else {
+                    alert('创建失败: ' + result.error);
+                }
+            } catch (error) {
+                console.error('创建项目失败:', error);
+                alert('创建失败: ' + error.message);
+            }
+        }
+
+        // 导入项目
+        function importProject() {
+            document.getElementById('fileInput').click();
+        }
+
+        // 处理文件上传
+        async function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/api/projects/import', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    await loadProjects();
+                    addMessage('system', `✓ 项目 ${result.data.name} 已导入`);
+                } else {
+                    alert('导入失败: ' + result.error);
+                }
+            } catch (error) {
+                console.error('导入项目失败:', error);
+                alert('导入失败: ' + error.message);
+            }
+
+            // 清空文件输入
+            event.target.value = '';
+        }
+
+        // 切换项目
+        async function switchProject(projectName) {
+            try {
+                const response = await fetch(`/api/projects/${projectName}/switch`, {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentProject = projectName;
+                    document.getElementById('currentProject').textContent = projectName;
+                    await loadProjects(); // 刷新列表
+                    loadOutline();
+                    loadChapterTree();
+                    addMessage('system', `✓ 已切换到项目: ${projectName}`);
+                }
+            } catch (error) {
+                console.error('切换项目失败:', error);
+            }
+        }
+
+        // ==================== Agent 切换 ====================
+
+        // 切换 Agent
+        function switchAgent(agentName) {
+            currentAgentName = agentName;
+            
+            // 更新按钮样式
+            document.querySelectorAll('.agent-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 更新顶部显示
+            const agentNames = {
+                'chat': 'ChatAgent',
+                'writer': 'NovelWriter',
+                'outline_polisher': 'OutlinePolisher',
+                'content_polisher': 'ContentPolisher',
+                'summary': 'SummaryGenerator',
+                'info_query': 'InfoQuery'
+            };
+            document.getElementById('currentAgent').textContent = 
+                `当前 Agent: ${agentNames[agentName]}`;
+        }
+
+        // ==================== 对话功能 ====================
+
+        // 发送消息
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            let message = input.value.trim();
+            
+            if (!message) return;
+
+            // 如果不是 chat agent，自动添加 @指令
+            if (currentAgentName !== 'chat' && !message.startsWith('@')) {
+                const agentCommands = {
+                    'writer': '@写作',
+                    'outline_polisher': '@大纲润色',
+                    'content_polisher': '@小说润色',
+                    'summary': '@汇总说明',
+                    'info_query': '@信息查询'
+                };
+                message = `${agentCommands[currentAgentName]} ${message}`;
+            }
+
+            // 添加用户消息
+            addMessage('user', message);
+            input.value = '';
+            input.style.height = 'auto';
+
+            // 禁用发送按钮
+            const btnSend = document.getElementById('btnSend');
+            btnSend.disabled = true;
+            btnSend.innerHTML = '<span class="loading"></span>';
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // 添加 AI 回复
+                    addMessage('assistant', result.data.response);
+                    
+                    // 如果是写作工作流，刷新章节列表
+                    if (result.data.workflow) {
+                        loadChapterTree();
+                    }
+                } else {
+                    addMessage('system', '错误: ' + result.error);
+                }
+            } catch (error) {
+                console.error('发送消息失败:', error);
+                addMessage('system', '发送失败: ' + error.message);
+            } finally {
+                // 恢复发送按钮
+                btnSend.disabled = false;
+                btnSend.textContent = '发送';
+            }
+        }
+
+        // 添加消息到聊天区域
+        function addMessage(role, content) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+            
+            const avatar = role === 'user' ? '你' : (role === 'system' ? '⚙' : 'AI');
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${avatar}</div>
+                <div class="message-content markdown-content">${renderMarkdown(content)}</div>
+            `;
+            
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // ==================== 右侧面板 ====================
+
+        // 切换面板
+        function switchPanel(panel, event) {
+            currentPanel = panel;
+            
+            // 更新标签样式
+            document.querySelectorAll('.panel-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            if (event) {
+                event.target.classList.add('active');
+            }
+            
+            // 显示对应面板
+            document.getElementById('outlinePanel').style.display = 
+                panel === 'outline' ? 'block' : 'none';
+            document.getElementById('chaptersPanel').style.display = 
+                panel === 'chapters' ? 'block' : 'none';
+        }
+
+        // 当前大纲原始内容（用于编辑模式）
+        let currentOutlineRaw = '';
+
+        // 加载大纲
+        async function loadOutline() {
+            if (!currentProject) return;
+            
+            try {
+                const response = await fetch(`/api/projects/${currentProject}/outline`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentOutlineRaw = result.data.outline || '';
+                    const outlinePreview = document.getElementById('outlinePreview');
+                    const outlineEdit = document.getElementById('outlineEdit');
+                    
+                    if (currentOutlineRaw) {
+                        outlinePreview.innerHTML = renderMarkdown(currentOutlineRaw);
+                        outlineEdit.value = currentOutlineRaw;
+                        
+                        // 解析并显示目录
+                        parseOutlineToc(currentOutlineRaw);
+                    } else {
+                        outlinePreview.innerHTML = '<p style="color: #999;">暂无大纲</p>';
+                        outlineEdit.value = '';
+                        document.getElementById('outlineToc').style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('加载大纲失败:', error);
+            }
+        }
+
+        // 解析大纲目录
+        function parseOutlineToc(markdown) {
+            const tocList = document.getElementById('tocList');
+            const outlineToc = document.getElementById('outlineToc');
+            
+            // 匹配标题：# 一级标题，## 二级标题，### 三级标题
+            const headingRegex = /^(#{1,3})\s+(.+)$/gm;
+            const headings = [];
+            let match;
+            
+            while ((match = headingRegex.exec(markdown)) !== null) {
+                const level = match[1].length;
+                const text = match[2].trim();
+                const id = 'heading-' + headings.length;
+                headings.push({ level, text, id });
+            }
+            
+            if (headings.length === 0) {
+                outlineToc.style.display = 'none';
+                return;
+            }
+            
+            // 生成目录列表
+            tocList.innerHTML = headings.map(h => 
+                `<li class="toc-item level-${h.level}" onclick="scrollToHeading('${h.id}')" title="${h.text}">${h.text}</li>`
+            ).join('');
+            
+            // 为标题添加ID用于跳转
+            const outlinePreview = document.getElementById('outlinePreview');
+            let headingIndex = 0;
+            outlinePreview.innerHTML = outlinePreview.innerHTML.replace(
+                /<h([1-3])>(.*?)<\/h\1>/g,
+                (match, level, text) => {
+                    const id = 'heading-' + headingIndex;
+                    headingIndex++;
+                    return `<h${level} id="${id}">${text}</h${level}>`;
+                }
+            );
+            
+            outlineToc.style.display = 'block';
+        }
+
+        // 跳转到指定标题
+        function scrollToHeading(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // 切换目录显示/隐藏
+        function toggleToc() {
+            const tocList = document.getElementById('tocList');
+            const toggleBtn = document.querySelector('.toc-toggle');
+            
+            if (tocList.classList.contains('collapsed')) {
+                tocList.classList.remove('collapsed');
+                toggleBtn.textContent = '收起';
+            } else {
+                tocList.classList.add('collapsed');
+                toggleBtn.textContent = '展开';
+            }
+        }
+
+        // 切换大纲预览/编辑模式
+        function switchOutlineMode(mode) {
+            const previewDiv = document.getElementById('outlinePreview');
+            const editArea = document.getElementById('outlineEdit');
+            const tocNav = document.getElementById('outlineToc');
+            const btnPreview = document.getElementById('btnOutlinePreview');
+            const btnEdit = document.getElementById('btnOutlineEdit');
+            const btnSave = document.getElementById('btnOutlineSave');
+            
+            if (mode === 'preview') {
+                previewDiv.style.display = 'block';
+                editArea.style.display = 'none';
+                tocNav.style.display = 'block';
+                btnPreview.classList.add('active');
+                btnEdit.classList.remove('active');
+                btnSave.classList.remove('visible');
+            } else {
+                previewDiv.style.display = 'none';
+                editArea.style.display = 'block';
+                tocNav.style.display = 'none';
+                btnPreview.classList.remove('active');
+                btnEdit.classList.add('active');
+                btnSave.classList.add('visible');
+            }
+        }
+
+        // 保存大纲
+        async function saveOutline() {
+            const editArea = document.getElementById('outlineEdit');
+            const newContent = editArea.value;
+            
+            try {
+                const response = await fetch(`/api/projects/${currentProject}/outline`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: newContent })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentOutlineRaw = newContent;
+                    const outlinePreview = document.getElementById('outlinePreview');
+                    outlinePreview.innerHTML = renderMarkdown(newContent);
+                    parseOutlineToc(newContent);
+                    
+                    // 切换到预览模式
+                    switchOutlineMode('preview');
+                    alert('✓ 大纲已保存');
+                } else {
+                    alert('保存失败: ' + result.error);
+                }
+            } catch (error) {
+                console.error('保存大纲失败:', error);
+                alert('保存失败: ' + error.message);
+            }
+        }
+
+        // 加载章节目录树
+        async function loadChapterTree() {
+            if (!currentProject) return;
+            
+            try {
+                const response = await fetch(`/api/projects/${currentProject}/chapter-tree`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const chaptersDiv = document.getElementById('chaptersPanel');
+                    const tree = result.data.tree;
+                    
+                    if (tree.length > 0) {
+                        chaptersDiv.innerHTML = tree.map(vol => `
+                            <div class="volume-item">
+                                <div class="volume-title">${vol.volume}</div>
+                                ${vol.chapters.map(ch => `
+                                    <div class="chapter-item" onclick="viewChapter('${ch.file}', '${ch.name}')">
+                                        ${ch.name}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `).join('');
+                    } else {
+                        chaptersDiv.innerHTML = '<p style="color: #999;">暂无章节</p>';
+                    }
+                }
+            } catch (error) {
+                console.error('加载章节目录失败:', error);
+            }
+        }
+
+        // 查看章节内容
+        async function viewChapter(filePath, chapterName) {
+            try {
+                const response = await fetch(`/api/projects/${currentProject}/chapter?file=${encodeURIComponent(filePath)}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const chaptersDiv = document.getElementById('chaptersPanel');
+                    const content = result.data.content || '';
+                    
+                    chaptersDiv.innerHTML = `
+                        <div class="chapter-preview">
+                            <div class="chapter-preview-header">
+                                <h3>${chapterName}</h3>
+                                <div style="display: flex; gap: 6px; align-items: center;">
+                                    <button class="btn-mode-toggle" id="btnChapterPreview" onclick="switchChapterMode('preview', '${filePath}')">预览</button>
+                                    <button class="btn-mode-toggle" id="btnChapterEdit" onclick="switchChapterMode('edit', '${filePath}')">编辑</button>
+                                    <button class="btn-save" id="btnChapterSave" onclick="saveChapter('${filePath}')">💾 保存</button>
+                                    <button class="btn-back" onclick="loadChapterTree()">← 返回列表</button>
+                                </div>
+                            </div>
+                            <div id="chapterPreview" class="markdown-content">${renderMarkdown(content)}</div>
+                            <textarea id="chapterEdit" class="edit-textarea" style="display: none;" placeholder="在此编辑章节内容...">${content}</textarea>
+                        </div>
+                    `;
+                    
+                    // 默认显示预览模式
+                    switchChapterMode('preview', filePath);
+                }
+            } catch (error) {
+                console.error('加载章节内容失败:', error);
+                alert('加载失败: ' + error.message);
+            }
+        }
+
+        // 切换章节预览/编辑模式
+        function switchChapterMode(mode, filePath) {
+            const previewDiv = document.getElementById('chapterPreview');
+            const editArea = document.getElementById('chapterEdit');
+            const btnPreview = document.getElementById('btnChapterPreview');
+            const btnEdit = document.getElementById('btnChapterEdit');
+            const btnSave = document.getElementById('btnChapterSave');
+            
+            if (mode === 'preview') {
+                previewDiv.style.display = 'block';
+                editArea.style.display = 'none';
+                btnPreview.classList.add('active');
+                btnEdit.classList.remove('active');
+                btnSave.classList.remove('visible');
+            } else {
+                previewDiv.style.display = 'none';
+                editArea.style.display = 'block';
+                btnPreview.classList.remove('active');
+                btnEdit.classList.add('active');
+                btnSave.classList.add('visible');
+            }
+        }
+
+        // 保存章节
+        async function saveChapter(filePath) {
+            const editArea = document.getElementById('chapterEdit');
+            const newContent = editArea.value;
+            
+            try {
+                const response = await fetch(`/api/projects/${currentProject}/chapter`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ file: filePath, content: newContent })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const previewDiv = document.getElementById('chapterPreview');
+                    previewDiv.innerHTML = renderMarkdown(newContent);
+                    
+                    // 切换到预览模式
+                    switchChapterMode('preview', filePath);
+                    alert('✓ 章节已保存');
+                } else {
+                    alert('保存失败: ' + result.error);
+                }
+            } catch (error) {
+                console.error('保存章节失败:', error);
+                alert('保存失败: ' + error.message);
+            }
+        }
+
+        // ==================== 设置功能 ====================
+
+        // 打开设置
+        async function openSettings() {
+            document.getElementById('settingsModal').classList.add('show');
+            await loadSettings();
+        }
+
+        // 关闭设置
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.remove('show');
+        }
+
+        // 当前掩码 key（用于判断用户是否修改了 key）
+        let currentMaskedKey = '';
+        let apiKeyVisible = false;
+
+        // 切换 API Key 显示/隐藏
+        function toggleApiKeyVisibility() {
+            const input = document.getElementById('apiKey');
+            const btn = document.querySelector('.btn-toggle-visibility');
+            
+            if (apiKeyVisible) {
+                // 当前可见，切换为隐藏
+                input.type = 'password';
+                btn.textContent = '👁';
+                btn.title = '显示';
+                apiKeyVisible = false;
+            } else {
+                // 当前隐藏，切换为可见
+                input.type = 'text';
+                btn.textContent = '👁‍🗨';
+                btn.title = '隐藏';
+                apiKeyVisible = true;
+            }
+        }
+
+        // 加载设置
+        async function loadSettings() {
+            try {
+                const response = await fetch('/api/settings');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const data = result.data;
+                    document.getElementById('baseUrl').value = data.base_url || '';
+                    document.getElementById('modelName').value = data.model || '';
+                    document.getElementById('temperature').value = data.temperature || 0.7;
+                    
+                    // API Key：预填掩码值，用户可清空后输入新值
+                    currentMaskedKey = data.api_key_masked || '';
+                    const apiKeyInput = document.getElementById('apiKey');
+                    apiKeyInput.value = currentMaskedKey;
+                    apiKeyInput.readOnly = false; // 允许编辑
+                    
+                    // 根据 URL 判断模型类型
+                    if (data.base_url && data.base_url.includes('localhost:11434')) {
+                        document.getElementById('modelType').value = 'local';
+                    } else {
+                        document.getElementById('modelType').value = 'online';
+                    }
+                    
+                    // 同步 API Key 区域显隐
+                    onModelTypeChange();
+                }
+            } catch (error) {
+                console.error('加载设置失败:', error);
+            }
+        }
+
+        // 模型类型切换
+        function onModelTypeChange() {
+            const modelType = document.getElementById('modelType').value;
+            const baseUrlInput = document.getElementById('baseUrl');
+            const apiKeyGroup = document.getElementById('apiKeyGroup');
+            const apiKeyInput = document.getElementById('apiKey');
+            
+            if (modelType === 'local') {
+                baseUrlInput.value = 'http://localhost:11434/v1';
+                baseUrlInput.placeholder = 'http://localhost:11434/v1';
+                // 本地模型不需要 API Key，隐藏并禁用
+                apiKeyGroup.classList.add('hidden');
+                apiKeyInput.disabled = true;
+            } else {
+                baseUrlInput.value = 'https://api.openai.com/v1';
+                baseUrlInput.placeholder = 'https://api.openai.com/v1';
+                // 在线模型显示 API Key
+                apiKeyGroup.classList.remove('hidden');
+                apiKeyInput.disabled = false;
+            }
+        }
+
+        // 保存设置
+        async function saveSettings(event) {
+            event.preventDefault();
+            
+            const apiKeyInput = document.getElementById('apiKey');
+            const apiKeyValue = apiKeyInput.value.trim();
+            const modelType = document.getElementById('modelType').value;
+            
+            const data = {
+                base_url: document.getElementById('baseUrl').value,
+                model: document.getElementById('modelName').value,
+                temperature: parseFloat(document.getElementById('temperature').value)
+            };
+            
+            // 仅在线模型且用户修改了 key 时才发送（非掩码值）
+            if (modelType === 'online' && apiKeyValue && apiKeyValue !== currentMaskedKey) {
+                data.api_key = apiKeyValue;
+            }
+
+            try {
+                const response = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('✓ 设置已保存');
+                    await loadSettings();
+                } else {
+                    alert('保存失败: ' + result.error);
+                }
+            } catch (error) {
+                console.error('保存设置失败:', error);
+                alert('保存失败: ' + error.message);
+            }
+        }
+
+        // 测试连接
+        async function testConnection() {
+            const data = {
+                base_url: document.getElementById('baseUrl').value,
+                model: document.getElementById('modelName').value,
+                api_key: document.getElementById('apiKey').value
+            };
+
+            try {
+                const response = await fetch('/api/settings/test', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`✓ 连接成功\n\n模型响应: ${result.data.response}`);
+                } else {
+                    alert(`✗ 连接失败\n\n${result.error}`);
+                }
+            } catch (error) {
+                console.error('测试连接失败:', error);
+                alert('测试失败: ' + error.message);
+            }
+        }
+
+        // ==================== 工具函数 ====================
+
+        // 简单的 Markdown 渲染
+        function renderMarkdown(text) {
+            if (!text) return '';
+            
+            // 转义 HTML
+            text = text.replace(/&/g, '&amp;')
+                      .replace(/</g, '&lt;')
+                      .replace(/>/g, '&gt;');
+            
+            // 标题
+            text = text.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+            text = text.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+            text = text.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+            
+            // 粗体
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // 斜体
+            text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            
+            // 代码块
+            text = text.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+            
+            // 行内代码
+            text = text.replace(/`(.*?)`/g, '<code>$1</code>');
+            
+            // 列表
+            text = text.replace(/^\s*[-*] (.*$)/gim, '<li>$1</li>');
+            text = text.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+            
+            // 换行
+            text = text.replace(/\n/g, '<br>');
+            
+            return text;
+        }
+    </script>
+</body>
+</html>
