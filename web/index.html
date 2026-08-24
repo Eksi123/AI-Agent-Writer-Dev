@@ -1302,45 +1302,261 @@
     <!-- 文件上传隐藏输入 -->
     <input type="file" id="fileInput" accept=".md" style="display: none;" onchange="handleFileUpload(event)">
 
-    <script>
-        // 全局状态
-        let currentProject = null;
-        let currentPanel = 'outline';
-        let currentAgentName = 'chat';
+        <!-- 强制设置引导弹窗（不可关闭） -->
+        <div class="modal" id="setupModal">
+            <div class="modal-content" style="max-width: 500px;">
+                <div class="modal-header">
+                    <span>⚙ 首次配置 — 请完善大模型参数</span>
+                </div>
+                <form id="setupForm" onsubmit="saveWizardConfig(event)">
+                    <div class="form-group">
+                        <label>模型类型</label>
+                        <select id="wizardModelType" onchange="onWizardModelTypeChange()">
+                            <option value="online">在线模型</option>
+                            <option value="local">本地模型 (Ollama)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>API URL</label>
+                        <input type="text" id="wizardBaseUrl" placeholder="https://api.openai.com/v1">
+                    </div>
+                    <div class="form-group" id="wizardApiKeyGroup">
+                        <label>API Key <span style="color: #e74c3c;">*</span></label>
+                        <input type="password" id="wizardApiKey" placeholder="sk-...">
+                        <small style="color: #999; font-size: 12px;">API Key 将写入环境变量，不会保存到配置文件</small>
+                    </div>
+                    <div class="form-group">
+                        <label>模型名称 <span style="color: #e74c3c;">*</span></label>
+                        <input type="text" id="wizardModelName" placeholder="qwen-plus" list="wizardOllamaModelList" autocomplete="off">
+                        <datalist id="wizardOllamaModelList"></datalist>
+                    </div>
+                    <div class="form-group">
+                        <label>Temperature</label>
+                        <input type="number" id="wizardTemperature" min="0" max="2" step="0.1" value="0.7">
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="button" class="btn-secondary" onclick="testWizardConnection()">🔌 测试连接</button>
+                        <button type="submit" class="btn-primary">💾 保存并启用</button>
+                    </div>
+                    <p style="color: #999; font-size: 12px; margin-top: 15px; text-align: center;">
+                        请填写所有必填项后保存，配置完成后弹窗将自动关闭
+                    </p>
+                </form>
+            </div>
+        </div>
 
-        // ==================== 初始化 ====================
-        
-        // 页面加载时初始化
-        window.addEventListener('DOMContentLoaded', () => {
-            loadProjects();
-            loadSettings();
-            setupInputHandlers();
-            
-            // 初始化大纲预览模式
-            switchOutlineMode('preview');
-        });
+        <script>
+            // 全局状态
+            let currentProject = null;
+            let currentPanel = 'outline';
+            let currentAgentName = 'chat';
 
-        // 设置输入框事件处理
-        function setupInputHandlers() {
-            const input = document.getElementById('chatInput');
+            // ==================== 初始化 ====================
             
-            // Enter 发送，Shift+Enter 换行
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
+            // 页面加载时初始化
+            window.addEventListener('DOMContentLoaded', async () => {
+                // 先检查配置状态
+                await checkConfigStatus();
+                
+                loadProjects();
+                loadSettings();
+                setupInputHandlers();
+                
+                // 初始化大纲预览模式
+                switchOutlineMode('preview');
+            });
+
+            // 检查配置状态，若未配置则显示强制设置弹窗
+            async function checkConfigStatus() {
+                try {
+                    const response = await fetch('/api/settings/status');
+                    const result = await response.json();
+                    
+                    if (result.success && !result.data.configured) {
+                        // 配置不完整，显示强制设置弹窗
+                        showSetupModal();
+                    }
+                } catch (error) {
+                    console.error('检查配置状态失败:', error);
                 }
-            });
+            }
 
-            // 自动调整高度
-            input.addEventListener('input', () => {
-                input.style.height = 'auto';
-                input.style.height = Math.min(input.scrollHeight, 150) + 'px';
-            });
+            // 显示强制设置弹窗
+            function showSetupModal() {
+                const modal = document.getElementById('setupModal');
+                modal.classList.add('show');
+                
+                // 预填默认值
+                document.getElementById('wizardBaseUrl').value = 'https://dashscope.aliyuncs.com/compatible-mode/v1';
+                document.getElementById('wizardModelName').value = 'qwen-plus';
+                document.getElementById('wizardTemperature').value = '0.7';
+                document.getElementById('wizardModelType').value = 'online';
+                onWizardModelTypeChange();
+            }
 
-            // 拖动分隔条调整对话框大小
-            setupResizeHandle();
-        }
+            // 切换向导模型类型
+            function onWizardModelTypeChange() {
+                const modelType = document.getElementById('wizardModelType').value;
+                const baseUrlInput = document.getElementById('wizardBaseUrl');
+                const apiKeyGroup = document.getElementById('wizardApiKeyGroup');
+                const modelNameInput = document.getElementById('wizardModelName');
+                
+                if (modelType === 'local') {
+                    baseUrlInput.value = 'http://localhost:11434/v1';
+                    baseUrlInput.placeholder = 'http://localhost:11434/v1';
+                    apiKeyGroup.style.display = 'none';
+                    document.getElementById('wizardApiKey').value = '';
+                    modelNameInput.placeholder = 'qwen2.5';
+                    // 加载 Ollama 模型列表
+                    loadWizardOllamaModels();
+                } else {
+                    baseUrlInput.value = 'https://dashscope.aliyuncs.com/compatible-mode/v1';
+                    baseUrlInput.placeholder = 'https://api.openai.com/v1';
+                    apiKeyGroup.style.display = 'block';
+                    modelNameInput.placeholder = 'qwen-plus';
+                }
+            }
+
+            // 加载 Ollama 模型列表（向导用）
+            async function loadWizardOllamaModels() {
+                try {
+                    const response = await fetch('/api/llm/ollama/models');
+                    const result = await response.json();
+                    const datalist = document.getElementById('wizardOllamaModelList');
+                    if (result.success && result.data.models.length > 0) {
+                        datalist.innerHTML = result.data.models.map(m =>
+                            `<option value="${m}">`
+                        ).join('');
+                        // 自动选择第一个模型
+                        document.getElementById('wizardModelName').value = result.data.models[0];
+                    } else {
+                        datalist.innerHTML = '';
+                    }
+                } catch (error) {
+                    console.error('加载 Ollama 模型失败:', error);
+                }
+            }
+
+            // 测试向导连接
+            async function testWizardConnection() {
+                const modelType = document.getElementById('wizardModelType').value;
+                const data = {
+                    api_url: document.getElementById('wizardBaseUrl').value,
+                    model_name: document.getElementById('wizardModelName').value,
+                    provider: modelType === 'local' ? 'ollama' : 'openai_compatible'
+                };
+                
+                if (modelType === 'online') {
+                    const apiKey = document.getElementById('wizardApiKey').value;
+                    if (!apiKey) {
+                        alert('请先填写 API Key');
+                        return;
+                    }
+                    data.api_key = apiKey;
+                    data.use_input_key = true;
+                }
+
+                try {
+                    const response = await fetch('/api/settings/test', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        alert(`✓ 连接成功\n\n模型响应: ${result.data.response}`);
+                    } else {
+                        alert(`✗ 连接失败\n\n${result.error}`);
+                    }
+                } catch (error) {
+                    console.error('测试连接失败:', error);
+                    alert('测试失败: ' + error.message);
+                }
+            }
+
+            // 保存向导配置
+            async function saveWizardConfig(event) {
+                event.preventDefault();
+                
+                const modelType = document.getElementById('wizardModelType').value;
+                const data = {
+                    api_url: document.getElementById('wizardBaseUrl').value,
+                    model_name: document.getElementById('wizardModelName').value,
+                    provider: modelType === 'local' ? 'ollama' : 'openai_compatible',
+                    temperature: parseFloat(document.getElementById('wizardTemperature').value)
+                };
+                
+                if (modelType === 'online') {
+                    const apiKey = document.getElementById('wizardApiKey').value;
+                    if (!apiKey) {
+                        alert('API Key 不能为空');
+                        return;
+                    }
+                    data.api_key = apiKey;
+                }
+
+                try {
+                    const response = await fetch('/api/settings', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // 再次检查配置状态
+                        const statusResponse = await fetch('/api/settings/status');
+                        const statusResult = await statusResponse.json();
+                        
+                        if (statusResult.success && statusResult.data.configured) {
+                            // 配置完整，关闭弹窗并刷新页面
+                            document.getElementById('setupModal').classList.remove('show');
+                            alert('✓ 配置已保存，页面即将刷新');
+                            location.reload();
+                        } else {
+                            // 仍不完整，显示缺失字段
+                            const missing = statusResult.data.missing || [];
+                            const fieldNames = {
+                                'api_url': 'API URL',
+                                'model_name': '模型名称',
+                                'api_key': 'API Key'
+                            };
+                            const missingNames = missing.map(f => fieldNames[f] || f).join('、');
+                            alert(`✗ 配置仍不完整，缺少：${missingNames}`);
+                        }
+                    } else {
+                        alert('保存失败: ' + result.error);
+                    }
+                } catch (error) {
+                    console.error('保存配置失败:', error);
+                    alert('保存失败: ' + error.message);
+                }
+            }
+
+        // 设置输入框事件
+        function setupInputHandlers() {
+                const input = document.getElementById('chatInput');
+                
+                // Enter 发送，Shift+Enter 换行
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendMessage();
+                    }
+                });
+
+                // 自动调整高度
+                input.addEventListener('input', () => {
+                    input.style.height = 'auto';
+                    input.style.height = Math.min(input.scrollHeight, 150) + 'px';
+                });
+
+                // 拖动分隔条调整对话框大小
+                setupResizeHandle();
+            }
 
         // 设置可拖动分隔条
         function setupResizeHandle() {

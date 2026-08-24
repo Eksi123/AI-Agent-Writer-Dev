@@ -43,7 +43,6 @@ class ConfigManager:
             配置字典，包含 api_url、model_name、provider、temperature、top_p、api_key
         """
         ollama_config = self.get_ollama_config()
-        ollama_config = self.get_ollama_config()
         if ollama_config.get('enabled', False):
             logger.info(f"使用 Ollama 本地模型: {ollama_config['model_name']}")
             return ollama_config
@@ -51,7 +50,8 @@ class ConfigManager:
         # 从环境变量读取 API Key（安全考虑，不在配置文件中存储）
         api_key = os.environ.get("LLM_API_KEY")
         if not api_key:
-            logger.warning("环境变量 LLM_API_KEY 未设置")
+            logger.warning("环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动")
+            api_key = "sk-not-configured"  # 占位符，避免 ChatOpenAI 初始化时报错
         
         # 读取配置文件中的 LLM 配置
         if 'LLM' in self.config:
@@ -175,6 +175,74 @@ class ConfigManager:
             self.config.write(f)
         
         logger.info("Web Server 配置已更新")
+    
+    def is_llm_configured(self) -> dict:
+        """
+        检查 LLM 是否已配置完整。
+        
+        判断逻辑：
+        - 若 Ollama enabled=true，视为已配置（本地模型无需 API Key）
+        - 否则检查在线模型三要素：api_url 非空 + model_name 非空 + 环境变量 LLM_API_KEY 存在
+        
+        Returns:
+            字典，包含 configured (bool) 和 missing (缺失字段列表)
+        """
+        # 检查 Ollama 是否已启用
+        ollama_config = self.get_ollama_config()
+        if ollama_config.get('enabled', False):
+            return {"configured": True, "missing": []}
+        
+        # 检查在线模型配置
+        missing = []
+        
+        if 'LLM' in self.config:
+            api_url = self.config.get('LLM', 'api_url', fallback='')
+            model_name = self.config.get('LLM', 'model_name', fallback='')
+        else:
+            api_url = ''
+            model_name = ''
+        
+        if not api_url:
+            missing.append('api_url')
+        if not model_name:
+            missing.append('model_name')
+        
+        api_key = os.environ.get("LLM_API_KEY", "")
+        if not api_key:
+            missing.append('api_key')
+        
+        return {
+            "configured": len(missing) == 0,
+            "missing": missing
+        }
+    
+    def update_ollama_config(self, api_url: Optional[str] = None,
+                             model_name: Optional[str] = None,
+                             temperature: Optional[float] = None,
+                             top_p: Optional[float] = None,
+                             enabled: Optional[bool] = None) -> None:
+        """
+        运行时更新 Ollama 本地模型配置，修改后立即持久化到 config.ini。
+        仅更新传入的参数，未传入的保持不变。
+        """
+        if 'Ollama' not in self.config:
+            self.config.add_section('Ollama')
+        
+        if api_url:
+            self.config.set('Ollama', 'api_url', api_url)
+        if model_name:
+            self.config.set('Ollama', 'model_name', model_name)
+        if temperature is not None:
+            self.config.set('Ollama', 'temperature', str(temperature))
+        if top_p is not None:
+            self.config.set('Ollama', 'top_p', str(top_p))
+        if enabled is not None:
+            self.config.set('Ollama', 'enabled', str(enabled).lower())
+        
+        with open(self.config_path, 'w', encoding='utf-8') as f:
+            self.config.write(f)
+        
+        logger.info("Ollama 配置已更新")
     
     def get_output_dir(self) -> str:
         """获取输出目录路径"""

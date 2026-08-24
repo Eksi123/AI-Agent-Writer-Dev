@@ -773,9 +773,23 @@ def api_get_settings():
         return jsonify({'error': str(e)}), 500
 
 
+@app.route('/api/settings/status', methods=['GET'])
+def api_check_settings():
+    """检查 LLM 配置是否完整，返回缺失字段列表"""
+    try:
+        status = config_manager.is_llm_configured()
+        return jsonify({
+            'success': True,
+            'data': status
+        })
+    except Exception as e:
+        logger.error(f"检查配置状态错误: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
 @app.route('/api/settings', methods=['POST'])
 def api_update_settings():
-    """更新 LLM 配置"""
+    """更新 LLM 配置（支持在线模型和本地模型）"""
     try:
         data = request.json
         api_url = data.get('api_url')
@@ -785,18 +799,34 @@ def api_update_settings():
         top_p = data.get('top_p')
         api_key = data.get('api_key')
         
-        # 更新配置文件中的字段
-        config_manager.update_llm_config(
-            api_url=api_url,
-            model_name=model_name,
-            provider=provider,
-            temperature=temperature,
-            top_p=top_p
-        )
-        
-        # 如果提供了 API Key，设置环境变量
-        if api_key:
-            os.environ['LLM_API_KEY'] = api_key
+        if provider == 'ollama':
+            # 本地模型：更新 [Ollama] 节，设置 enabled=true
+            config_manager.update_ollama_config(
+                api_url=api_url,
+                model_name=model_name,
+                temperature=temperature,
+                top_p=top_p,
+                enabled=True
+            )
+        else:
+            # 在线模型：更新 [LLM] 节
+            # 缺失的 api_url / model_name 用默认值填充，确保不报错
+            if not api_url:
+                api_url = 'https://dashscope.aliyuncs.com/compatible-mode/v1'
+            if not model_name:
+                model_name = 'qwen-plus'
+            
+            config_manager.update_llm_config(
+                api_url=api_url,
+                model_name=model_name,
+                provider=provider,
+                temperature=temperature,
+                top_p=top_p
+            )
+            
+            # 如果提供了 API Key，设置环境变量
+            if api_key:
+                os.environ['LLM_API_KEY'] = api_key
         
         return jsonify({
             'success': True,

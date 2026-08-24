@@ -5,6 +5,7 @@
 Agent-Writer 是一个基于 langchain + langgraph + openai 实现的写作智能体专用系统，旨在更加灵活高效地实现中短篇小说（10~30万字）的编排写作。
 
 **核心功能：**
+
 - 小说大纲导入或创建
 - 小说项目管理（每个大纲对应一个项目）
 - 固定写作工作流（大纲审查 → 逐章写作 → 逻辑审查）
@@ -15,6 +16,7 @@ Agent-Writer 是一个基于 langchain + langgraph + openai 实现的写作智�
 - LLM 配置管理（Web 页面可修改 API URL / Key，支持切换本地离线模型如 Ollama）
 
 **交互方式：**
+
 - 本地 Python 服务启动后自动打开浏览器页面
 - 统一对话窗口 + @指令切换 Agent
 - 最终产出一个 HTML 文件，点击即可在浏览器中打开 Agent 可操作的 Web 界面
@@ -85,9 +87,11 @@ python main.py --web
 每个大纲对应一个独立的项目，项目结构精简为两部分：
 
 **项目文件（Markdown 格式）：**
+
 - `outline.md` — 大纲（包含故事梗概、角色设定、世界观、写作要求、分卷分章的剧情概要等所有设定信息）
 
 **正文组织：**
+
 - 章节文件存放在 `chapters/` 目录下，按卷分子文件夹
 - 卷目录命名规范：`第X卷-{卷名}`（中划线分隔），示例：`第一卷-命运的邂逅`
 - 章节文件命名规范：`第X卷_第Y章_{章节名}.md`（下划线分隔），示例：`第一卷_第1章_初入江湖.md`
@@ -95,12 +99,14 @@ python main.py --web
 - Web 端右侧栏【章节】面板支持新建/删除卷、新建/删除章节、重命名卷和章节
 
 **命名规则校验：**
+
 - 卷名和章节名不能包含特殊字符：`/ \ : * ? " < > | - _`
 - 卷名和章节名长度不超过50个字符
 - 命名时系统会弹出提示框，明确显示规则并给出示例
 - 后端和前端均有校验，防止非法名称导致文件系统错误
 
 **项目结构：**
+
 - 大纲和正文统一存储在 `output/{小说名}/` 目录下
 - 支持多卷、多章节的灵活组织
 
@@ -108,14 +114,14 @@ python main.py --web
 
 通过 `@指令` 在统一对话中切换不同职能的 Agent：
 
-| 指令 | Agent | 职责 |
-|------|-------|------|
-| `@写作` | NovelWriter | 执行写作工作流（大纲审查→逐章写作→逻辑审查） |
-| `@大纲润色` | OutlinePolisher | 优化大纲结构、小说设定和章节安排 |
-| `@小说润色` | ContentPolisher | 章节内容润色、文笔优化 |
-| `@汇总说明` | SummaryGenerator | 生成小说各类信息汇总，包括人物汇总，地点汇总，剧情经历汇总，章节字数汇总等等 |
-| `@信息查询` | InfoQuery | 查询小说内各种细节信息以及网络上信息 |
-| 无指令（默认） | ChatAgent | 自由对话，此时不支持编辑小说 |
+| 指令           | Agent            | 职责                                                                         |
+| -------------- | ---------------- | ---------------------------------------------------------------------------- |
+| `@写作`      | NovelWriter      | 执行写作工作流（大纲审查→逐章写作→逻辑审查）                               |
+| `@大纲润色`  | OutlinePolisher  | 优化大纲结构、小说设定和章节安排                                             |
+| `@小说润色`  | ContentPolisher  | 章节内容润色、文笔优化                                                       |
+| `@汇总说明`  | SummaryGenerator | 生成小说各类信息汇总，包括人物汇总，地点汇总，剧情经历汇总，章节字数汇总等等 |
+| `@信息查询`  | InfoQuery        | 查询小说内各种细节信息以及网络上信息                                         |
+| 无指令（默认） | ChatAgent        | 自由对话，此时不支持编辑小说                                                 |
 
 ### 写作工作流（Writing Workflow）
 
@@ -153,6 +159,7 @@ python main.py --web
 ```
 
 **关键规则：**
+
 - 每章写作前**必须**先审查对应大纲部分是否合理正确
 - 审查完成后才开始写作，必须**逐章节**完成（不能跳章）
 - 每章写作完成后**必须**审查本章正文与前面所有正文的逻辑一致性
@@ -169,6 +176,7 @@ python main.py --web
 4. 保存后系统自动加载
 
 **Skill 目录结构：**
+
 ```
 custom/
 └── my-tool/                    # 工具目录（目录名即工具组名）
@@ -180,6 +188,7 @@ custom/
 ```
 
 **工具规范：**
+
 - 必须使用 `@tool` 装饰器（来自 `langchain_core.tools`）
 - 必须提供清晰的 docstring（作为工具描述展示给 LLM）
 - 所有参数必须有类型注解
@@ -187,6 +196,7 @@ custom/
 - `SKILL.md` 必须包含工具描述、参数说明和使用示例
 
 **示例：**
+
 ```python
 # custom/my-tool/scripts/my_tool.py
 from langchain_core.tools import tool
@@ -195,10 +205,10 @@ from langchain_core.tools import tool
 def word_count(text: str) -> str:
     """
     统计文本的字数和行数
-    
+  
     Args:
         text: 要统计的文本内容
-    
+  
     Returns:
         字数和行数统计结果
     """
@@ -368,32 +378,32 @@ auto_open_browser = true
 
 ### REST API
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| `GET` | `/api/projects` | 获取所有小说项目列表 + 当前项目名 |
-| `POST` | `/api/projects` | 创建新项目（自动用模板初始化大纲） |
-| `POST` | `/api/projects/import` | 导入项目（上传 .md 文件作为大纲） |
-| `POST` | `/api/projects/{name}/switch` | 切换到指定项目 |
-| `DELETE` | `/api/projects/{name}` | 删除项目 |
-| `GET` | `/api/projects/{name}/export` | 导出整个项目为 ZIP 文件 |
-| `GET` | `/api/projects/{name}/outline` | 读取大纲内容 |
-| `PUT` | `/api/projects/{name}/outline` | 保存大纲内容 |
-| `GET` | `/api/projects/{name}/chapters` | 获取章节列表 |
-| `GET` | `/api/projects/{name}/chapter-tree` | 获取章节目录树（按卷分组，含预览） |
-| `GET` | `/api/projects/{name}/chapter?file=xxx` | 读取指定章节内容 |
-| `PUT` | `/api/projects/{name}/chapter` | 保存章节内容 |
-| `POST` | `/api/projects/{name}/volume` | 新建卷（body: `{name}`） |
-| `DELETE` | `/api/projects/{name}/volume/{vol}` | 删除卷及其所有章节 |
-| `PUT` | `/api/projects/{name}/volume/{vol}` | 重命名卷（body: `{name}`） |
-| `POST` | `/api/projects/{name}/chapter/create` | 新建章节（body: `{volume, name}`） |
-| `DELETE` | `/api/projects/{name}/chapter/{vol}/{ch}` | 删除章节 |
-| `PUT` | `/api/projects/{name}/chapter/{vol}/{ch}` | 重命名章节（body: `{name}`） |
-| `POST` | `/api/chat` | 发送消息并获取 Agent 回复 |
-| `GET` | `/api/agent/current` | 获取当前激活的 Agent |
-| `GET` | `/api/settings` | 获取当前 LLM 配置（API Key 掩码处理） |
-| `POST` | `/api/settings` | 更新 LLM 配置 |
-| `POST` | `/api/settings/test` | 测试 LLM 连接 |
-| `GET` | `/api/llm/ollama/models` | 获取 Ollama 本地可用模型列表 |
+| 方法       | 路径                                        | 说明                                  |
+| ---------- | ------------------------------------------- | ------------------------------------- |
+| `GET`    | `/api/projects`                           | 获取所有小说项目列表 + 当前项目名     |
+| `POST`   | `/api/projects`                           | 创建新项目（自动用模板初始化大纲）    |
+| `POST`   | `/api/projects/import`                    | 导入项目（上传 .md 文件作为大纲）     |
+| `POST`   | `/api/projects/{name}/switch`             | 切换到指定项目                        |
+| `DELETE` | `/api/projects/{name}`                    | 删除项目                              |
+| `GET`    | `/api/projects/{name}/export`             | 导出整个项目为 ZIP 文件               |
+| `GET`    | `/api/projects/{name}/outline`            | 读取大纲内容                          |
+| `PUT`    | `/api/projects/{name}/outline`            | 保存大纲内容                          |
+| `GET`    | `/api/projects/{name}/chapters`           | 获取章节列表                          |
+| `GET`    | `/api/projects/{name}/chapter-tree`       | 获取章节目录树（按卷分组，含预览）    |
+| `GET`    | `/api/projects/{name}/chapter?file=xxx`   | 读取指定章节内容                      |
+| `PUT`    | `/api/projects/{name}/chapter`            | 保存章节内容                          |
+| `POST`   | `/api/projects/{name}/volume`             | 新建卷（body:`{name}`）             |
+| `DELETE` | `/api/projects/{name}/volume/{vol}`       | 删除卷及其所有章节                    |
+| `PUT`    | `/api/projects/{name}/volume/{vol}`       | 重命名卷（body:`{name}`）           |
+| `POST`   | `/api/projects/{name}/chapter/create`     | 新建章节（body:`{volume, name}`）   |
+| `DELETE` | `/api/projects/{name}/chapter/{vol}/{ch}` | 删除章节                              |
+| `PUT`    | `/api/projects/{name}/chapter/{vol}/{ch}` | 重命名章节（body:`{name}`）         |
+| `POST`   | `/api/chat`                               | 发送消息并获取 Agent 回复             |
+| `GET`    | `/api/agent/current`                      | 获取当前激活的 Agent                  |
+| `GET`    | `/api/settings`                           | 获取当前 LLM 配置（API Key 掩码处理） |
+| `POST`   | `/api/settings`                           | 更新 LLM 配置                         |
+| `POST`   | `/api/settings/test`                      | 测试 LLM 连接                         |
+| `GET`    | `/api/llm/ollama/models`                  | 获取 Ollama 本地可用模型列表          |
 
 ---
 
@@ -402,6 +412,7 @@ auto_open_browser = true
 ### Phase 1: 项目管理 + 基础对话 + @指令路由 ✅
 
 **已完成功能：**
+
 - 小说项目创建/导入/切换/删除（`core/project_manager.py`）
 - Agent 基类和注册表（`core/agents/base_agent.py`）
 - LangGraph 状态图工厂（`core/agent_graph.py`）
@@ -410,6 +421,7 @@ auto_open_browser = true
 - 项目管理 UI（`web/index.html` 侧边栏）
 
 **已验证：**
+
 - ✅ 可以创建/导入小说项目
 - ✅ 切换项目正常
 - ✅ 对话中 `@大纲润色` 等指令能路由到对应 Agent
@@ -422,30 +434,32 @@ auto_open_browser = true
 **已完成功能：**
 
 1. **写作工作流引擎** (`core/workflow/`)
+
    - 工作流控制器（`writing_workflow.py`）
    - 大纲审查逻辑（`outline_reviewer.py`）
    - 正文逻辑审查（`logic_reviewer.py`）
-
 2. **6 个预置 Agent**
+
    - `@写作` Agent（`novel_writer.py`）- 执行写作工作流
    - `@大纲润色` Agent（`outline_polisher.py`）- 大纲结构优化
    - `@汇总说明` Agent（`summary_generator.py`）- 生成汇总信息
    - `@小说润色` Agent（`content_polisher.py`）- 文笔润色
    - `@信息查询` Agent（`info_query.py`）- 查询小说和网络信息
    - 自由对话 Agent（`chat_agent.py`）- 默认模式
-
 3. **8 个内置工具**（启动时自动注册）
+
    - 文件读写：`read_tool`、`write_tool`、`edit_tool`
    - 目录操作：`glob_tool`、`list_tool`
    - 任务管理：`todo_tool`
    - 用户交互：`ask_tool`
    - 网络请求：`online_tool`
-
 4. **提示词模板** (`core/prompts/`)
+
    - Markdown 格式的提示词文件
    - 包括写作、润色、审查等专用提示词
 
 **已验证：**
+
 - ✅ `@写作 第1章` 触发完整工作流
 - ✅ `@大纲润色` 能分析并优化大纲
 - ✅ `@汇总说明` 能生成各类汇总
@@ -457,16 +471,19 @@ auto_open_browser = true
 ### Phase 3: 用户自定义工具 ✅
 
 **已完成功能：**
+
 1. Skill 目录格式支持（`core/tools/custom/`）
+
    - 包含 `SKILL.md` 和示例工具
    - 两个完整示例：字数统计、文件信息
-
 2. 热加载机制（`core/tools/__init__.py`）
+
    - 自动扫描 `custom/` 目录
    - 动态导入并注册 `@tool` 函数
    - 调用 `reload_custom_tools()` 可重新加载
 
 **验证：**
+
 - 用户创建 `custom/my-tool/SKILL.md` + `scripts/my_tool.py` → 系统自动发现并注册
 - 工具管理面板显示新工具
 - 对话中 Agent 可以调用自定义工具
@@ -476,19 +493,22 @@ auto_open_browser = true
 ### Phase 4: 大纲/章节预览 + 导出 ✅
 
 **已完成功能：**
+
 1. 大纲查看器（`web/index.html` 底部面板）
+
    - 树形结构展示大纲
    - 可折叠展开
-
 2. 章节预览器（`web/index.html` 底部面板）
+
    - Markdown 渲染章节内容
    - 分章节浏览
-
 3. 导出功能
+
    - 导出整个项目为 ZIP 文件
    - 包含大纲和所有章节
 
 **已验证：**
+
 - ✅ 大纲查看器正常显示
 - ✅ 章节预览正常渲染
 - ✅ 导出功能可用
@@ -498,23 +518,26 @@ auto_open_browser = true
 ### Phase 5: Web 界面 ✅
 
 **已完成功能：**
+
 1. 前端页面（`web/index.html`）
+
    - 单文件 HTML（内嵌 CSS + JS）
    - 多项目管理：创建、导入、删除、切换
    - 项目侧边栏
    - 对话界面、大纲查看器、章节预览器
    - 设置面板：修改 LLM 配置
    - Ollama 本地模型支持
-
 2. 后端服务（`web/app.py`）
+
    - Flask Web 服务
    - 支持 `main.py --web` 或 `main.py` 启动
    - 自动打开浏览器（可配置）
-
 3. 前后端通信
+
    - REST API 实现所有操作
 
 **已验证：**
+
 - ✅ 启动服务后自动打开浏览器
 - ✅ 多项目管理正常
 - ✅ 对话、工具调用等功能完整可用
@@ -535,7 +558,7 @@ def parse_command(self, user_input: str) -> tuple:
         parts = user_input.split(maxsplit=1)
         command = parts[0]
         actual_input = parts[1] if len(parts) > 1 else ""
-        
+      
         command_map = {
             '@写作': 'writer',
             '@大纲润色': 'outline_polisher',
@@ -543,10 +566,10 @@ def parse_command(self, user_input: str) -> tuple:
             '@汇总说明': 'summary',
             '@信息查询': 'info_query'
         }
-        
+      
         if command in command_map:
             return command_map[command], actual_input
-    
+  
     return 'chat', user_input  # 无指令时默认自由对话
 ```
 
@@ -561,7 +584,7 @@ class BaseAgent:
         self.system_prompt = system_prompt
         self.tools = get_tools_by_names(tool_names or [])  # 从全局注册表获取工具
         self.graph = self._build_graph()  # 构建 LangGraph 状态图
-    
+  
     def chat(self, user_input: str) -> dict:
         """调用 Agent，返回回复和思考过程"""
         result = self.graph.invoke({"messages": [HumanMessage(content=user_input)]})
@@ -635,28 +658,32 @@ flask-cors==6.0.2         # Flask 跨域支持
 ## 验证清单
 
 ### 基础功能
-- [x] 创建/导入/切换/删除小说项目
-- [x] `@大纲润色` 等指令正确路由到对应 Agent
-- [x] 无 @指令时默认使用 ChatAgent 自由对话
+
+- [X] 创建/导入/切换/删除小说项目
+- [X] `@大纲润色` 等指令正确路由到对应 Agent
+- [X] 无 @指令时默认使用 ChatAgent 自由对话
 
 ### 写作工作流
-- [x] `@写作 第1卷 第1章` 触发工作流：大纲审查 → 写作 → 逻辑审查
-- [x] 大纲审查能检测逻辑问题
-- [x] 逻辑审查能检测与前文的矛盾点
-- [x] 所有内置工具正常工作
+
+- [X] `@写作 第1卷 第1章` 触发工作流：大纲审查 → 写作 → 逻辑审查
+- [X] 大纲审查能检测逻辑问题
+- [X] 逻辑审查能检测与前文的矛盾点
+- [X] 所有内置工具正常工作
 
 ### 自定义工具
-- [x] 创建 `custom/my-tool/SKILL.md` + `scripts/` 后系统自动注册
-- [x] `reload_custom_tools()` 可重新加载
+
+- [X] 创建 `custom/my-tool/SKILL.md` + `scripts/` 后系统自动注册
+- [X] `reload_custom_tools()` 可重新加载
 
 ### Web 界面
-- [x] 启动服务后自动打开浏览器
-- [x] 多项目管理（创建、导入、删除、切换）
-- [x] 对话、工具调用等功能完整可用
-- [x] 设置面板可修改 LLM 配置
-- [x] Ollama 本地模型检测和切换
-- [x] API Key 从环境变量读取，不在配置文件中存储
-- [x] 导出项目为 ZIP 文件
+
+- [X] 启动服务后自动打开浏览器
+- [X] 多项目管理（创建、导入、删除、切换）
+- [X] 对话、工具调用等功能完整可用
+- [X] 设置面板可修改 LLM 配置
+- [X] Ollama 本地模型检测和切换
+- [X] API Key 从环境变量读取，不在配置文件中存储
+- [X] 导出项目为 ZIP 文件
 
 ---
 

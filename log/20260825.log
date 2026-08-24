@@ -1,0 +1,475 @@
+[2026-08-25 00:36:43,643][config_manager.py 33][DEBUG]: 配置文件已加载: E:\Programs\Python\Python Code\ai-agent-writer-dev\config.ini
+[2026-08-25 00:36:43,647][__init__.py 26][DEBUG]: 工具已注册: ask_user
+[2026-08-25 00:36:43,649][__init__.py 91][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-25 00:36:43,656][__init__.py 26][DEBUG]: 工具已注册: edit_file
+[2026-08-25 00:36:43,656][__init__.py 91][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-25 00:36:43,660][__init__.py 26][DEBUG]: 工具已注册: glob_search
+[2026-08-25 00:36:43,660][__init__.py 91][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-25 00:36:43,663][__init__.py 26][DEBUG]: 工具已注册: list_directory
+[2026-08-25 00:36:43,673][__init__.py 91][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-25 00:36:43,676][__init__.py 26][DEBUG]: 工具已注册: fetch_url
+[2026-08-25 00:36:43,676][__init__.py 91][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-25 00:36:43,679][__init__.py 26][DEBUG]: 工具已注册: read_file
+[2026-08-25 00:36:43,679][__init__.py 91][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-25 00:36:43,683][__init__.py 26][DEBUG]: 工具已注册: manage_todo
+[2026-08-25 00:36:43,683][__init__.py 91][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-25 00:36:43,683][__init__.py 26][DEBUG]: 工具已注册: write_file
+[2026-08-25 00:36:43,683][__init__.py 91][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-25 00:36:43,686][__init__.py 26][DEBUG]: 工具已注册: file_info
+[2026-08-25 00:36:43,687][__init__.py 169][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-25 00:36:43,687][__init__.py 126][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-25 00:36:43,690][__init__.py 26][DEBUG]: 工具已注册: word_count
+[2026-08-25 00:36:43,690][__init__.py 169][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-25 00:36:43,690][__init__.py 126][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-25 00:36:43,690][__init__.py 192][INFO]: 工具加载完成，共 10 个工具
+[2026-08-25 00:36:43,834][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置
+[2026-08-25 00:37:21,164][config_manager.py 33][DEBUG]: 配置文件已加载: e:\Programs\Python\Python Code\ai-agent-writer-dev\config.ini
+[2026-08-25 00:37:21,171][__init__.py 26][DEBUG]: 工具已注册: ask_user
+[2026-08-25 00:37:21,171][__init__.py 91][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-25 00:37:21,176][__init__.py 26][DEBUG]: 工具已注册: edit_file
+[2026-08-25 00:37:21,176][__init__.py 91][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-25 00:37:21,179][__init__.py 26][DEBUG]: 工具已注册: glob_search
+[2026-08-25 00:37:21,182][__init__.py 91][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-25 00:37:21,184][__init__.py 26][DEBUG]: 工具已注册: list_directory
+[2026-08-25 00:37:21,184][__init__.py 91][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-25 00:37:21,184][__init__.py 26][DEBUG]: 工具已注册: fetch_url
+[2026-08-25 00:37:21,188][__init__.py 91][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-25 00:37:21,191][__init__.py 26][DEBUG]: 工具已注册: read_file
+[2026-08-25 00:37:21,191][__init__.py 91][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-25 00:37:21,196][__init__.py 26][DEBUG]: 工具已注册: manage_todo
+[2026-08-25 00:37:21,196][__init__.py 91][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-25 00:37:21,196][__init__.py 26][DEBUG]: 工具已注册: write_file
+[2026-08-25 00:37:21,196][__init__.py 91][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-25 00:37:21,200][__init__.py 26][DEBUG]: 工具已注册: file_info
+[2026-08-25 00:37:21,200][__init__.py 169][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-25 00:37:21,200][__init__.py 126][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-25 00:37:21,201][__init__.py 26][DEBUG]: 工具已注册: word_count
+[2026-08-25 00:37:21,201][__init__.py 169][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-25 00:37:21,201][__init__.py 126][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-25 00:37:21,201][__init__.py 192][INFO]: 工具加载完成，共 10 个工具
+[2026-08-25 00:37:21,342][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:22,229][base_agent.py 63][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-25 00:37:22,230][chat_agent.py 51][INFO]: 自由对话 Agent 已初始化
+[2026-08-25 00:37:22,230][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-25 00:37:22,230][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:22,238][base_agent.py 63][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-25 00:37:22,238][novel_writer.py 45][INFO]: 写作 Agent 已初始化
+[2026-08-25 00:37:22,240][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-25 00:37:22,240][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:22,243][base_agent.py 63][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-25 00:37:22,244][outline_polisher.py 42][INFO]: 大纲润色 Agent 已初始化
+[2026-08-25 00:37:22,244][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-25 00:37:22,244][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:22,249][base_agent.py 63][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-25 00:37:22,249][content_polisher.py 44][INFO]: 小说润色 Agent 已初始化
+[2026-08-25 00:37:22,249][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:22,255][base_agent.py 63][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-25 00:37:22,255][summary_generator.py 93][INFO]: 汇总说明 Agent 已初始化
+[2026-08-25 00:37:22,255][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:22,260][base_agent.py 63][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-25 00:37:22,260][info_query.py 81][INFO]: 信息查询 Agent 已初始化
+[2026-08-25 00:37:22,260][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:22,260][outline_reviewer.py 31][DEBUG]: 大纲审查器已初始化
+[2026-08-25 00:37:22,260][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:22,263][logic_reviewer.py 32][DEBUG]: 逻辑审查器已初始化
+[2026-08-25 00:37:22,263][writing_workflow.py 32][INFO]: 写作工作流已初始化
+[2026-08-25 00:37:22,264][novel_writer.py 86][INFO]: 已注入项目路径信息到 NovelWriter: e:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:37:22,264][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:22,269][base_agent.py 63][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-25 00:37:22,269][novel_writer.py 90][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:37:22,269][outline_polisher.py 83][INFO]: 已注入项目路径信息到 OutlinePolisher: e:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:37:22,269][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:22,273][base_agent.py 63][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-25 00:37:22,273][outline_polisher.py 87][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:37:22,274][content_polisher.py 85][INFO]: 已注入项目路径信息到 ContentPolisher: e:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:37:22,274][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:22,277][base_agent.py 63][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-25 00:37:22,277][content_polisher.py 89][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:37:22,277][summary_generator.py 134][INFO]: 已注入项目路径信息到 SummaryGenerator: e:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:37:22,277][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:22,283][base_agent.py 63][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-25 00:37:22,283][summary_generator.py 138][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:37:22,284][info_query.py 122][INFO]: 已注入项目路径信息到 InfoQuery: e:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:37:22,284][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:22,289][base_agent.py 63][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-25 00:37:22,290][info_query.py 126][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:37:22,290][app.py 116][INFO]: 已设置项目: 霸道总裁爱上我
+[2026-08-25 00:37:22,290][app.py 71][INFO]: 已自动加载项目: 霸道总裁爱上我
+[2026-08-25 00:37:22,290][app.py 63][INFO]: Web Agent Writer 已初始化
+[2026-08-25 00:37:22,300][app.py 954][INFO]: 启动 Web 服务器: http://127.0.0.1:8000
+[2026-08-25 00:37:25,286][config_manager.py 33][DEBUG]: 配置文件已加载: e:\Programs\Python\Python Code\ai-agent-writer-dev\config.ini
+[2026-08-25 00:37:25,293][__init__.py 26][DEBUG]: 工具已注册: ask_user
+[2026-08-25 00:37:25,293][__init__.py 91][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-25 00:37:25,300][__init__.py 26][DEBUG]: 工具已注册: edit_file
+[2026-08-25 00:37:25,300][__init__.py 91][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-25 00:37:25,304][__init__.py 26][DEBUG]: 工具已注册: glob_search
+[2026-08-25 00:37:25,305][__init__.py 91][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-25 00:37:25,308][__init__.py 26][DEBUG]: 工具已注册: list_directory
+[2026-08-25 00:37:25,308][__init__.py 91][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-25 00:37:25,312][__init__.py 26][DEBUG]: 工具已注册: fetch_url
+[2026-08-25 00:37:25,312][__init__.py 91][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-25 00:37:25,315][__init__.py 26][DEBUG]: 工具已注册: read_file
+[2026-08-25 00:37:25,315][__init__.py 91][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-25 00:37:25,317][__init__.py 26][DEBUG]: 工具已注册: manage_todo
+[2026-08-25 00:37:25,320][__init__.py 91][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-25 00:37:25,320][__init__.py 26][DEBUG]: 工具已注册: write_file
+[2026-08-25 00:37:25,320][__init__.py 91][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-25 00:37:25,322][__init__.py 26][DEBUG]: 工具已注册: file_info
+[2026-08-25 00:37:25,322][__init__.py 169][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-25 00:37:25,322][__init__.py 126][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-25 00:37:25,322][__init__.py 26][DEBUG]: 工具已注册: word_count
+[2026-08-25 00:37:25,322][__init__.py 169][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-25 00:37:25,322][__init__.py 126][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-25 00:37:25,322][__init__.py 192][INFO]: 工具加载完成，共 10 个工具
+[2026-08-25 00:37:25,465][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:26,812][base_agent.py 63][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-25 00:37:26,812][chat_agent.py 51][INFO]: 自由对话 Agent 已初始化
+[2026-08-25 00:37:26,813][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-25 00:37:26,813][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:26,833][base_agent.py 63][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-25 00:37:26,833][novel_writer.py 45][INFO]: 写作 Agent 已初始化
+[2026-08-25 00:37:26,833][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-25 00:37:26,839][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:26,850][base_agent.py 63][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-25 00:37:26,851][outline_polisher.py 42][INFO]: 大纲润色 Agent 已初始化
+[2026-08-25 00:37:26,851][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-25 00:37:26,852][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:26,864][base_agent.py 63][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-25 00:37:26,864][content_polisher.py 44][INFO]: 小说润色 Agent 已初始化
+[2026-08-25 00:37:26,864][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:26,872][base_agent.py 63][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-25 00:37:26,873][summary_generator.py 93][INFO]: 汇总说明 Agent 已初始化
+[2026-08-25 00:37:26,874][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:26,885][base_agent.py 63][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-25 00:37:26,886][info_query.py 81][INFO]: 信息查询 Agent 已初始化
+[2026-08-25 00:37:26,887][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:26,888][outline_reviewer.py 31][DEBUG]: 大纲审查器已初始化
+[2026-08-25 00:37:26,888][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:26,890][logic_reviewer.py 32][DEBUG]: 逻辑审查器已初始化
+[2026-08-25 00:37:26,891][writing_workflow.py 32][INFO]: 写作工作流已初始化
+[2026-08-25 00:37:26,891][novel_writer.py 86][INFO]: 已注入项目路径信息到 NovelWriter: e:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:37:26,892][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:26,901][base_agent.py 63][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-25 00:37:26,901][novel_writer.py 90][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:37:26,901][outline_polisher.py 83][INFO]: 已注入项目路径信息到 OutlinePolisher: e:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:37:26,901][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:26,910][base_agent.py 63][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-25 00:37:26,912][outline_polisher.py 87][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:37:26,912][content_polisher.py 85][INFO]: 已注入项目路径信息到 ContentPolisher: e:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:37:26,912][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:26,924][base_agent.py 63][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-25 00:37:26,924][content_polisher.py 89][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:37:26,925][summary_generator.py 134][INFO]: 已注入项目路径信息到 SummaryGenerator: e:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:37:26,925][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:26,937][base_agent.py 63][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-25 00:37:26,937][summary_generator.py 138][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:37:26,937][info_query.py 122][INFO]: 已注入项目路径信息到 InfoQuery: e:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:37:26,937][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:26,945][base_agent.py 63][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-25 00:37:26,945][info_query.py 126][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:37:26,945][app.py 116][INFO]: 已设置项目: 霸道总裁爱上我
+[2026-08-25 00:37:26,945][app.py 71][INFO]: 已自动加载项目: 霸道总裁爱上我
+[2026-08-25 00:37:26,945][app.py 63][INFO]: Web Agent Writer 已初始化
+[2026-08-25 00:37:26,969][app.py 954][INFO]: 启动 Web 服务器: http://127.0.0.1:8000
+[2026-08-25 00:37:58,924][config_manager.py 33][DEBUG]: 配置文件已加载: E:\Programs\Python\Python Code\ai-agent-writer-dev\config.ini
+[2026-08-25 00:37:58,930][__init__.py 26][DEBUG]: 工具已注册: ask_user
+[2026-08-25 00:37:58,931][__init__.py 91][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-25 00:37:58,934][__init__.py 26][DEBUG]: 工具已注册: edit_file
+[2026-08-25 00:37:58,934][__init__.py 91][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-25 00:37:58,940][__init__.py 26][DEBUG]: 工具已注册: glob_search
+[2026-08-25 00:37:58,940][__init__.py 91][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-25 00:37:58,943][__init__.py 26][DEBUG]: 工具已注册: list_directory
+[2026-08-25 00:37:58,943][__init__.py 91][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-25 00:37:58,946][__init__.py 26][DEBUG]: 工具已注册: fetch_url
+[2026-08-25 00:37:58,946][__init__.py 91][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-25 00:37:58,949][__init__.py 26][DEBUG]: 工具已注册: read_file
+[2026-08-25 00:37:58,949][__init__.py 91][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-25 00:37:58,954][__init__.py 26][DEBUG]: 工具已注册: manage_todo
+[2026-08-25 00:37:58,954][__init__.py 91][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-25 00:37:58,954][__init__.py 26][DEBUG]: 工具已注册: write_file
+[2026-08-25 00:37:58,954][__init__.py 91][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-25 00:37:58,956][__init__.py 26][DEBUG]: 工具已注册: file_info
+[2026-08-25 00:37:58,958][__init__.py 169][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-25 00:37:58,958][__init__.py 126][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-25 00:37:58,960][__init__.py 26][DEBUG]: 工具已注册: word_count
+[2026-08-25 00:37:58,961][__init__.py 169][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-25 00:37:58,961][__init__.py 126][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-25 00:37:58,961][__init__.py 192][INFO]: 工具加载完成，共 10 个工具
+[2026-08-25 00:37:59,090][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:59,823][base_agent.py 63][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-25 00:37:59,823][chat_agent.py 51][INFO]: 自由对话 Agent 已初始化
+[2026-08-25 00:37:59,823][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-25 00:37:59,824][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:59,832][base_agent.py 63][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-25 00:37:59,832][novel_writer.py 45][INFO]: 写作 Agent 已初始化
+[2026-08-25 00:37:59,832][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-25 00:37:59,832][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:59,839][base_agent.py 63][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-25 00:37:59,839][outline_polisher.py 42][INFO]: 大纲润色 Agent 已初始化
+[2026-08-25 00:37:59,839][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-25 00:37:59,839][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:59,844][base_agent.py 63][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-25 00:37:59,845][content_polisher.py 44][INFO]: 小说润色 Agent 已初始化
+[2026-08-25 00:37:59,845][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:59,849][base_agent.py 63][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-25 00:37:59,850][summary_generator.py 93][INFO]: 汇总说明 Agent 已初始化
+[2026-08-25 00:37:59,850][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:59,854][base_agent.py 63][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-25 00:37:59,854][info_query.py 81][INFO]: 信息查询 Agent 已初始化
+[2026-08-25 00:37:59,855][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:59,855][outline_reviewer.py 31][DEBUG]: 大纲审查器已初始化
+[2026-08-25 00:37:59,856][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:59,856][logic_reviewer.py 32][DEBUG]: 逻辑审查器已初始化
+[2026-08-25 00:37:59,857][writing_workflow.py 32][INFO]: 写作工作流已初始化
+[2026-08-25 00:37:59,857][novel_writer.py 86][INFO]: 已注入项目路径信息到 NovelWriter: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:37:59,858][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:59,862][base_agent.py 63][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-25 00:37:59,862][novel_writer.py 90][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:37:59,863][outline_polisher.py 83][INFO]: 已注入项目路径信息到 OutlinePolisher: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:37:59,863][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:59,863][base_agent.py 63][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-25 00:37:59,863][outline_polisher.py 87][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:37:59,863][content_polisher.py 85][INFO]: 已注入项目路径信息到 ContentPolisher: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:37:59,863][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:59,872][base_agent.py 63][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-25 00:37:59,872][content_polisher.py 89][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:37:59,872][summary_generator.py 134][INFO]: 已注入项目路径信息到 SummaryGenerator: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:37:59,872][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:59,876][base_agent.py 63][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-25 00:37:59,876][summary_generator.py 138][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:37:59,876][info_query.py 122][INFO]: 已注入项目路径信息到 InfoQuery: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:37:59,877][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:37:59,881][base_agent.py 63][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-25 00:37:59,881][info_query.py 126][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:37:59,881][app.py 116][INFO]: 已设置项目: 霸道总裁爱上我
+[2026-08-25 00:37:59,882][app.py 71][INFO]: 已自动加载项目: 霸道总裁爱上我
+[2026-08-25 00:37:59,882][app.py 63][INFO]: Web Agent Writer 已初始化
+[2026-08-25 00:37:59,891][app.py 954][INFO]: 启动 Web 服务器: http://127.0.0.1:8000
+[2026-08-25 00:38:02,520][config_manager.py 33][DEBUG]: 配置文件已加载: E:\Programs\Python\Python Code\ai-agent-writer-dev\config.ini
+[2026-08-25 00:38:02,526][__init__.py 26][DEBUG]: 工具已注册: ask_user
+[2026-08-25 00:38:02,526][__init__.py 91][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-25 00:38:02,532][__init__.py 26][DEBUG]: 工具已注册: edit_file
+[2026-08-25 00:38:02,532][__init__.py 91][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-25 00:38:02,533][__init__.py 26][DEBUG]: 工具已注册: glob_search
+[2026-08-25 00:38:02,533][__init__.py 91][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-25 00:38:02,539][__init__.py 26][DEBUG]: 工具已注册: list_directory
+[2026-08-25 00:38:02,540][__init__.py 91][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-25 00:38:02,542][__init__.py 26][DEBUG]: 工具已注册: fetch_url
+[2026-08-25 00:38:02,542][__init__.py 91][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-25 00:38:02,545][__init__.py 26][DEBUG]: 工具已注册: read_file
+[2026-08-25 00:38:02,545][__init__.py 91][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-25 00:38:02,548][__init__.py 26][DEBUG]: 工具已注册: manage_todo
+[2026-08-25 00:38:02,548][__init__.py 91][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-25 00:38:02,550][__init__.py 26][DEBUG]: 工具已注册: write_file
+[2026-08-25 00:38:02,550][__init__.py 91][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-25 00:38:02,553][__init__.py 26][DEBUG]: 工具已注册: file_info
+[2026-08-25 00:38:02,553][__init__.py 169][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-25 00:38:02,554][__init__.py 126][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-25 00:38:02,556][__init__.py 26][DEBUG]: 工具已注册: word_count
+[2026-08-25 00:38:02,556][__init__.py 169][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-25 00:38:02,557][__init__.py 126][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-25 00:38:02,557][__init__.py 192][INFO]: 工具加载完成，共 10 个工具
+[2026-08-25 00:38:02,696][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:38:03,781][base_agent.py 63][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-25 00:38:03,782][chat_agent.py 51][INFO]: 自由对话 Agent 已初始化
+[2026-08-25 00:38:03,782][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-25 00:38:03,783][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:38:03,807][base_agent.py 63][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-25 00:38:03,809][novel_writer.py 45][INFO]: 写作 Agent 已初始化
+[2026-08-25 00:38:03,810][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-25 00:38:03,810][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:38:03,822][base_agent.py 63][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-25 00:38:03,823][outline_polisher.py 42][INFO]: 大纲润色 Agent 已初始化
+[2026-08-25 00:38:03,824][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-25 00:38:03,824][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:38:03,833][base_agent.py 63][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-25 00:38:03,833][content_polisher.py 44][INFO]: 小说润色 Agent 已初始化
+[2026-08-25 00:38:03,833][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:38:03,846][base_agent.py 63][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-25 00:38:03,847][summary_generator.py 93][INFO]: 汇总说明 Agent 已初始化
+[2026-08-25 00:38:03,847][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:38:03,856][base_agent.py 63][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-25 00:38:03,857][info_query.py 81][INFO]: 信息查询 Agent 已初始化
+[2026-08-25 00:38:03,858][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:38:03,859][outline_reviewer.py 31][DEBUG]: 大纲审查器已初始化
+[2026-08-25 00:38:03,860][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:38:03,863][logic_reviewer.py 32][DEBUG]: 逻辑审查器已初始化
+[2026-08-25 00:38:03,863][writing_workflow.py 32][INFO]: 写作工作流已初始化
+[2026-08-25 00:38:03,864][novel_writer.py 86][INFO]: 已注入项目路径信息到 NovelWriter: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:38:03,865][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:38:03,872][base_agent.py 63][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-25 00:38:03,873][novel_writer.py 90][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:38:03,873][outline_polisher.py 83][INFO]: 已注入项目路径信息到 OutlinePolisher: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:38:03,873][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:38:03,883][base_agent.py 63][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-25 00:38:03,883][outline_polisher.py 87][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:38:03,883][content_polisher.py 85][INFO]: 已注入项目路径信息到 ContentPolisher: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:38:03,883][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:38:03,892][base_agent.py 63][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-25 00:38:03,893][content_polisher.py 89][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:38:03,893][summary_generator.py 134][INFO]: 已注入项目路径信息到 SummaryGenerator: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:38:03,893][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:38:03,900][base_agent.py 63][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-25 00:38:03,902][summary_generator.py 138][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:38:03,902][info_query.py 122][INFO]: 已注入项目路径信息到 InfoQuery: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:38:03,902][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:38:03,910][base_agent.py 63][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-25 00:38:03,910][info_query.py 126][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:38:03,910][app.py 116][INFO]: 已设置项目: 霸道总裁爱上我
+[2026-08-25 00:38:03,912][app.py 71][INFO]: 已自动加载项目: 霸道总裁爱上我
+[2026-08-25 00:38:03,912][app.py 63][INFO]: Web Agent Writer 已初始化
+[2026-08-25 00:38:03,930][app.py 954][INFO]: 启动 Web 服务器: http://127.0.0.1:8000
+[2026-08-25 00:52:29,843][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:52:39,394][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:52:44,021][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:05,656][config_manager.py 33][DEBUG]: 配置文件已加载: e:\Programs\Python\Python Code\ai-agent-writer-dev\config.ini
+[2026-08-25 00:53:05,662][__init__.py 26][DEBUG]: 工具已注册: ask_user
+[2026-08-25 00:53:05,662][__init__.py 91][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-25 00:53:05,668][__init__.py 26][DEBUG]: 工具已注册: edit_file
+[2026-08-25 00:53:05,669][__init__.py 91][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-25 00:53:05,673][__init__.py 26][DEBUG]: 工具已注册: glob_search
+[2026-08-25 00:53:05,673][__init__.py 91][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-25 00:53:05,677][__init__.py 26][DEBUG]: 工具已注册: list_directory
+[2026-08-25 00:53:05,677][__init__.py 91][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-25 00:53:05,678][__init__.py 26][DEBUG]: 工具已注册: fetch_url
+[2026-08-25 00:53:05,678][__init__.py 91][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-25 00:53:05,683][__init__.py 26][DEBUG]: 工具已注册: read_file
+[2026-08-25 00:53:05,683][__init__.py 91][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-25 00:53:05,687][__init__.py 26][DEBUG]: 工具已注册: manage_todo
+[2026-08-25 00:53:05,687][__init__.py 91][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-25 00:53:05,687][__init__.py 26][DEBUG]: 工具已注册: write_file
+[2026-08-25 00:53:05,687][__init__.py 91][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-25 00:53:05,691][__init__.py 26][DEBUG]: 工具已注册: file_info
+[2026-08-25 00:53:05,691][__init__.py 169][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-25 00:53:05,691][__init__.py 126][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-25 00:53:05,694][__init__.py 26][DEBUG]: 工具已注册: word_count
+[2026-08-25 00:53:05,694][__init__.py 169][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-25 00:53:05,694][__init__.py 126][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-25 00:53:05,695][__init__.py 192][INFO]: 工具加载完成，共 10 个工具
+[2026-08-25 00:53:05,831][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:06,569][base_agent.py 63][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-25 00:53:06,569][chat_agent.py 51][INFO]: 自由对话 Agent 已初始化
+[2026-08-25 00:53:06,569][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-25 00:53:06,569][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:06,580][base_agent.py 63][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-25 00:53:06,580][novel_writer.py 45][INFO]: 写作 Agent 已初始化
+[2026-08-25 00:53:06,581][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-25 00:53:06,581][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:06,585][base_agent.py 63][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-25 00:53:06,585][outline_polisher.py 42][INFO]: 大纲润色 Agent 已初始化
+[2026-08-25 00:53:06,587][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-25 00:53:06,587][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:06,592][base_agent.py 63][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-25 00:53:06,593][content_polisher.py 44][INFO]: 小说润色 Agent 已初始化
+[2026-08-25 00:53:06,593][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:06,597][base_agent.py 63][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-25 00:53:06,598][summary_generator.py 93][INFO]: 汇总说明 Agent 已初始化
+[2026-08-25 00:53:06,599][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:06,599][base_agent.py 63][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-25 00:53:06,599][info_query.py 81][INFO]: 信息查询 Agent 已初始化
+[2026-08-25 00:53:06,603][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:06,604][outline_reviewer.py 31][DEBUG]: 大纲审查器已初始化
+[2026-08-25 00:53:06,604][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:06,605][logic_reviewer.py 32][DEBUG]: 逻辑审查器已初始化
+[2026-08-25 00:53:06,605][writing_workflow.py 32][INFO]: 写作工作流已初始化
+[2026-08-25 00:53:06,606][novel_writer.py 86][INFO]: 已注入项目路径信息到 NovelWriter: e:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:53:06,606][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:06,607][base_agent.py 63][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-25 00:53:06,607][novel_writer.py 90][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:53:06,607][outline_polisher.py 83][INFO]: 已注入项目路径信息到 OutlinePolisher: e:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:53:06,607][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:06,615][base_agent.py 63][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-25 00:53:06,615][outline_polisher.py 87][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:53:06,615][content_polisher.py 85][INFO]: 已注入项目路径信息到 ContentPolisher: e:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:53:06,616][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:06,621][base_agent.py 63][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-25 00:53:06,621][content_polisher.py 89][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:53:06,621][summary_generator.py 134][INFO]: 已注入项目路径信息到 SummaryGenerator: e:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:53:06,621][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:06,625][base_agent.py 63][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-25 00:53:06,625][summary_generator.py 138][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:53:06,625][info_query.py 122][INFO]: 已注入项目路径信息到 InfoQuery: e:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:53:06,625][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:06,630][base_agent.py 63][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-25 00:53:06,630][info_query.py 126][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:53:06,630][app.py 116][INFO]: 已设置项目: 霸道总裁爱上我
+[2026-08-25 00:53:06,630][app.py 71][INFO]: 已自动加载项目: 霸道总裁爱上我
+[2026-08-25 00:53:06,630][app.py 63][INFO]: Web Agent Writer 已初始化
+[2026-08-25 00:53:06,640][app.py 954][INFO]: 启动 Web 服务器: http://127.0.0.1:8000
+[2026-08-25 00:53:07,014][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:09,362][config_manager.py 33][DEBUG]: 配置文件已加载: e:\Programs\Python\Python Code\ai-agent-writer-dev\config.ini
+[2026-08-25 00:53:09,366][__init__.py 26][DEBUG]: 工具已注册: ask_user
+[2026-08-25 00:53:09,366][__init__.py 91][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-08-25 00:53:09,368][__init__.py 26][DEBUG]: 工具已注册: edit_file
+[2026-08-25 00:53:09,368][__init__.py 91][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-08-25 00:53:09,374][__init__.py 26][DEBUG]: 工具已注册: glob_search
+[2026-08-25 00:53:09,376][__init__.py 91][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-08-25 00:53:09,379][__init__.py 26][DEBUG]: 工具已注册: list_directory
+[2026-08-25 00:53:09,379][__init__.py 91][DEBUG]: 内置工具模块已加载: list_tool
+[2026-08-25 00:53:09,382][__init__.py 26][DEBUG]: 工具已注册: fetch_url
+[2026-08-25 00:53:09,382][__init__.py 91][DEBUG]: 内置工具模块已加载: online_tool
+[2026-08-25 00:53:09,385][__init__.py 26][DEBUG]: 工具已注册: read_file
+[2026-08-25 00:53:09,386][__init__.py 91][DEBUG]: 内置工具模块已加载: read_tool
+[2026-08-25 00:53:09,389][__init__.py 26][DEBUG]: 工具已注册: manage_todo
+[2026-08-25 00:53:09,390][__init__.py 91][DEBUG]: 内置工具模块已加载: todo_tool
+[2026-08-25 00:53:09,390][__init__.py 26][DEBUG]: 工具已注册: write_file
+[2026-08-25 00:53:09,390][__init__.py 91][DEBUG]: 内置工具模块已加载: write_tool
+[2026-08-25 00:53:09,393][__init__.py 26][DEBUG]: 工具已注册: file_info
+[2026-08-25 00:53:09,393][__init__.py 169][DEBUG]: Skill example-file-info 的 SKILL.md 已读取（375 字符）
+[2026-08-25 00:53:09,393][__init__.py 126][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-08-25 00:53:09,397][__init__.py 26][DEBUG]: 工具已注册: word_count
+[2026-08-25 00:53:09,397][__init__.py 169][DEBUG]: Skill example-word-count 的 SKILL.md 已读取（346 字符）
+[2026-08-25 00:53:09,397][__init__.py 126][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-08-25 00:53:09,397][__init__.py 192][INFO]: 工具加载完成，共 10 个工具
+[2026-08-25 00:53:09,531][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:10,718][base_agent.py 63][DEBUG]: Agent 已初始化: ChatAgent
+[2026-08-25 00:53:10,718][chat_agent.py 51][INFO]: 自由对话 Agent 已初始化
+[2026-08-25 00:53:10,718][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-08-25 00:53:10,718][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:10,746][base_agent.py 63][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-25 00:53:10,747][novel_writer.py 45][INFO]: 写作 Agent 已初始化
+[2026-08-25 00:53:10,748][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-08-25 00:53:10,748][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:10,760][base_agent.py 63][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-25 00:53:10,761][outline_polisher.py 42][INFO]: 大纲润色 Agent 已初始化
+[2026-08-25 00:53:10,762][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-08-25 00:53:10,762][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:10,772][base_agent.py 63][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-25 00:53:10,772][content_polisher.py 44][INFO]: 小说润色 Agent 已初始化
+[2026-08-25 00:53:10,772][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:10,781][base_agent.py 63][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-25 00:53:10,781][summary_generator.py 93][INFO]: 汇总说明 Agent 已初始化
+[2026-08-25 00:53:10,782][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:10,793][base_agent.py 63][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-25 00:53:10,794][info_query.py 81][INFO]: 信息查询 Agent 已初始化
+[2026-08-25 00:53:10,795][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:10,797][outline_reviewer.py 31][DEBUG]: 大纲审查器已初始化
+[2026-08-25 00:53:10,798][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:10,799][logic_reviewer.py 32][DEBUG]: 逻辑审查器已初始化
+[2026-08-25 00:53:10,799][writing_workflow.py 32][INFO]: 写作工作流已初始化
+[2026-08-25 00:53:10,801][novel_writer.py 86][INFO]: 已注入项目路径信息到 NovelWriter: e:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:53:10,801][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:10,809][base_agent.py 63][DEBUG]: Agent 已初始化: NovelWriter
+[2026-08-25 00:53:10,810][novel_writer.py 90][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:53:10,810][outline_polisher.py 83][INFO]: 已注入项目路径信息到 OutlinePolisher: e:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:53:10,811][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:10,823][base_agent.py 63][DEBUG]: Agent 已初始化: OutlinePolisher
+[2026-08-25 00:53:10,823][outline_polisher.py 87][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:53:10,824][content_polisher.py 85][INFO]: 已注入项目路径信息到 ContentPolisher: e:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:53:10,824][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:10,835][base_agent.py 63][DEBUG]: Agent 已初始化: ContentPolisher
+[2026-08-25 00:53:10,835][content_polisher.py 89][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:53:10,836][summary_generator.py 134][INFO]: 已注入项目路径信息到 SummaryGenerator: e:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:53:10,836][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:10,844][base_agent.py 63][DEBUG]: Agent 已初始化: SummaryGenerator
+[2026-08-25 00:53:10,845][summary_generator.py 138][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:53:10,845][info_query.py 122][INFO]: 已注入项目路径信息到 InfoQuery: e:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-08-25 00:53:10,845][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:10,855][base_agent.py 63][DEBUG]: Agent 已初始化: InfoQuery
+[2026-08-25 00:53:10,856][info_query.py 126][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-08-25 00:53:10,856][app.py 116][INFO]: 已设置项目: 霸道总裁爱上我
+[2026-08-25 00:53:10,856][app.py 71][INFO]: 已自动加载项目: 霸道总裁爱上我
+[2026-08-25 00:53:10,856][app.py 63][INFO]: Web Agent Writer 已初始化
+[2026-08-25 00:53:10,886][app.py 954][INFO]: 启动 Web 服务器: http://127.0.0.1:8000
+[2026-08-25 00:53:11,285][config_manager.py 53][WARNING]: 环境变量 LLM_API_KEY 未设置，使用占位符以确保服务可启动
+[2026-08-25 00:53:33,862][app.py 922][ERROR]: 测试连接错误: Error code: 401 - {'error': {'message': 'Incorrect API key provided. For details, see: https://help.aliyun.com/zh/model-studio/error-code#apikey-error', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}, 'request_id': 'f2737888-7b5e-9ea2-9cd5-2c5102a0403b'}
