@@ -1,5 +1,7 @@
 """
-在线请求工具（从互联网获取资料）
+在线请求工具
+
+从互联网获取网页内容，自动截断过长响应以避免 Token 溢出。
 """
 import requests
 from langchain_core.tools import tool
@@ -18,17 +20,13 @@ def fetch_url(url: str, timeout: int = 10) -> str:
         响应内容（文本或错误信息）
     """
     try:
-        # 发送 GET 请求
+        # 发送 GET 请求并自动检测编码
         response = requests.get(url, timeout=timeout)
         response.raise_for_status()
         
-        # 设置编码
         response.encoding = response.apparent_encoding or 'utf-8'
         
-        # 获取内容
-        content = response.text
-        
-        # 限制返回长度（避免过长）
+        # 截断过长内容，避免 Token 溢出
         max_length = 5000
         if len(content) > max_length:
             content = content[:max_length] + f"\n\n... (内容已截断，总长度: {len(response.text)} 字符)"

@@ -1,34 +1,31 @@
 """
 大纲审查器
-职责：
-- 审查大纲的合理性
-- 检查与前文的衔接
-- 提供修改建议
+
+使用 LLM 审查大纲的合理性，检查与前文的衔接，提供修改建议。
+不使用工具，直接通过文本提示和响应进行审查。
 """
 from typing import Optional
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
-from core.config import config_manager
+from core.config_manager import config_manager
 from core.prompts import get_prompt, OUTLINE_REVIEW_PROMPT
 from core.agent_logger import logger
 
 
 class OutlineReviewer:
-    """
-    大纲审查器
-    负责审查大纲的合理性
-    """
+    """大纲审查器，使用 LLM 审查大纲片段的合理性和与前文的衔接。"""
     
     def __init__(self):
         """初始化大纲审查器"""
         config = config_manager.get_llm_config()
         
-        # 创建 LLM 实例（不需要工具）
+        # 使用较低温度保证审查的严谨性
         self.llm = ChatOpenAI(
             api_key=config["api_key"],
-            base_url=config["base_url"],
-            model=config["model"],
-            temperature=0.3  # 使用较低温度，保证审查的严谨性
+            base_url=config["api_url"],
+            model=config["model_name"],
+            temperature=config.get("temperature", 0.3),  # 使用较低温度，保证审查的严谨性
+            max_tokens=8192
         )
         
         logger.debug("大纲审查器已初始化")
@@ -42,16 +39,10 @@ class OutlineReviewer:
             previous_content: 前文内容（可选，用于检查衔接）
         
         Returns:
-            {
-                "passed": bool,        # 是否通过审查
-                "feedback": str,       # 审查反馈
-                "suggestions": list    # 修改建议列表
-            }
+            审查结果字典，包含 passed（是否通过）、feedback（反馈）、suggestions（建议列表）
         """
-        # 构建审查提示
         review_prompt = self._build_review_prompt(outline_section, previous_content)
         
-        # 调用 LLM 进行审查
         messages = [
             SystemMessage(content=get_prompt(OUTLINE_REVIEW_PROMPT)),
             HumanMessage(content=review_prompt)
@@ -60,7 +51,6 @@ class OutlineReviewer:
         response = self.llm.invoke(messages)
         feedback = response.content
         
-        # 解析审查结果
         result = self._parse_review_result(feedback)
         
         logger.debug(f"大纲审查完成: {'通过' if result['passed'] else '需要修改'}")
@@ -80,22 +70,12 @@ class OutlineReviewer:
     
     def _parse_review_result(self, feedback: str) -> dict:
         """
-        解析审查结果
-        
-        Returns:
-            {
-                "passed": bool,
-                "feedback": str,
-                "suggestions": list
-            }
+        解析审查结果：通过关键词判断是否通过，提取建议列表。
         """
-        # 简单的判断逻辑：如果包含"通过"则认为通过
         passed = "通过" in feedback and "需要修改" not in feedback
         
-        # 提取建议（如果有的话）
         suggestions = []
         if "建议" in feedback:
-            # 简单的文本提取，实际可以更复杂
             lines = feedback.split('\n')
             for line in lines:
                 if line.strip().startswith('-') or line.strip().startswith('•'):
@@ -109,7 +89,6 @@ class OutlineReviewer:
 
 
 if __name__ == '__main__':
-    # 测试代码
     reviewer = OutlineReviewer()
     
     test_outline = """

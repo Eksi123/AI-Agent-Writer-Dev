@@ -1,5 +1,7 @@
 """
 文件查询工具（按模式匹配）
+
+使用 glob 模式搜索文件，如 `**/*.py`、`*.md` 等。
 """
 import os
 import glob
@@ -19,7 +21,6 @@ def glob_search(pattern: str, root_dir: str = ".") -> str:
         匹配的文件路径列表，每行一个
     """
     try:
-        # 规范化根目录
         abs_root = os.path.abspath(root_dir)
         
         if not os.path.exists(abs_root):
@@ -28,7 +29,7 @@ def glob_search(pattern: str, root_dir: str = ".") -> str:
         if not os.path.isdir(abs_root):
             return f"错误: 路径不是目录 - {abs_root}"
         
-        # 执行 glob 搜索
+        # 执行 glob 搜索（支持 ** 递归匹配）
         search_pattern = os.path.join(abs_root, pattern)
         matches = glob.glob(search_pattern, recursive=True)
         

@@ -1,5 +1,8 @@
 """
 任务清单工具
+
+Agent 用此工具管理写作任务进度，支持添加、更新、删除和查看任务。
+任务数据持久化到 todo.json 文件。
 """
 import json
 import os
@@ -7,7 +10,7 @@ from typing import List, Dict
 from langchain_core.tools import tool
 
 
-# 任务清单存储文件
+# 任务清单存储文件（位于项目根目录下的 todo.json）
 TODO_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "todo.json")
 
 
@@ -50,7 +53,7 @@ def manage_todo(action: str, task_id: int = -1, title: str = "", status: str = "
             if not title:
                 return "错误: 添加任务时必须提供 title"
             
-            # 生成新 ID
+            # 自动分配递增的任务 ID
             new_id = max([t["id"] for t in todos], default=0) + 1
             
             new_todo = {

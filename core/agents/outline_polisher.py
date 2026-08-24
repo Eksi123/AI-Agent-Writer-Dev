@@ -1,29 +1,26 @@
 """
 OutlinePolisher Agent
-职责：
-- 优化大纲结构
-- 完善角色设定
-- 优化世界观设定
-- 调整剧情安排
+
+优化小说大纲，包括完善结构、角色设定、世界观和剧情安排。
 """
 from typing import Optional
 from core.agents.base_agent import BaseAgent
 from core.tools import get_tools_by_names
+from core.tools.builtin.write_tool import set_allowed_project_dir
 from core.project_manager import ProjectManager, NovelProject
-from core.config import config_manager
+from core.config_manager import config_manager
 from core.prompts import get_prompt, OUTLINE_POLISHER_PROMPT
 from core.agent_logger import logger
 
 
 class OutlinePolisher(BaseAgent):
     """
-    大纲润色 Agent
-    负责优化大纲结构和设定
+    大纲润色 Agent，负责优化小说大纲的结构和内容。
+    
+    绑定的工具：read_file、write_file、edit_file、ask_user
     """
     
     def __init__(self):
-        """初始化大纲润色 Agent"""
-        # 获取大纲编辑所需的工具
         tools = get_tools_by_names([
             'read_file',
             'write_file',
@@ -31,7 +28,6 @@ class OutlinePolisher(BaseAgent):
             'ask_user'
         ])
         
-        # 保存原始 system prompt（用于后续更新）
         self._original_system_prompt = get_prompt(OUTLINE_POLISHER_PROMPT)
         
         super().__init__(
@@ -40,25 +36,33 @@ class OutlinePolisher(BaseAgent):
             tools=tools
         )
         
-        # 项目管理器
         self.project_manager = ProjectManager(config_manager.get_output_dir())
-        
-        # 当前项目
         self.current_project: Optional[NovelProject] = None
         
         logger.info("大纲润色 Agent 已初始化")
     
     def set_project(self, project_name: str) -> bool:
-        """设置当前项目"""
+        """
+        设置当前项目
+        
+        流程：
+        1. 加载项目信息
+        2. 设置允许写入的项目目录（安全限制）
+        3. 在 system prompt 中注入项目路径信息
+        4. 重新初始化 AgentGraph 使新配置生效
+        
+        Args:
+            project_name: 项目名称
+        
+        Returns:
+            是否成功
+        """
         project = self.project_manager.load_project(project_name)
         
         if project:
             self.current_project = project
-            # 设置允许写入的项目目录
-            from core.tools.builtin.write_tool import set_allowed_project_dir
             set_allowed_project_dir(project.base_dir)
             
-            # 在 system prompt 中注入项目路径信息（每次都更新）
             outline_path = project.outline_path
             chapters_dir = project.chapters_dir
             self.system_prompt = f"""## 当前项目信息
@@ -78,7 +82,6 @@ class OutlinePolisher(BaseAgent):
 {self._original_system_prompt}"""
             logger.info(f"已注入项目路径信息到 {self.name}: {project.base_dir}")
             
-            # 重新初始化 AgentGraph，使新的 system_prompt 生效
             self._init_agent_graph()
             
             logger.info(f"已切换到项目: {project_name}")
@@ -88,14 +91,14 @@ class OutlinePolisher(BaseAgent):
             return False
     
     def get_outline(self) -> str:
-        """获取当前项目的大纲"""
+        """获取当前项目的大纲内容"""
         if not self.current_project:
             return "错误: 未选择项目"
         
         return self.current_project.read_outline()
     
     def update_outline(self, content: str) -> str:
-        """更新大纲"""
+        """更新大纲内容并保存到文件"""
         if not self.current_project:
             return "错误: 未选择项目"
         
@@ -104,8 +107,6 @@ class OutlinePolisher(BaseAgent):
 
 
 if __name__ == '__main__':
-    # 测试代码
     polisher = OutlinePolisher()
-    
     response = polisher.chat("你好，请介绍一下你能做什么")
     print(f"\nAgent: {response}")

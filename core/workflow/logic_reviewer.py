@@ -1,34 +1,32 @@
 """
 逻辑审查器
-职责：
-- 审查正文与前面所有章节的逻辑一致性
-- 检查情节、角色、时间线等是否矛盾
-- 提供修改建议
+
+使用 LLM 审查正文与前面所有章节的逻辑一致性，
+检查情节、角色、时间线等是否矛盾，提供修改建议。
+不使用工具，直接通过文本提示和响应进行审查。
 """
 from typing import Optional, List
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
-from core.config import config_manager
+from core.config_manager import config_manager
 from core.prompts import get_prompt, LOGIC_REVIEW_PROMPT
 from core.agent_logger import logger
 
 
 class LogicReviewer:
-    """
-    逻辑审查器
-    负责审查正文的逻辑一致性
-    """
+    """逻辑审查器，使用 LLM 检查章节间的逻辑一致性。"""
     
     def __init__(self):
         """初始化逻辑审查器"""
         config = config_manager.get_llm_config()
         
-        # 创建 LLM 实例（不需要工具）
+        # 使用较低温度保证审查的严谨性
         self.llm = ChatOpenAI(
             api_key=config["api_key"],
-            base_url=config["base_url"],
-            model=config["model"],
-            temperature=0.3  # 使用较低温度，保证审查的严谨性
+            base_url=config["api_url"],
+            model=config["model_name"],
+            temperature=config.get("temperature", 0.3),  # 使用较低温度，保证审查的严谨性
+            max_tokens=8192
         )
         
         logger.debug("逻辑审查器已初始化")
@@ -42,17 +40,10 @@ class LogicReviewer:
             previous_chapters: 前面所有章节的内容列表
         
         Returns:
-            {
-                "passed": bool,        # 是否通过审查
-                "feedback": str,       # 审查反馈
-                "issues": list,        # 发现的问题列表
-                "suggestions": list    # 修改建议列表
-            }
+            审查结果字典，包含 passed、feedback、issues、suggestions
         """
-        # 构建审查提示
         review_prompt = self._build_review_prompt(current_chapter, previous_chapters)
         
-        # 调用 LLM 进行审查
         messages = [
             SystemMessage(content=get_prompt(LOGIC_REVIEW_PROMPT)),
             HumanMessage(content=review_prompt)
@@ -61,7 +52,6 @@ class LogicReviewer:
         response = self.llm.invoke(messages)
         feedback = response.content
         
-        # 解析审查结果
         result = self._parse_review_result(feedback)
         
         logger.debug(f"逻辑审查完成: {'通过' if result['passed'] else '需要修改'}")
@@ -72,35 +62,25 @@ class LogicReviewer:
         """构建审查提示"""
         prompt_parts = ["请审查以下章节与前面所有章节的逻辑一致性：\n\n"]
         
-        # 添加前文内容（限制长度，避免超出 token 限制）
+        # 添加前文内容，每章截取前 1000 字符避免超出 token 限制
         if previous_chapters:
             prompt_parts.append("【前面章节内容】\n")
             for i, chapter in enumerate(previous_chapters, 1):
-                # 每章只取前 1000 字符，避免过长
                 chapter_preview = chapter[:1000] + "..." if len(chapter) > 1000 else chapter
                 prompt_parts.append(f"\n--- 第{i}章 ---\n{chapter_preview}\n")
         
-        # 添加当前章节
+        # 添加当前章节内容
         prompt_parts.append(f"\n\n【当前章节内容】\n{current_chapter}\n")
         
         return '\n'.join(prompt_parts)
     
     def _parse_review_result(self, feedback: str) -> dict:
         """
-        解析审查结果
-        
-        Returns:
-            {
-                "passed": bool,
-                "feedback": str,
-                "issues": list,
-                "suggestions": list
-            }
+        解析审查结果：通过关键词判断是否通过，提取问题和建议列表。
         """
-        # 简单的判断逻辑
         passed = "通过" in feedback and "需要修改" not in feedback
         
-        # 提取问题
+        # 提取问题列表
         issues = []
         if "问题" in feedback:
             lines = feedback.split('\n')
@@ -112,11 +92,10 @@ class LogicReviewer:
                 if in_issues_section and (line.strip().startswith('-') or line.strip().startswith('•')):
                     issues.append(line.strip())
                 elif in_issues_section and line.strip() and not line.strip().startswith('-'):
-                    # 遇到新的段落，结束问题部分
                     if "建议" in line or "修改" in line:
                         break
         
-        # 提取建议
+        # 提取建议列表
         suggestions = []
         if "建议" in feedback:
             lines = feedback.split('\n')
@@ -137,7 +116,6 @@ class LogicReviewer:
 
 
 if __name__ == '__main__':
-    # 测试代码
     reviewer = LogicReviewer()
     
     test_previous = [

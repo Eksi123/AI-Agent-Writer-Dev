@@ -1,5 +1,8 @@
 """
 文件编辑工具
+
+提供文件内容替换功能，支持单处替换和全局替换。
+与 write_tool 共享项目目录安全限制。
 """
 import os
 from langchain_core.tools import tool
@@ -21,13 +24,11 @@ def edit_file(file_path: str, old_text: str, new_text: str, replace_all: bool = 
         操作结果信息
     """
     try:
-        # 规范化路径
         abs_path = os.path.abspath(file_path)
         
-        # 检查是否在允许的项目目录内
+        # 安全检查：确保路径在允许的项目目录内
         allowed_dir = get_allowed_project_dir()
         if allowed_dir:
-            # 确保路径在允许的项目目录内
             if not abs_path.startswith(allowed_dir + os.sep) and abs_path != allowed_dir:
                 return f"错误: 不允许编辑项目目录外的文件。允许目录: {allowed_dir}，尝试编辑: {abs_path}"
         
@@ -45,7 +46,7 @@ def edit_file(file_path: str, old_text: str, new_text: str, replace_all: bool = 
         if old_text not in content:
             return f"错误: 未找到要替换的文本\n文件: {abs_path}"
         
-        # 执行替换
+        # 执行替换：replace_all=True 时替换所有匹配，否则只替换第一个
         if replace_all:
             new_content = content.replace(old_text, new_text)
             replace_count = content.count(old_text)

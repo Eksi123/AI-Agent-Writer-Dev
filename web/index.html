@@ -237,6 +237,7 @@
             flex-direction: column;
             background: #fff;
             border-right: 1px solid #e0e0e0;
+            min-width: 0;
         }
 
         .chat-messages {
@@ -270,6 +271,16 @@
 
         .message.user .message-avatar {
             background: #28a745;
+        }
+
+        .message.system .message-avatar {
+            background: #dc3545;
+        }
+
+        .message.system .message-content {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
         }
 
         .message-content {
@@ -504,11 +515,15 @@
             display: flex;
             flex-direction: column;
             background: #fff;
+            min-height: 0;
+            min-width: 0;
+            overflow: hidden;
         }
 
         .panel-tabs {
             display: flex;
             border-bottom: 1px solid #e0e0e0;
+            flex-shrink: 0;
         }
 
         .panel-tab {
@@ -528,19 +543,46 @@
         .panel-content {
             flex: 1;
             overflow: hidden;
-            padding: 15px;
+            padding: 0;
             display: flex;
             flex-direction: column;
             min-height: 0;
         }
 
+        /* 大纲和章节面板容器 */
         .outline-content, .chapters-content {
-            line-height: 1.6;
             flex: 1;
             display: flex;
             flex-direction: column;
             min-height: 0;
             overflow: hidden;
+            padding: 15px;
+            line-height: 1.6;
+        }
+
+        /* 内容区域包装器 - 确保可滚动 */
+        .outline-content > .markdown-content,
+        .outline-content > .edit-textarea,
+        .chapter-preview > .markdown-content,
+        .chapter-preview > .edit-textarea {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        /* 章节内容容器 —— 必须有 display:flex 和 min-height:0 才能让子元素填满，
+           但自身不能是滚动容器（否则 flex:1 约束失效），滚动交给子元素处理 */
+        #chaptersContent {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 编辑框铺满整个可用空间 —— 用 flex:1 填充，不用 height:100%（会与 flex 冲突） */
+        .outline-content > .edit-textarea {
+            width: 100%;
         }
 
         /* 章节目录树 */
@@ -556,6 +598,33 @@
             padding: 6px 10px;
             background: #f1f3f5;
             border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .volume-title-text {
+            flex: 1;
+        }
+
+        .volume-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .btn-volume-action {
+            padding: 2px 6px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+
+        .btn-volume-action:hover {
+            background: #e9ecef;
+            border-color: #007bff;
         }
 
         .chapter-item {
@@ -566,6 +635,39 @@
             cursor: pointer;
             transition: all 0.2s;
             font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chapter-item-text {
+            flex: 1;
+        }
+
+        .chapter-actions {
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .chapter-item:hover .chapter-actions {
+            opacity: 1;
+        }
+
+        .btn-chapter-action {
+            padding: 2px 6px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+
+        .btn-chapter-action:hover {
+            background: #e9ecef;
+            border-color: #007bff;
         }
 
         .chapter-item:hover {
@@ -573,25 +675,32 @@
         }
 
         .chapter-preview {
-            padding: 0;
             flex: 1;
             display: flex;
             flex-direction: column;
             min-height: 0;
+            overflow: hidden;
         }
 
         .chapter-preview-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
             border-bottom: 1px solid #e0e0e0;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            gap: 6px;
         }
 
         .chapter-preview-header h3 {
             font-size: 14px;
             font-weight: 600;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .btn-back {
@@ -615,6 +724,9 @@
             border-radius: 6px;
             padding: 10px;
             margin-bottom: 12px;
+            flex-shrink: 0;
+            max-height: 40%;
+            overflow-y: auto;
         }
 
         .toc-title {
@@ -688,6 +800,7 @@
             margin-bottom: 8px;
             border-bottom: 1px solid #e0e0e0;
             gap: 6px;
+            flex-shrink: 0;
         }
 
         .panel-toolbar .toolbar-left {
@@ -772,6 +885,7 @@
             flex: 1;
             overflow-y: auto;
             min-height: 0;
+            padding: 0;
         }
 
         .edit-textarea:focus {
@@ -814,6 +928,34 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        .settings-tabs {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .settings-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            border-bottom: 2px solid transparent;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .settings-tab.active {
+            border-bottom-color: #007bff;
+            color: #007bff;
+            font-weight: 500;
+        }
+
+        .settings-tab:hover {
+            background: #f5f5f5;
         }
 
         .btn-close {
@@ -1098,6 +1240,7 @@
                             <div class="panel-toolbar">
                                 <div class="toolbar-left">
                                     <button class="btn-refresh" onclick="refreshChapters()" title="刷新">🔄 刷新</button>
+                                    <button class="btn-refresh" onclick="createVolumePrompt()" title="新建卷">＋ 新建卷</button>
                                 </div>
                                 <div class="toolbar-right"></div>
                             </div>
@@ -1113,9 +1256,11 @@
     <div class="modal" id="settingsModal">
         <div class="modal-content">
             <div class="modal-header">
-                <span>⚙ LLM 设置</span>
+                <span>⚙ 设置</span>
                 <button class="btn-close" onclick="closeSettings()">×</button>
             </div>
+            <!-- LLM 设置 -->
+            <div id="llmSettingsPanel">
             <form id="settingsForm" onsubmit="saveSettings(event)">
                 <div class="form-group">
                     <label>模型类型</label>
@@ -1131,14 +1276,15 @@
                 <div class="form-group" id="apiKeyGroup">
                     <label>API Key</label>
                     <div class="input-with-icon">
-                        <input type="password" id="apiKey" placeholder="sk-..." readonly>
+                        <input type="password" id="apiKey" placeholder="sk-..." readonly oninput="apiKeyModified = true">
                         <button type="button" class="btn-toggle-visibility" onclick="toggleApiKeyVisibility()" title="显示">👁</button>
                     </div>
                     <small style="color: #999; font-size: 12px;">清空输入框可输入新的 Key，保存后写入环境变量</small>
                 </div>
                 <div class="form-group">
-                    <label>模型名称</label>
-                    <input type="text" id="modelName" placeholder="gpt-4">
+                    <label>模型名称 <span id="ollamaModelHint" style="color: #999; font-size: 11px; font-weight: normal; display: none;">（自动加载本地模型列表）</span></label>
+                    <input type="text" id="modelName" placeholder="gpt-4" list="ollamaModelList" autocomplete="off">
+                    <datalist id="ollamaModelList"></datalist>
                 </div>
                 <div class="form-group">
                     <label>Temperature</label>
@@ -1147,6 +1293,9 @@
                 <button type="button" class="btn-secondary" onclick="testConnection()">🔌 测试连接</button>
                 <button type="submit" class="btn-primary">💾 保存设置</button>
             </form>
+            </div>
+            
+
         </div>
     </div>
 
@@ -1541,16 +1690,24 @@
                 const result = await response.json();
                 
                 if (result.success) {
+                    const data = result.data;
                     // 添加 AI 回复，包含思考过程
-                    const thoughtProcess = result.data.thought_process || [];
-                    addMessage('assistant', result.data.response, thoughtProcess);
+                    const thoughtProcess = data.thought_process || [];
+                    
+                    if (data.error) {
+                        // 大模型返回了错误，使用 system 样式显示
+                        addMessage('system', data.response, thoughtProcess);
+                    } else {
+                        addMessage('assistant', data.response, thoughtProcess);
+                    }
                     
                     // 如果是写作工作流，刷新章节列表
-                    if (result.data.workflow) {
+                    if (data.workflow) {
                         loadChapterTree();
                     }
                 } else {
-                    addMessage('system', '错误: ' + result.error);
+                    // 显示错误信息（使用 system 类型，会有醒目的样式）
+                    addMessage('system', result.error);
                 }
             } catch (error) {
                 console.error('发送消息失败:', error);
@@ -1568,7 +1725,7 @@
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${role}`;
             
-            const avatar = role === 'user' ? '你' : (role === 'system' ? '⚙' : 'AI');
+            const avatar = role === 'user' ? '你' : (role === 'system' ? '⚠' : 'AI');
             
             // 构建思考过程 HTML
             let thoughtHtml = '';
@@ -1663,11 +1820,13 @@
                 event.target.classList.add('active');
             }
             
-            // 显示对应面板
+            // 显示对应面板 —— 必须用 'flex' 而非 'block'，
+            // 因为 .outline-content / .chapters-content 是 flex 容器，
+            // 用 'block' 会破坏整个 flex 布局链条
             document.getElementById('outlinePanel').style.display = 
-                panel === 'outline' ? 'block' : 'none';
+                panel === 'outline' ? 'flex' : 'none';
             document.getElementById('chaptersPanel').style.display = 
-                panel === 'chapters' ? 'block' : 'none';
+                panel === 'chapters' ? 'flex' : 'none';
         }
 
         // 当前大纲原始内容（用于编辑模式）
@@ -1777,15 +1936,17 @@
             const btnSave = document.getElementById('btnOutlineSave');
             
             if (mode === 'preview') {
-                previewDiv.style.display = 'block';
+                // 使用空字符串清除 inline style，让 CSS class 生效
+                previewDiv.style.display = '';
                 editArea.style.display = 'none';
-                tocNav.style.display = 'block';
+                tocNav.style.display = '';
                 btnPreview.classList.add('active');
                 btnEdit.classList.remove('active');
                 btnSave.classList.remove('visible');
             } else {
                 previewDiv.style.display = 'none';
-                editArea.style.display = 'block';
+                // textarea 不需要 flex，保持 block 即可
+                editArea.style.display = '';
                 tocNav.style.display = 'none';
                 btnPreview.classList.remove('active');
                 btnEdit.classList.add('active');
@@ -1840,20 +2001,233 @@
                     if (tree.length > 0) {
                         chaptersDiv.innerHTML = tree.map(vol => `
                             <div class="volume-item">
-                                <div class="volume-title">${vol.volume}</div>
+                                <div class="volume-title">
+                                    <span class="volume-title-text">第${vol.volume}卷${vol.volume_name ? ' - ' + vol.volume_name : ''}</span>
+                                    <div class="volume-actions">
+                                        <button class="btn-volume-action" onclick="event.stopPropagation(); createChapterPrompt(${vol.volume})" title="新建章节">＋</button>
+                                        <button class="btn-volume-action" onclick="event.stopPropagation(); renameVolumePrompt(${vol.volume}, '${vol.volume_name}')" title="重命名卷">✏</button>
+                                        <button class="btn-volume-action" onclick="event.stopPropagation(); deleteVolumeConfirm(${vol.volume})" title="删除卷">✕</button>
+                                    </div>
+                                </div>
                                 ${vol.chapters.map(ch => `
-                                    <div class="chapter-item" onclick="viewChapter('${ch.file}', '${ch.name}')">
-                                        ${ch.name}
+                                    <div class="chapter-item">
+                                        <span class="chapter-item-text" onclick="viewChapter('${ch.file}', '第${vol.volume}卷第${ch.chapter}章 ${ch.chapter_name}')">第${ch.chapter}章 ${ch.chapter_name || ''}</span>
+                                        <div class="chapter-actions">
+                                            <button class="btn-chapter-action" onclick="event.stopPropagation(); renameChapterPrompt(${vol.volume}, ${ch.chapter}, '${ch.chapter_name}')" title="重命名">✏</button>
+                                            <button class="btn-chapter-action" onclick="event.stopPropagation(); deleteChapterConfirm(${vol.volume}, ${ch.chapter})" title="删除">✕</button>
+                                        </div>
                                     </div>
                                 `).join('')}
                             </div>
                         `).join('');
                     } else {
-                        chaptersDiv.innerHTML = '<p style="color: #999;">暂无章节</p>';
+                        chaptersDiv.innerHTML = '<p style="color: #999;">暂无章节，请先新建卷</p>';
                     }
                 }
             } catch (error) {
                 console.error('加载章节目录失败:', error);
+            }
+        }
+
+        // ====== 卷/章节管理函数 ======
+
+        // 名称校验：禁止包含 / \ : * ? " < > | - _ 等特殊字符，最长50字符
+        const INVALID_CHARS = ['/', '\\', ':', '*', '?', '"', '<', '>', '|', '-', '_'];
+        function validateName(name, nameType) {
+            if (!name) return null; // 空名称允许（使用默认命名）
+            for (const ch of INVALID_CHARS) {
+                if (name.includes(ch)) {
+                    return `${nameType}不能包含特殊字符：/ \\ : * ? " < > | - _`;
+                }
+            }
+            if (name.length > 50) {
+                return `${nameType}长度不能超过50个字符`;
+            }
+            if (name.trim() === '') {
+                return `${nameType}不能只包含空白字符`;
+            }
+            return null;
+        }
+
+        // 新建卷（弹出输入框，支持自定义卷序号）
+        async function createVolumePrompt() {
+            if (!currentProject) { alert('请先选择项目'); return; }
+            
+            // 弹出对话框：先输入卷序号，再输入卷名
+            const volNumStr = prompt('请输入卷序号（阿拉伯数字，如 1, 2, 3）：\n\n留空则自动递增', '');
+            if (volNumStr === null) return;  // 用户取消
+            
+            let volume = null;
+            if (volNumStr.trim() !== '') {
+                volume = parseInt(volNumStr.trim());
+                if (isNaN(volume) || volume < 1) {
+                    alert('卷序号必须是正整数');
+                    return;
+                }
+            }
+            
+            const volName = prompt('请输入卷名（留空则使用默认名"第X卷"）：\n\n【格式】第x卷-yyyy（x为中文数字，由序号自动转换）\n【命名规则】\n• 不能包含特殊字符：/ \\ : * ? " < > | - _\n• 长度不超过50个字符\n• 示例：命运的邂逅、初入江湖', '');
+            if (volName === null) return;  // 用户取消
+            
+            // 前端校验
+            const error = validateName(volName.trim(), '卷名');
+            if (error) {
+                alert(error);
+                return;
+            }
+            
+            try {
+                const body = { name: volName.trim() };
+                if (volume !== null) body.volume = volume;
+                
+                const response = await fetch(`/api/projects/${currentProject}/volume`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    await loadChapterTree();
+                } else {
+                    alert('新建卷失败: ' + (result.error || '未知错误'));
+                }
+            } catch (error) {
+                alert('新建卷失败: ' + error.message);
+            }
+        }
+
+        // 重命名卷（弹出输入框）
+        async function renameVolumePrompt(volume, currentName) {
+            const newName = prompt(`请输入第${volume}卷的新卷名：\n\n【命名规则】\n• 不能包含特殊字符：/ \\ : * ? " < > | - _\n• 长度不超过50个字符\n• 示例：命运的邂逅、初入江湖`, currentName);
+            if (newName === null || newName.trim() === '') return;
+            
+            // 前端校验
+            const error = validateName(newName.trim(), '卷名');
+            if (error) {
+                alert(error);
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/projects/${currentProject}/volume/${volume}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: newName.trim() })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    await loadChapterTree();
+                } else {
+                    alert('重命名失败: ' + (result.error || '未知错误'));
+                }
+            } catch (error) {
+                alert('重命名失败: ' + error.message);
+            }
+        }
+
+        // 删除卷（确认对话框）
+        async function deleteVolumeConfirm(volume) {
+            if (!confirm(`确定要删除第${volume}卷及其所有章节吗？此操作不可撤销！`)) return;
+            try {
+                const response = await fetch(`/api/projects/${currentProject}/volume/${volume}`, { method: 'DELETE' });
+                const result = await response.json();
+                if (result.success) {
+                    await loadChapterTree();
+                } else {
+                    alert('删除失败: ' + (result.error || '未知错误'));
+                }
+            } catch (error) {
+                alert('删除失败: ' + error.message);
+            }
+        }
+
+        // 新建章节（弹出输入框，支持自定义章节序号）
+        async function createChapterPrompt(volume) {
+            // 弹出对话框：先输入章节序号，再输入章节名
+            const chNumStr = prompt('请输入章节序号（阿拉伯数字，如 1, 2, 3）：\n\n留空则自动递增', '');
+            if (chNumStr === null) return;  // 用户取消
+            
+            let chapter = null;
+            if (chNumStr.trim() !== '') {
+                chapter = parseInt(chNumStr.trim());
+                if (isNaN(chapter) || chapter < 1) {
+                    alert('章节序号必须是正整数');
+                    return;
+                }
+            }
+            
+            const chapterName = prompt('请输入章节名（留空则使用默认名"第X章"）：\n\n【格式】第x章-yyyy（x为阿拉伯数字）\n【命名规则】\n• 不能包含特殊字符：/ \\ : * ? " < > | - _\n• 长度不超过50个字符\n• 示例：命运的邂逅、初入江湖', '');
+            if (chapterName === null) return;
+            
+            // 前端校验
+            const error = validateName(chapterName.trim(), '章节名');
+            if (error) {
+                alert(error);
+                return;
+            }
+            
+            try {
+                const body = { volume: volume, name: chapterName.trim() };
+                if (chapter !== null) body.chapter = chapter;
+                
+                const response = await fetch(`/api/projects/${currentProject}/chapter/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    await loadChapterTree();
+                } else {
+                    alert('新建章节失败: ' + (result.error || '未知错误'));
+                }
+            } catch (error) {
+                alert('新建章节失败: ' + error.message);
+            }
+        }
+
+        // 重命名章节（弹出输入框）
+        async function renameChapterPrompt(volume, chapter, currentName) {
+            const newName = prompt(`请输入第${volume}卷第${chapter}章的新章节名：\n\n【命名规则】\n• 不能包含特殊字符：/ \\ : * ? " < > | - _\n• 长度不超过50个字符\n• 示例：命运的邂逅、初入江湖`, currentName);
+            if (newName === null || newName.trim() === '') return;
+            
+            // 前端校验
+            const error = validateName(newName.trim(), '章节名');
+            if (error) {
+                alert(error);
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/projects/${currentProject}/chapter/${volume}/${chapter}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: newName.trim() })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    await loadChapterTree();
+                } else {
+                    alert('重命名失败: ' + (result.error || '未知错误'));
+                }
+            } catch (error) {
+                alert('重命名失败: ' + error.message);
+            }
+        }
+
+        // 删除章节（确认对话框）
+        async function deleteChapterConfirm(volume, chapter) {
+            if (!confirm(`确定要删除第${volume}卷第${chapter}章吗？此操作不可撤销！`)) return;
+            try {
+                const response = await fetch(`/api/projects/${currentProject}/chapter/${volume}/${chapter}`, { method: 'DELETE' });
+                const result = await response.json();
+                if (result.success) {
+                    await loadChapterTree();
+                } else {
+                    alert('删除失败: ' + (result.error || '未知错误'));
+                }
+            } catch (error) {
+                alert('删除失败: ' + error.message);
             }
         }
 
@@ -1879,7 +2253,7 @@
                                 </div>
                             </div>
                             <div id="chapterPreview" class="markdown-content">${renderMarkdown(content)}</div>
-                            <textarea id="chapterEdit" class="edit-textarea" style="display: none;" placeholder="在此编辑章节内容...">${content}</textarea>
+                            <textarea id="chapterEdit" class="edit-textarea chapter-edit-fill" style="display: none;" placeholder="在此编辑章节内容...">${content}</textarea>
                         </div>
                     `;
                     
@@ -1901,14 +2275,16 @@
             const btnSave = document.getElementById('btnChapterSave');
             
             if (mode === 'preview') {
-                previewDiv.style.display = 'block';
+                // 使用空字符串清除 inline style，让 CSS class (.markdown-content) 的 display 生效
+                previewDiv.style.display = '';
                 editArea.style.display = 'none';
                 btnPreview.classList.add('active');
                 btnEdit.classList.remove('active');
                 btnSave.classList.remove('visible');
             } else {
                 previewDiv.style.display = 'none';
-                editArea.style.display = 'block';
+                // 清除 inline style，让 CSS class (.edit-textarea) 的 display 生效
+                editArea.style.display = '';
                 btnPreview.classList.remove('active');
                 btnEdit.classList.add('active');
                 btnSave.classList.add('visible');
@@ -1960,6 +2336,7 @@
 
         // 当前掩码 key（用于判断用户是否修改了 key）
         let currentMaskedKey = '';
+        let apiKeyModified = false;  // 标记 API Key 输入框是否被用户修改过
         let apiKeyVisible = false;
 
         // 切换 API Key 显示/隐藏
@@ -1990,8 +2367,8 @@
                 
                 if (result.success) {
                     const data = result.data;
-                    document.getElementById('baseUrl').value = data.base_url || '';
-                    document.getElementById('modelName').value = data.model || '';
+                    document.getElementById('baseUrl').value = data.api_url || '';
+                    document.getElementById('modelName').value = data.model_name || '';
                     document.getElementById('temperature').value = data.temperature || 0.7;
                     
                     // API Key：预填掩码值，用户可清空后输入新值
@@ -1999,9 +2376,10 @@
                     const apiKeyInput = document.getElementById('apiKey');
                     apiKeyInput.value = currentMaskedKey;
                     apiKeyInput.readOnly = false; // 允许编辑
+                    apiKeyModified = false; // 重置修改标记
                     
-                    // 根据 URL 判断模型类型
-                    if (data.base_url && data.base_url.includes('localhost:11434')) {
+                    // 根据 provider 判断模型类型
+                    if (data.provider === 'ollama') {
                         document.getElementById('modelType').value = 'local';
                     } else {
                         document.getElementById('modelType').value = 'online';
@@ -2015,7 +2393,7 @@
             }
         }
 
-        // 模型类型切换
+        // 模型类型切换（不硬编码 URL，保持当前配置值）
         function onModelTypeChange() {
             const modelType = document.getElementById('modelType').value;
             const baseUrlInput = document.getElementById('baseUrl');
@@ -2023,13 +2401,15 @@
             const apiKeyInput = document.getElementById('apiKey');
             
             if (modelType === 'local') {
-                baseUrlInput.value = 'http://localhost:11434/v1';
+                // 仅更新 placeholder，不改变当前 value
                 baseUrlInput.placeholder = 'http://localhost:11434/v1';
                 // 本地模型不需要 API Key，隐藏并禁用
                 apiKeyGroup.classList.add('hidden');
                 apiKeyInput.disabled = true;
+                // 加载 Ollama 可用模型列表
+                loadOllamaModels();
             } else {
-                baseUrlInput.value = 'https://api.openai.com/v1';
+                // 仅更新 placeholder，不改变当前 value
                 baseUrlInput.placeholder = 'https://api.openai.com/v1';
                 // 在线模型显示 API Key
                 apiKeyGroup.classList.remove('hidden');
@@ -2037,7 +2417,25 @@
             }
         }
 
-        // 保存设置
+        // 加载 Ollama 本地可用模型列表
+        async function loadOllamaModels() {
+            try {
+                const response = await fetch('/api/llm/ollama/models');
+                const result = await response.json();
+                const datalist = document.getElementById('ollamaModelList');
+                if (result.success && result.data.models.length > 0) {
+                    datalist.innerHTML = result.data.models.map(m =>
+                        `<option value="${m}">`
+                    ).join('');
+                } else {
+                    datalist.innerHTML = '';
+                }
+            } catch (error) {
+                console.error('加载 Ollama 模型失败:', error);
+            }
+        }
+
+        // 保存设置 —— 将表单中的值写入 config.ini 和环境变量
         async function saveSettings(event) {
             event.preventDefault();
             
@@ -2046,12 +2444,13 @@
             const modelType = document.getElementById('modelType').value;
             
             const data = {
-                base_url: document.getElementById('baseUrl').value,
-                model: document.getElementById('modelName').value,
+                api_url: document.getElementById('baseUrl').value,
+                model_name: document.getElementById('modelName').value,
+                provider: modelType === 'local' ? 'ollama' : 'openai_compatible',
                 temperature: parseFloat(document.getElementById('temperature').value)
             };
             
-            // 仅在线模型且用户修改了 key 时才发送（非掩码值）
+            // 在线模型且用户输入了新的 Key（不是掩码值）时才发送给后端
             if (modelType === 'online' && apiKeyValue && apiKeyValue !== currentMaskedKey) {
                 data.api_key = apiKeyValue;
             }
@@ -2066,7 +2465,8 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    alert('✓ 设置已保存');
+                    alert('✓ 设置已保存到 config.ini 或环境变量');
+                    // 重新加载设置，刷新掩码值
                     await loadSettings();
                 } else {
                     alert('保存失败: ' + result.error);
@@ -2077,13 +2477,24 @@
             }
         }
 
-        // 测试连接
+        // 测试连接 —— 根据表单中当前的值进行测试
         async function testConnection() {
+            const modelType = document.getElementById('modelType').value;
+            const apiKeyInput = document.getElementById('apiKey');
+            
+            // 读取表单中当前填写的值
             const data = {
-                base_url: document.getElementById('baseUrl').value,
-                model: document.getElementById('modelName').value,
-                api_key: document.getElementById('apiKey').value
+                api_url: document.getElementById('baseUrl').value,
+                model_name: document.getElementById('modelName').value,
+                provider: modelType === 'local' ? 'ollama' : 'openai_compatible'
             };
+            
+            // 在线模型：把 API Key 输入框当前的值发过去
+            if (modelType === 'online') {
+                data.api_key = apiKeyInput.value;
+                // 标记用户是否修改了 Key（输入框的值不等于加载时的掩码值）
+                data.use_input_key = apiKeyModified || (apiKeyInput.value !== currentMaskedKey);
+            }
 
             try {
                 const response = await fetch('/api/settings/test', {

@@ -1,28 +1,27 @@
 """
 NovelWriter Agent
-职责：
-- 执行写作工作流（大纲审查 → 逐章写作 → 逻辑审查）
-- 管理小说项目
-- 协调写作流程
+
+执行完整的写作工作流：大纲审查 → 逐章写作 → 逻辑审查。
+管理小说项目的创建、大纲和章节的读写操作。
 """
 from typing import Optional
 from core.agents.base_agent import BaseAgent
 from core.tools import get_tools_by_names
+from core.tools.builtin.write_tool import set_allowed_project_dir
 from core.project_manager import ProjectManager, NovelProject
-from core.config import config_manager
+from core.config_manager import config_manager
 from core.prompts import get_prompt, WRITER_PROMPT
 from core.agent_logger import logger
 
 
 class NovelWriter(BaseAgent):
     """
-    写作 Agent
-    负责执行写作工作流
+    写作 Agent，负责执行完整的写作工作流。
+    
+    绑定的工具：read_file、write_file、edit_file、glob_search、list_directory、ask_user
     """
     
     def __init__(self):
-        """初始化写作 Agent"""
-        # 获取写作所需的工具
         tools = get_tools_by_names([
             'read_file',
             'write_file',
@@ -32,7 +31,6 @@ class NovelWriter(BaseAgent):
             'ask_user'
         ])
         
-        # 保存原始 system prompt（用于后续更新）
         self._original_system_prompt = get_prompt(WRITER_PROMPT)
         
         super().__init__(
@@ -41,10 +39,7 @@ class NovelWriter(BaseAgent):
             tools=tools
         )
         
-        # 项目管理器
         self.project_manager = ProjectManager(config_manager.get_output_dir())
-        
-        # 当前项目
         self.current_project: Optional[NovelProject] = None
         
         logger.info("写作 Agent 已初始化")
@@ -52,6 +47,12 @@ class NovelWriter(BaseAgent):
     def set_project(self, project_name: str) -> bool:
         """
         设置当前项目
+        
+        流程：
+        1. 加载项目信息
+        2. 设置允许写入的项目目录（安全限制）
+        3. 在 system prompt 中注入项目路径信息
+        4. 重新初始化 AgentGraph 使新配置生效
         
         Args:
             project_name: 项目名称
@@ -63,11 +64,8 @@ class NovelWriter(BaseAgent):
         
         if project:
             self.current_project = project
-            # 设置允许写入的项目目录
-            from core.tools.builtin.write_tool import set_allowed_project_dir
             set_allowed_project_dir(project.base_dir)
             
-            # 在 system prompt 中注入项目路径信息（每次都更新）
             outline_path = project.outline_path
             chapters_dir = project.chapters_dir
             self.system_prompt = f"""## 当前项目信息
@@ -87,7 +85,6 @@ class NovelWriter(BaseAgent):
 {self._original_system_prompt}"""
             logger.info(f"已注入项目路径信息到 {self.name}: {project.base_dir}")
             
-            # 重新初始化 AgentGraph，使新的 system_prompt 生效
             self._init_agent_graph()
             
             logger.info(f"已切换到项目: {project_name}")
@@ -110,6 +107,35 @@ class NovelWriter(BaseAgent):
         self.current_project = project
         logger.info(f"项目已创建: {project_name}")
         return project
+    
+    def get_outline(self) -> str:
+        """获取当前项目的大纲内容"""
+        if not self.current_project:
+            return "错误: 未选择项目"
+        
+        return self.current_project.read_outline()
+    
+    def get_chapter_content(self, volume: int, chapter: int) -> str:
+        """获取指定章节的内容"""
+        if not self.current_project:
+            return "错误: 未选择项目"
+        
+        return self.current_project.read_chapter(volume, chapter)
+    
+    def save_chapter(self, volume: int, chapter: int, content: str, 
+                    chapter_name: str = "") -> str:
+        """保存章节内容到文件"""
+        if not self.current_project:
+            return "错误: 未选择项目"
+        
+        return self.current_project.write_chapter(volume, chapter, content, chapter_name)
+    
+    def list_chapters(self) -> list:
+        """列出当前项目的所有章节"""
+        if not self.current_project:
+            return []
+        
+        return self.current_project.list_chapters()
     
     def get_outline(self) -> str:
         """获取当前项目的大纲"""
@@ -142,15 +168,10 @@ class NovelWriter(BaseAgent):
 
 
 if __name__ == '__main__':
-    # 测试代码
     writer = NovelWriter()
     
-    # 创建测试项目
     project = writer.create_project("测试小说")
-    
-    # 写入大纲
     project.write_outline("# 测试小说\n\n这是一个测试大纲。")
     
-    # 获取大纲
     outline = writer.get_outline()
     print(f"大纲:\n{outline}")

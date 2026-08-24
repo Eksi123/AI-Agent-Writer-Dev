@@ -1,5 +1,7 @@
 """
 列出目录内容工具
+
+显示指定目录下的文件和文件夹，支持隐藏文件显示。
 """
 import os
 from langchain_core.tools import tool
@@ -18,7 +20,6 @@ def list_directory(dir_path: str = ".", show_hidden: bool = False) -> str:
         目录内容列表，文件夹以 / 结尾
     """
     try:
-        # 规范化路径
         abs_path = os.path.abspath(dir_path)
         
         if not os.path.exists(abs_path):
@@ -27,14 +28,13 @@ def list_directory(dir_path: str = ".", show_hidden: bool = False) -> str:
         if not os.path.isdir(abs_path):
             return f"错误: 路径不是目录 - {abs_path}"
         
-        # 列出目录内容
         items = os.listdir(abs_path)
         
-        # 过滤隐藏文件
+        # 过滤隐藏文件（以 . 开头的文件）
         if not show_hidden:
             items = [item for item in items if not item.startswith('.')]
         
-        # 排序：文件夹在前，文件在后，各自按字母排序
+        # 分类：文件夹和文件分别排序
         dirs = []
         files = []
         

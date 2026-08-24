@@ -1,34 +1,28 @@
 '''
-AI Agent Demo实现，重点介绍Agent-Loop，工具注册和调用等实现原理
-Agent-Loop:思考 -> 行动 ->反馈
-Tool_call:tool定义 -> tool注册 -> tool调用 -> tool执行
+AI Agent Demo - 原生实现
+
+重点介绍 Agent-Loop、工具注册和调用等实现原理。
+核心概念：
+- Agent-Loop：思考 → 行动 → 反馈（循环直到完成）
+- Tool Call：工具定义 → 注册 → 调用 → 执行
+
+这是一个教学示例，展示如何用纯 OpenAI API 实现 Agent 模式。
 '''
 
+import os
 import json
 import openai
 
 # 1. 大模型封装
 class LLM:
     """
-    # OpenAI的模型 response 是一个 ChatCompletion 对象
-    response = client.chat.completions.create(...)
-
-    response.id                 # "chatcmpl-abc123"
-    response.object             # "chat.completion"
-    response.created            # 1234567890 (时间戳)
-    response.model              # "gpt-3.5-turbo"
-    response.usage              # Token 使用统计
-    response.choices            # 回复选项列表（通常只有1个）
-
-    进一步
-    message = response.choices[0].message
-
-    message.role               # "assistant"
-    message.content            # 文本回复内容（字符串或None）
-    message.tool_calls         # 工具调用列表（列表或None）
+    OpenAI 兼容的 LLM 封装
+    
+    ChatCompletion 响应结构：
+    - response.choices[0].message.content: 文本回复
+    - response.choices[0].message.tool_calls: 工具调用列表
     """
     def __init__(self):
-        import os
         api_key = os.environ.get("LLM_API_KEY")
         if not api_key:
             raise ValueError("环境变量 LLM_API_KEY 未设置，请先设置 API Key")
@@ -57,8 +51,8 @@ class LLM:
 llm = LLM()
 
 
-# 2. 工具定义与注册函数
-tool_registry_list= {}  # 工具注册表
+# 2. 工具注册表：存储工具名称、描述、参数 Schema 和执行函数
+tool_registry_list = {}
 
 def register_tool(tool_name, description, parameters, func):
     """注册工具"""
@@ -83,7 +77,7 @@ def get_tools_schema():
     ]
 
 
-# 3. 自定义工具(get_weather)注册
+# 3. 自定义工具定义和注册
 def get_weather(city: str) -> str:
     """Mock天气查询"""
     mock_data = {
@@ -97,7 +91,7 @@ def get_weather(city: str) -> str:
     result = {"城市": city, **data}
     return json.dumps(result, ensure_ascii=False)
 
-# 工具注册:get_weather
+# 注册工具到全局注册表
 register_tool(  
     tool_name="get_weather",
     description="查询指定城市的天气信息",

@@ -1,5 +1,7 @@
 """
 向用户提问工具
+
+Agent 用此工具向用户提出问题以澄清需求，支持可选的选项列表。
 """
 from langchain_core.tools import tool
 
@@ -16,7 +18,7 @@ def ask_user(question: str, options: str = "") -> str:
     Returns:
         提示用户回答的信息
     """
-    # 构建提示信息
+    # 构建问题提示（包含问题文本和可选选项）
     prompt_lines = [f"问题: {question}"]
     
     if options:

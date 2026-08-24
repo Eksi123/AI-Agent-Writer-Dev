@@ -1,12 +1,14 @@
 """
 文件写入工具
+
+提供安全的文件写入功能，通过全局变量控制允许写入的项目目录。
 """
 import os
 from langchain_core.tools import tool
 from typing import Optional
 
 
-# 全局变量，用于存储当前允许的项目目录
+# 全局变量：当前允许写入的项目目录（由 NovelWriter 等 Agent 设置）
 _allowed_project_dir: Optional[str] = None
 
 
@@ -35,29 +37,27 @@ def write_file(file_path: str, content: str, overwrite: bool = False) -> str:
         操作结果信息
     """
     try:
-        # 规范化路径
         abs_path = os.path.abspath(file_path)
         
-        # 检查是否在允许的项目目录内
+        # 安全检查：确保路径在允许的项目目录内
         allowed_dir = get_allowed_project_dir()
         if allowed_dir:
-            # 确保路径在允许的项目目录内
             if not abs_path.startswith(allowed_dir + os.sep) and abs_path != allowed_dir:
                 return f"错误: 不允许写入项目目录外的文件。允许目录: {allowed_dir}，尝试写入: {abs_path}"
         
-        # 确保目录存在
+        # 自动创建目录
         dir_path = os.path.dirname(abs_path)
         if dir_path and not os.path.exists(dir_path):
             os.makedirs(dir_path, exist_ok=True)
         
-        # 写入模式
+        # 根据 overwrite 参数选择写入模式：'w' 覆盖，'a' 追加
         mode = 'w' if overwrite else 'a'
         action = "覆盖写入" if overwrite else "追加写入"
         
         with open(abs_path, mode, encoding='utf-8') as f:
             f.write(content)
         
-        # 统计信息
+        # 统计写入的行数和字符数
         line_count = content.count('\n') + (1 if content and not content.endswith('\n') else 0)
         char_count = len(content)
         

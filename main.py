@@ -1,7 +1,10 @@
 """
 AI Agent Writer - 主入口
-支持多 Agent 协作的写作智能体系统
+
+支持多 Agent 协作的写作智能体系统，提供命令行和 Web 两种启动模式。
+启动流程：检查命令行参数 → 检查配置文件的 auto_open_browser → 命令行模式
 """
+import sys
 from typing import Optional
 from core.agents import (
     ChatAgent, NovelWriter, OutlinePolisher,
@@ -9,19 +12,26 @@ from core.agents import (
 )
 from core.workflow import WritingWorkflow
 from core.project_manager import ProjectManager
-from core.config import config_manager
+from core.config_manager import config_manager
 from core.agent_logger import logger
+from web.app import run_web_server
 
 
 class AgentWriter:
     """
-    Agent Writer 主类
-    管理多个 Agent，处理 @指令切换
+    Agent Writer 主类，管理多个 Agent 并通过 @指令切换。
+    
+    支持的指令：
+    - @写作：执行写作工作流（NovelWriter + WritingWorkflow）
+    - @大纲润色：优化大纲（OutlinePolisher）
+    - @小说润色：润色章节（ContentPolisher）
+    - @汇总说明：生成汇总信息（SummaryGenerator）
+    - @信息查询：查询信息（InfoQuery）
+    - 无指令：自由对话（ChatAgent）
     """
     
     def __init__(self):
-        """初始化 Agent Writer"""
-        # 创建所有 Agent
+        """初始化所有 Agent、写作工作流和项目管理器"""
         self.agents = {
             'chat': ChatAgent(),
             'writer': NovelWriter(),
@@ -31,28 +41,22 @@ class AgentWriter:
             'info_query': InfoQuery()
         }
         
-        # 当前激活的 Agent
+        # 默认使用自由对话 Agent
         self.current_agent = self.agents['chat']
         
-        # 写作工作流（使用 NovelWriter）
         self.writing_workflow = WritingWorkflow(self.agents['writer'])
-        
-        # 项目管理器
         self.project_manager = ProjectManager(config_manager.get_output_dir())
-        
-        # 当前项目
         self.current_project = None
         
         logger.info("Agent Writer 已初始化")
     
     def parse_command(self, user_input: str) -> tuple:
         """
-        解析用户输入，提取 @指令
+        解析用户输入，提取 @指令并映射到对应的 Agent。
         
         Returns:
-            (agent_name, actual_input)
+            (agent_name, actual_input) - Agent 名称和实际输入内容
         """
-        # 检查是否以 @ 开头
         if user_input.startswith('@'):
             parts = user_input.split(maxsplit=1)
             command = parts[0]
@@ -70,7 +74,6 @@ class AgentWriter:
             if command in command_map:
                 return command_map[command], actual_input
         
-        # 默认使用 ChatAgent
         return 'chat', user_input
     
     def switch_agent(self, agent_name: str) -> None:
@@ -80,11 +83,10 @@ class AgentWriter:
             logger.info(f"已切换到 Agent: {agent_name}")
     
     def set_project(self, project_name: str) -> bool:
-        """设置当前项目"""
+        """设置当前项目，同步到所有需要项目上下文的 Agent"""
         project = self.project_manager.load_project(project_name)
         if project:
             self.current_project = project
-            # 同步到所有需要项目的 Agent
             for agent_name in ['writer', 'outline_polisher', 'content_polisher', 
                              'summary', 'info_query']:
                 self.agents[agent_name].set_project(project_name)
@@ -94,33 +96,28 @@ class AgentWriter:
     
     def chat(self, user_input: str) -> str:
         """
-        处理用户输入并返回 Agent 回复
+        处理用户输入并返回 Agent 回复。
         
-        Args:
-            user_input: 用户输入
-        
-        Returns:
-            Agent 回复内容
+        流程：
+        1. 解析 @指令，切换到对应 Agent
+        2. 特殊处理：@写作 + 章节号 → 执行写作工作流
+        3. 普通对话：调用当前 Agent 的 chat 方法
         """
-        # 解析指令
         agent_name, actual_input = self.parse_command(user_input)
-        
-        # 切换 Agent
         self.switch_agent(agent_name)
         
-        # 特殊处理：写作工作流
+        # 特殊处理：@写作 + 章节信息 → 执行写作工作流
+        # 例如："@写作 第1卷 第1章" 或 "@写作 第1章"
         if agent_name == 'writer' and actual_input.startswith('第'):
             # 解析章节信息（简化版）
             # 例如："@写作 第1卷 第1章" 或 "@写作 第1章"
             try:
-                # 这里简化处理，实际可以更复杂
+                # 解析章节信息：支持 "第X卷 第Y章" 和 "第Y章" 两种格式
                 if '卷' in actual_input:
-                    # 解析卷和章
                     parts = actual_input.replace('第', '').replace('卷', ' ').replace('章', ' ').split()
                     volume = int(parts[0])
                     chapter = int(parts[1])
                 else:
-                    # 只有章
                     chapter = int(actual_input.replace('第', '').replace('章', ''))
                     volume = 1
                 
@@ -135,7 +132,7 @@ class AgentWriter:
                 logger.error(f"写作工作流错误: {e}")
                 return f"写作失败: {str(e)}"
         
-        # 普通对话
+        # 普通对话：调用当前 Agent
         if actual_input:
             result = self.current_agent.chat(actual_input)
             return result['response']
@@ -149,15 +146,20 @@ class AgentWriter:
 
 
 def main():
-    """主函数"""
-    import sys
-    
-    # 检查是否启动 Web 模式
+    """主函数，根据参数和配置决定启动模式"""
+    # 命令行参数 --web 或 -w：强制启动 Web 模式
     if '--web' in sys.argv or '-w' in sys.argv:
-        from web.app import run_web_server
         run_web_server(debug=True)
         return
     
+    # 配置文件中的 auto_open_browser = true：自动启动 Web 服务
+    server_config = config_manager.get_server_config()
+    if server_config.get('auto_open_browser', False):
+        print("\n检测到 auto_open_browser = true，正在启动 Web 服务...")
+        run_web_server(debug=True)
+        return
+    
+    # 命令行交互模式
     print("\n" + "=" * 60)
     print("欢迎使用 AI Agent Writer！")
     print("=" * 60)
@@ -177,10 +179,9 @@ def main():
     print("  /quit            - 退出程序")
     print("=" * 60 + "\n")
     
-    # 创建 Agent Writer
     writer = AgentWriter()
     
-    # 列出可用项目
+    # 列出可用项目供用户选择
     projects = writer.project_manager.list_projects()
     if projects:
         print(f"可用项目: {', '.join(projects)}")
@@ -193,11 +194,12 @@ def main():
             if not user_input:
                 continue
             
-            # 处理特殊命令
+            # 退出命令
             if user_input.lower() in ('quit', 'exit', 'q', '/quit','拜拜','再见'):
                 print("再见！")
                 break
             
+            # 切换项目命令
             if user_input.startswith('/project '):
                 project_name = user_input[9:].strip()
                 if writer.set_project(project_name):
@@ -206,6 +208,7 @@ def main():
                     print(f"✗ 项目不存在: {project_name}")
                 continue
             
+            # 清空历史命令
             if user_input == '/clear':
                 writer.clear_history()
                 print("✓ 对话历史已清空")
@@ -213,7 +216,7 @@ def main():
             
             # 普通对话
             result = writer.chat(user_input)
-            print(f"\nAgent: {result['response']}")
+            print(f"\nAgent: {result}")
             
         except KeyboardInterrupt:
             print("\n再见！")

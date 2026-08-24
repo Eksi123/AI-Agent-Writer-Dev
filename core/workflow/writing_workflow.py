@@ -1,22 +1,19 @@
 """
 写作工作流控制器
-职责：
-- 控制写作流程：大纲审查 → 逐章写作 → 逻辑审查
-- 协调各个审查器
-- 管理写作状态
+
+协调完整的单章写作流程：大纲审查 → 章节写作 → 逻辑审查。
+每个步骤由独立的审查器或 Agent 执行，工作流负责编排和状态管理。
 """
 from typing import Optional, List
 from core.agents.novel_writer import NovelWriter
 from core.workflow.outline_reviewer import OutlineReviewer
 from core.workflow.logic_reviewer import LogicReviewer
 from core.agent_logger import logger
+from core.tools import get_all_tools
 
 
 class WritingWorkflow:
-    """
-    写作工作流控制器
-    负责协调写作的整个流程
-    """
+    """写作工作流控制器，协调大纲审查、章节写作和逻辑审查三个阶段。"""
     
     def __init__(self, writer: NovelWriter):
         """
@@ -29,7 +26,6 @@ class WritingWorkflow:
         self.outline_reviewer = OutlineReviewer()
         self.logic_reviewer = LogicReviewer()
         
-        # 写作状态
         self.current_volume = 1
         self.current_chapter = 1
         
@@ -66,7 +62,7 @@ class WritingWorkflow:
             "logic_review": None
         }
         
-        # Step 1: 大纲审查
+        # Step 1: 大纲审查 - 检查当前章节大纲与已有内容的一致性
         logger.info("Step 1: 大纲审查")
         outline_section = self._extract_outline_section(volume, chapter)
         previous_content = self._get_previous_content()
@@ -75,35 +71,29 @@ class WritingWorkflow:
         result["outline_review"] = outline_review
         
         if not outline_review["passed"]:
-            logger.warning("大纲审查未通过")
-            # 这里可以添加用户确认逻辑
-            # 暂时继续执行
-            logger.info("用户确认后继续写作")
+            logger.warning("大纲审查未通过，用户确认后继续")
         
-        # Step 2: 章节写作
+        # Step 2: 章节写作 - 调用 NovelWriter Agent 生成章节内容
         logger.info("Step 2: 章节写作")
         chapter_content = self._write_chapter_content(volume, chapter, chapter_name, outline_section)
         result["chapter_content"] = chapter_content
         
-        # 保存章节
+        # 保存章节到文件
         if self.writer.current_project:
             self.writer.current_project.write_chapter(volume, chapter, chapter_content, chapter_name)
             logger.info(f"章节已保存: 第{volume}卷 第{chapter}章")
         
-        # Step 3: 逻辑审查
+        # Step 3: 逻辑审查 - 检查本章与前面所有章节的逻辑一致性
         logger.info("Step 3: 逻辑审查")
         previous_chapters = self._get_all_previous_chapters(volume, chapter)
         logic_review = self.logic_reviewer.review(chapter_content, previous_chapters)
         result["logic_review"] = logic_review
         
         if not logic_review["passed"]:
-            logger.warning("逻辑审查未通过")
-            # 这里可以添加用户确认逻辑
-            # 暂时标记为成功
-            result["success"] = True
-        else:
-            result["success"] = True
-            logger.info(f"第{volume}卷 第{chapter}章 写作完成")
+            logger.warning("逻辑审查未通过，标记为成功待用户确认")
+        
+        result["success"] = True
+        logger.info(f"第{volume}卷 第{chapter}章 写作完成")
         
         # 更新当前进度
         self.current_volume = volume
@@ -112,27 +102,27 @@ class WritingWorkflow:
         return result
     
     def _extract_outline_section(self, volume: int, chapter: int) -> str:
-        """提取当前章节对应的大纲部分"""
+        """
+        提取当前章节对应的大纲部分。
+        通过匹配 "第X章" 或 "第X卷" 标记定位大纲段落，找不到则返回完整大纲。
+        """
         if not self.writer.current_project:
             return ""
         
         outline = self.writer.current_project.read_outline()
         
-        # 简单的大纲提取逻辑（实际可以更复杂）
-        # 这里假设大纲中有 "第X卷" 和 "第X章" 的标记
         lines = outline.split('\n')
         section_lines = []
         in_section = False
         
         for line in lines:
-            # 检查是否进入目标章节部分
             if f"第{chapter}章" in line or f"第{volume}卷" in line:
                 in_section = True
             
             if in_section:
                 section_lines.append(line)
                 
-                # 检查是否到达下一章
+                # 到达下一章或下一卷时截断
                 if len(section_lines) > 1 and (f"第{chapter+1}章" in line or f"第{volume+1}卷" in line):
                     section_lines.pop()  # 移除下一章的标题
                     break
@@ -140,7 +130,7 @@ class WritingWorkflow:
         return '\n'.join(section_lines) if section_lines else outline
     
     def _get_previous_content(self) -> str:
-        """获取前文内容（用于大纲审查）"""
+        """获取最后一章的内容，作为大纲审查的前文参考"""
         if not self.writer.current_project:
             return ""
         
@@ -149,15 +139,14 @@ class WritingWorkflow:
         if not chapters:
             return ""
         
-        # 获取最后一章的内容作为参考
         last_chapter_path = chapters[-1]
         with open(last_chapter_path, 'r', encoding='utf-8') as f:
             return f.read()
     
     def _write_chapter_content(self, volume: int, chapter: int, 
                                chapter_name: str, outline_section: str) -> str:
-        """调用写作 Agent 生成章节内容"""
-        # 构建写作提示
+        """调用 NovelWriter Agent 根据大纲生成章节内容"""
+        # 构建写作提示，要求 3000-5000 字，Markdown 格式
         prompt = f"""请根据以下大纲写第{volume}卷第{chapter}章的内容。
 
 章节名：{chapter_name}
@@ -172,13 +161,13 @@ class WritingWorkflow:
 4. 直接输出正文，使用 Markdown 格式
 """
         
-        # 调用写作 Agent（任务进行中，不限制循环次数）
+        # 调用写作 Agent，max_iterations=0 表示不限制循环次数
         result = self.writer.chat(prompt, max_iterations=0)
         
         return result['response']
     
     def _get_all_previous_chapters(self, volume: int, chapter: int) -> List[str]:
-        """获取前面所有章节的内容"""
+        """获取前面所有章节的内容，用于逻辑审查时比对前文"""
         if not self.writer.current_project:
             return []
         
@@ -193,17 +182,12 @@ class WritingWorkflow:
 
 
 if __name__ == '__main__':
-    # 测试代码
-    from core.agents.novel_writer import NovelWriter
-    
     writer = NovelWriter()
     workflow = WritingWorkflow(writer)
     
-    # 创建测试项目
     project = writer.create_project("测试小说")
     project.write_outline("# 测试小说\n\n## 第1卷\n\n### 第1章：初入江湖\n\n主角离开家乡...")
     
-    # 执行写作工作流
     result = workflow.write_chapter(1, 1, "初入江湖")
     
     print(f"写作成功: {result['success']}")

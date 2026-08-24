@@ -1,9 +1,7 @@
 """
 自由对话 Agent
-职责：
-- 无 @指令时的默认 Agent
-- 支持自由对话
-- 不支持编辑小说文件
+
+无 @指令时的默认 Agent，支持自由对话和创作建议，不支持编辑小说文件。
 """
 from core.agents.base_agent import BaseAgent
 from core.tools import get_tools_by_names
@@ -39,14 +37,9 @@ CHAT_SYSTEM_PROMPT = """你是一个友好的 AI 助手，专门协助用户进�
 
 
 class ChatAgent(BaseAgent):
-    """
-    自由对话 Agent
-    默认 Agent，用于自由对话，不支持编辑小说
-    """
+    """默认 Agent，用于自由对话，仅绑定 ask_user 和 fetch_url 工具。"""
     
     def __init__(self):
-        """初始化自由对话 Agent"""
-        # 获取基础工具（不包含文件编辑工具）
         tools = get_tools_by_names(['ask_user', 'fetch_url'])
         
         super().__init__(
@@ -59,8 +52,6 @@ class ChatAgent(BaseAgent):
 
 
 if __name__ == '__main__':
-    # 测试代码
     agent = ChatAgent()
-    
     response = agent.chat("你好，你能做什么？")
     print(f"\nAgent: {response}")
