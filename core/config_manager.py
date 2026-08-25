@@ -156,7 +156,35 @@ class ConfigManager:
             self.config.write(f)
         
         logger.info("LLM 配置已更新")
-    
+
+    def update_ollama_config(self, api_url: Optional[str] = None,
+                             model_name: Optional[str] = None,
+                             temperature: Optional[float] = None,
+                             top_p: Optional[float] = None,
+                             enabled: Optional[bool] = None) -> None:
+        """
+        运行时更新 Ollama 本地模型配置，修改后立即持久化到 config.ini。
+        仅更新传入的参数，未传入的保持不变。
+        """
+        if 'Ollama' not in self.config:
+            self.config.add_section('Ollama')
+        
+        if api_url:
+            self.config.set('Ollama', 'api_url', api_url)
+        if model_name:
+            self.config.set('Ollama', 'model_name', model_name)
+        if temperature is not None:
+            self.config.set('Ollama', 'temperature', str(temperature))
+        if top_p is not None:
+            self.config.set('Ollama', 'top_p', str(top_p))
+        if enabled is not None:
+            self.config.set('Ollama', 'enabled', str(enabled).lower())
+        
+        with open(self.config_path, 'w', encoding='utf-8') as f:
+            self.config.write(f)
+        
+        logger.info("Ollama 配置已更新")
+
     def update_server_config(self, port: Optional[int] = None,
                              auto_open_browser: Optional[bool] = None) -> None:
         """
@@ -215,34 +243,6 @@ class ConfigManager:
             "configured": len(missing) == 0,
             "missing": missing
         }
-    
-    def update_ollama_config(self, api_url: Optional[str] = None,
-                             model_name: Optional[str] = None,
-                             temperature: Optional[float] = None,
-                             top_p: Optional[float] = None,
-                             enabled: Optional[bool] = None) -> None:
-        """
-        运行时更新 Ollama 本地模型配置，修改后立即持久化到 config.ini。
-        仅更新传入的参数，未传入的保持不变。
-        """
-        if 'Ollama' not in self.config:
-            self.config.add_section('Ollama')
-        
-        if api_url:
-            self.config.set('Ollama', 'api_url', api_url)
-        if model_name:
-            self.config.set('Ollama', 'model_name', model_name)
-        if temperature is not None:
-            self.config.set('Ollama', 'temperature', str(temperature))
-        if top_p is not None:
-            self.config.set('Ollama', 'top_p', str(top_p))
-        if enabled is not None:
-            self.config.set('Ollama', 'enabled', str(enabled).lower())
-        
-        with open(self.config_path, 'w', encoding='utf-8') as f:
-            self.config.write(f)
-        
-        logger.info("Ollama 配置已更新")
     
     def get_output_dir(self) -> str:
         """获取输出目录路径"""

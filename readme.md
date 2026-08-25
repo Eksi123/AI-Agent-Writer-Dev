@@ -345,8 +345,8 @@ auto_open_browser = true
 │ - 新建/导入   │  - 流式输出                        │
 │ - 切换/删除   │  - 工作流状态显示                   │
 │              ├──────────────────────────────────┤
-│              │  底部面板（可折叠）                 │
-│              │  大纲查看 | 章节预览 | 工具管理     │
+│              │  右侧面板（标签切换）               │
+│              │  大纲查看 | 章节预览               │
 └──────────────┴──────────────────────────────────┘
                      │ HTTP (localhost:8000)
 ┌────────────────────┼──────────────────────────────┐
@@ -392,16 +392,17 @@ auto_open_browser = true
 | `GET`    | `/api/projects/{name}/chapter-tree`       | 获取章节目录树（按卷分组，含预览）    |
 | `GET`    | `/api/projects/{name}/chapter?file=xxx`   | 读取指定章节内容                      |
 | `PUT`    | `/api/projects/{name}/chapter`            | 保存章节内容                          |
-| `POST`   | `/api/projects/{name}/volume`             | 新建卷（body:`{name}`）             |
+| `POST`   | `/api/projects/{name}/volume`             | 新建卷（body:`{name, volume?}`）    |
 | `DELETE` | `/api/projects/{name}/volume/{vol}`       | 删除卷及其所有章节                    |
 | `PUT`    | `/api/projects/{name}/volume/{vol}`       | 重命名卷（body:`{name}`）           |
-| `POST`   | `/api/projects/{name}/chapter/create`     | 新建章节（body:`{volume, name}`）   |
+| `POST`   | `/api/projects/{name}/chapter/create`     | 新建章节（body:`{volume, name, chapter?}`） |
 | `DELETE` | `/api/projects/{name}/chapter/{vol}/{ch}` | 删除章节                              |
 | `PUT`    | `/api/projects/{name}/chapter/{vol}/{ch}` | 重命名章节（body:`{name}`）         |
 | `POST`   | `/api/chat`                               | 发送消息并获取 Agent 回复             |
 | `GET`    | `/api/agent/current`                      | 获取当前激活的 Agent                  |
 | `GET`    | `/api/settings`                           | 获取当前 LLM 配置（API Key 掩码处理） |
 | `POST`   | `/api/settings`                           | 更新 LLM 配置                         |
+| `GET`    | `/api/settings/status`                    | 检查配置状态（是否完整）               |
 | `POST`   | `/api/settings/test`                      | 测试 LLM 连接                         |
 | `GET`    | `/api/llm/ollama/models`                  | 获取 Ollama 本地可用模型列表          |
 
@@ -494,11 +495,11 @@ auto_open_browser = true
 
 **已完成功能：**
 
-1. 大纲查看器（`web/index.html` 底部面板）
+1. 大纲查看器（`web/index.html` 右侧面板）
 
    - 树形结构展示大纲
    - 可折叠展开
-2. 章节预览器（`web/index.html` 底部面板）
+2. 章节预览器（`web/index.html` 右侧面板）
 
    - Markdown 渲染章节内容
    - 分章节浏览

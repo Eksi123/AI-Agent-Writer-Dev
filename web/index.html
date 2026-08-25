@@ -283,6 +283,16 @@
             border: 1px solid #ffeaa7;
         }
 
+        .message.info .message-avatar {
+            background: #17a2b8;
+        }
+
+        .message.info .message-content {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
         .message-content {
             max-width: 70%;
             padding: 12px 16px;
@@ -1702,7 +1712,7 @@
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
                 
-                addMessage('system', `✓ 项目 ${projectName} 已导出为ZIP`);
+                addMessage('info', `✓ 项目 ${projectName} 已导出为ZIP`);
             } catch (error) {
                 console.error('导出项目失败:', error);
                 alert('导出失败: ' + error.message);
@@ -1722,7 +1732,7 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    addMessage('system', `✓ 项目 ${projectName} 已删除`);
+                    addMessage('info', `✓ 项目 ${projectName} 已删除`);
                     
                     // 如果删除的是当前项目，清空显示
                     if (currentProject === projectName) {
@@ -1746,14 +1756,14 @@
         async function refreshOutline() {
             if (!currentProject) return;
             await loadOutline();
-            addMessage('system', '✓ 大纲已刷新');
+            addMessage('info', '✓ 大纲已刷新');
         }
 
         // 刷新章节
         async function refreshChapters() {
             if (!currentProject) return;
             await loadChapterTree();
-            addMessage('system', '✓ 章节列表已刷新');
+            addMessage('info', '✓ 章节列表已刷新');
         }
 
         // 创建新小说
@@ -1772,7 +1782,7 @@
                 
                 if (result.success) {
                     await loadProjects();
-                    addMessage('system', `✓ 小说 ${name} 已创建（大纲已用模板初始化）`);
+                    addMessage('info', `✓ 小说 ${name} 已创建（大纲已用模板初始化）`);
                 } else {
                     alert('创建失败: ' + result.error);
                 }
@@ -1805,7 +1815,7 @@
                 
                 if (result.success) {
                     await loadProjects();
-                    addMessage('system', `✓ 大纲 ${result.data.name} 已导入`);
+                    addMessage('info', `✓ 大纲 ${result.data.name} 已导入`);
                 } else {
                     alert('导入失败: ' + result.error);
                 }
@@ -1833,7 +1843,7 @@
                     await loadProjects(); // 刷新列表
                     loadOutline();
                     loadChapterTree();
-                    addMessage('system', `✓ 已切换到项目: ${projectName}`);
+                    addMessage('info', `✓ 已切换到项目: ${projectName}`);
                 }
             } catch (error) {
                 console.error('切换项目失败:', error);
@@ -1941,7 +1951,7 @@
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${role}`;
             
-            const avatar = role === 'user' ? '你' : (role === 'system' ? '⚠' : 'AI');
+            const avatar = role === 'user' ? '你' : (role === 'system' ? '⚠' : (role === 'info' ? '⚙' : 'AI'));
             
             // 构建思考过程 HTML
             let thoughtHtml = '';
