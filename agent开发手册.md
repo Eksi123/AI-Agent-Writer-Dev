@@ -278,19 +278,20 @@ python demo/demo-langgraph.py
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                   用户界面层                          │
-│  web/index.html（单文件 SPA：HTML + CSS + JS）        │
+│                   用户界面层                         │
+│  web/index.html（单文件 SPA：HTML + CSS + JS）       │
 └──────────────────────┬──────────────────────────────┘
                        │ REST API (/api/*)
 ┌──────────────────────┼──────────────────────────────┐
-│              Web 服务层 (web/app.py)                  │
+│              Web 服务层 (web/app.py)                 |
 │  Flask 路由 → @指令解析 → Agent 路由 → 项目管理       │
 └──────────────────────┬──────────────────────────────┘
                        │
 ┌──────────────────────┼──────────────────────────────┐
-│              业务逻辑层                               │
-│  core/workflow/          写作工作流引擎               │
-│  core/agents/            Agent 定义与注册             │
+│              业务逻辑层                              │
+│  core/workflow/          写作工作流引擎              │
+│  core/agents/            Agent 定义与注册            |
+|  core/prompts/           Agent 角色提示词            |                                             
 │  core/project_manager.py 项目管理                    │
 └──────────────────────┬──────────────────────────────┘
                        │
@@ -421,9 +422,15 @@ def _tool_node(self, state: AgentState) -> dict:
 
 ### 3.2 工具系统
 
-工具是 Agent 与外部世界交互的接口。
+工具是 Agent 与外部世界交互的接口。本项目的工具系统分为三个层次：
 
-**工具注册流程**：
+1. **内置工具**（`core/tools/builtin/`）：系统自带的 `@tool` 函数，启动时自动注册
+2. **自定义 Skill - 提示词注入**（纯 Markdown）：`SKILL.md` 正文按 `applyTo` 字段注入到对应 Agent 的 `system_prompt`
+3. **自定义 Skill - 可调用工具**（带 `scripts/`）：`scripts/` 中的 `@tool` 函数自动注册并绑定到所有 Agent
+
+#### 3.2.1 内置工具注册
+
+内置工具位于 `core/tools/builtin/`，启动时由 `_load_builtin_tools()` 扫描注册：
 
 ```python
 # 1. 定义工具（使用 @tool 装饰器）
@@ -448,38 +455,275 @@ def read_file(file_path: str, start_line: int = 1, end_line: int = -1) -> str:
 # 2. 自动注册（core/tools/__init__.py 中的 _load_builtin_tools()）
 # 扫描 builtin/ 目录，自动发现并注册所有 @tool 函数
 
-# 3. Agent 获取工具
+# 3. Agent 获取工具（仅声明自己需要的内置工具）
 tools = get_tools_by_names(['read_file', 'write_file', 'edit_file'])
 ```
 
-**全局注册表**：
+#### 3.2.2 自定义 Skill 与 `applyTo` 提示词注入
 
-```python
-# core/tools/__init__.py
-_tool_registry: Dict[str, BaseTool] = {}
+这是本项目自定义工具的核心机制。每个 Skill 目录下有一个 `SKILL.md`，其 YAML frontmatter 中的 `applyTo` 字段决定该 Skill 的 Markdown 正文注入到哪些 Agent 的 `system_prompt` 中。
 
-def register_tool(tool: BaseTool) -> None:
-    """注册工具"""
-    _tool_registry[tool.name] = tool
+**Skill 目录结构**：
 
-def get_tools_by_names(names: List[str]) -> List[BaseTool]:
-    """根据名称列表获取工具"""
-    return [_tool_registry[name] for name in names if name in _tool_registry]
+```
+core/tools/custom/
+├── sumeru-write/          # 纯 Markdown Skill（无 scripts/）
+│   └── SKILL.md           #   applyTo: writer  → 注入到 NovelWriter
+├── sumeru-polish/
+│   └── SKILL.md           #   applyTo: content_polisher
+├── sumeru-worldbuilder/
+│   └── SKILL.md           #   applyTo: writer, outline_polisher, content_polisher
+├── example-word-count/    # 带脚本的 Skill
+│   ├── SKILL.md           #   applyTo: all（默认）
+│   └── scripts/
+│       └── word_count.py  #   @tool 函数 → 自动绑定到所有 Agent
+└── ...
 ```
 
-**热加载机制**：
+**SKILL.md 格式（YAML frontmatter + Markdown 正文）**：
+
+```markdown
+---
+name: sumeru-write
+description: 须弥小说写作技能
+applyTo: writer
+---
+
+## 写作规范
+
+1. 每次写作前先阅读大纲对应章节...
+2. 注意人物性格一致性...
+...（此处内容会被注入到 NovelWriter 的 system_prompt）
+```
+
+**`applyTo` 字段取值**：
+
+| 值                                           | 注入目标                            |
+| -------------------------------------------- | ----------------------------------- |
+| `writer`                                   | NovelWriter（@写作 Agent）          |
+| `outline_polisher`                         | OutlinePolisher（@大纲润色 Agent）  |
+| `content_polisher`                         | ContentPolisher（@小说润色 Agent）  |
+| `chat`                                     | ChatAgent（默认对话 Agent）         |
+| `writer, outline_polisher, content_polisher` | 同时注入到多个 Agent（逗号分隔）  |
+| `all`                                    | 注入到所有 Agent                    |
+| 不填 / 不写 `applyTo`                      | 默认等同 `all`，注入到所有 Agent    |
+
+#### 3.2.3 Skill 提示词注入的内部实现
+
+加载流程（`core/tools/__init__.py`）：
+
+```python
+# 全局 Skill 提示词注册表
+_skill_prompts: Dict[str, Dict[str, Any]] = {}
+# 结构：{
+#   "sumeru-write": {
+#       "content": "<SKILL.md 正文，去掉 frontmatter>",
+#       "apply_to": ["writer"]
+#   },
+#   ...
+# }
+
+def _parse_skill_frontmatter(skill_content: str) -> Dict[str, Any]:
+    """解析 SKILL.md 的 YAML frontmatter（正则提取 --- ... --- 段）"""
+    frontmatter_pattern = re.compile(r'^---\s*\n(.*?)\n---\s*\n', re.DOTALL)
+    match = frontmatter_pattern.match(skill_content)
+    if not match:
+        return {}
+    # 按行解析 key: value，逗号分隔的值转为列表
+    ...
+
+def _strip_frontmatter(skill_content: str) -> str:
+    """去掉 frontmatter 后的纯 Markdown 正文"""
+    frontmatter_pattern = re.compile(r'^---\s*\n.*?\n---\s*\n', re.DOTALL)
+    return frontmatter_pattern.sub('', skill_content, count=1).strip()
+
+def _load_skill(skill_name: str, skill_dir: str, skill_md_path: str) -> None:
+    """加载一个 Skill：解析 frontmatter → 存入 _skill_prompts → 加载 scripts/"""
+    with open(skill_md_path, 'r', encoding='utf-8') as f:
+        skill_content = f.read()
+    
+    frontmatter = _parse_skill_frontmatter(skill_content)
+    body = _strip_frontmatter(skill_content)
+    
+    # 解析 applyTo 字段
+    apply_to_raw = frontmatter.get("applyTo", "")
+    if isinstance(apply_to_raw, list):
+        apply_to = [t.strip().lower() for t in apply_to_raw]
+    elif isinstance(apply_to_raw, str) and apply_to_raw:
+        apply_to = [t.strip().lower() for t in apply_to_raw.split(',')]
+    else:
+        apply_to = []  # 空 → 默认注入到所有 Agent
+    
+    _skill_prompts[skill_name] = {
+        "content": body,
+        "apply_to": apply_to,
+    }
+    
+    # 如果有 scripts/ 子目录，加载其中的 @tool 函数
+    scripts_dir = os.path.join(skill_dir, "scripts")
+    if os.path.isdir(scripts_dir):
+        _load_skill_scripts(skill_name, scripts_dir)
+```
+
+Agent 获取匹配提示词（`core/tools/__init__.py`）：
+
+```python
+def get_skill_prompts_for_agent(agent_name: str) -> List[str]:
+    """获取应该注入到指定 Agent 的 system_prompt 的 Skill 提示词列表"""
+    agent_lower = agent_name.lower()
+    prompts = []
+    
+    for skill_name, skill_info in _skill_prompts.items():
+        apply_to = skill_info.get("apply_to", [])
+        
+        # 没有 applyTo 字段时，默认注入到所有 Agent
+        if not apply_to:
+            prompts.append(skill_info["content"])
+            continue
+        
+        # 检查 applyTo 中是否包含 "all" 或当前 Agent 名
+        for target in apply_to:
+            target_lower = target.lower()
+            if target_lower == "all" or target_lower == agent_lower:
+                prompts.append(skill_info["content"])
+                break
+    
+    return prompts
+```
+
+Agent 注入提示词（`core/agents/base_agent.py`）：
+
+```python
+class BaseAgent:
+    def _init_agent_graph(self) -> None:
+        """初始化 Agent：自动拼接匹配的 Skill 提示词到 system_prompt"""
+        config = config_manager.get_llm_config()
+        
+        # 拼接 Skill 提示词到 system_prompt
+        full_prompt = self._build_full_prompt()
+        
+        self.agent_graph = create_agent_graph(
+            base_url=config["api_url"],
+            api_key=config["api_key"],
+            model=config["model_name"],
+            tools=self.tools,
+            system_prompt=full_prompt,  # ← 使用的是拼接后的完整提示词
+            temperature=config["temperature"]
+        )
+    
+    def _build_full_prompt(self) -> str:
+        """构建完整 system_prompt：基础提示词 + Skill 提示词"""
+        skill_prompts = get_skill_prompts_for_agent(self.name)
+        
+        if not skill_prompts:
+            return self.system_prompt
+        
+        separator = "\n\n---\n\n"
+        full_prompt = self.system_prompt + separator + separator.join(skill_prompts)
+        logger.info(f"[{self.name}] system_prompt 已注入 {len(skill_prompts)} 个 Skill 提示词")
+        return full_prompt
+```
+
+**提示词优先级**：自定义 Skill 内容追加在 Agent 默认提示词之后，用 `---` 分隔。LLM 天然更重视靠后的指令，因此自定义内容会优先被遵循。
+
+#### 3.2.4 自定义 py 工具自动绑定
+
+带 `scripts/` 子目录的 Skill 中定义的 `@tool` 函数会被注册到全局 `_tool_registry`。Agent 通过 `get_tools_by_names()` 获取工具时，会**自动追加所有自定义 py 工具**，无需手动修改 Agent 代码：
+
+```python
+def get_tools_by_names(tool_names: List[str]) -> List[BaseTool]:
+    """获取工具：用户声明的内置工具 + 所有自定义 py 工具"""
+    # 合并用户指定的工具名和自定义工具名
+    custom_names = _get_custom_tool_names()  # 所有非 builtin_ 前缀的工具
+    all_names = list(tool_names) + [n for n in custom_names if n not in tool_names]
+    
+    return [
+        _tool_registry[name] 
+        for name in all_names 
+        if name in _tool_registry
+    ]
+```
+
+这意味着：只要你在 `core/tools/custom/xxx/scripts/` 下新建一个 `.py` 文件并用 `@tool` 装饰器定义函数，所有 Agent 就都能调用它。
+
+#### 3.2.5 热加载机制
+
+自定义工具的增删改可以在运行时生效，无需重启服务：
 
 ```python
 def reload_custom_tools() -> None:
     """重新加载自定义工具（无需重启服务）"""
-    # 清空非内置工具
+    # 1. 清空所有自定义工具
     custom_names = [name for name in _tool_registry if not name.startswith("builtin_")]
     for name in custom_names:
         del _tool_registry[name]
     
-    # 重新扫描 custom/ 目录
+    # 2. 清空 Skill 提示词注册表
+    _skill_prompts.clear()
+    
+    # 3. 重新扫描 custom/ 目录
     _load_custom_tools()
 ```
+
+热加载会同时重建**可调用工具**和**Skill 提示词**两部分。Web 端在修改在线模型设置后会自动触发 Agent 重载，进而重新注入最新的 Skill 提示词。
+
+#### 3.2.6 开发自定义 Skill 的两种模式
+
+**模式 A：纯 Markdown Skill（只改提示词，不加新工具）**
+
+适合场景：为某个 Agent 补充写作规范、风格指南、额外约束等。
+
+```
+core/tools/custom/my-style-guide/
+└── SKILL.md
+```
+
+```markdown
+---
+name: my-style-guide
+description: 言情小说风格指南
+applyTo: writer, content_polisher
+---
+
+## 言情小说写作规范
+
+1. 注重人物心理描写，使用细腻的情感刻画
+2. 对话要体现角色性格差异
+3. 避免使用过于直白的表白，多用含蓄暗示
+...
+```
+
+保存后，NovelWriter 和 ContentPolisher 的 `system_prompt` 会自动追加上述内容。
+
+**模式 B：带脚本的 Skill（既改提示词，又加新工具）**
+
+适合场景：需要 Agent 调用外部 API、执行特殊计算、统计数据等。
+
+```
+core/tools/custom/my-stats/
+├── SKILL.md
+└── scripts/
+    └── stats.py
+```
+
+```python
+# scripts/stats.py
+from langchain_core.tools import tool
+
+@tool
+def count_words(text: str) -> str:
+    """统计文本字数
+    
+    Args:
+        text: 待统计的文本
+    
+    Returns:
+        字数统计结果
+    """
+    return f"字数：{len(text)}"
+```
+
+保存后，`count_words` 工具会自动绑定到所有 Agent，同时 `SKILL.md` 的正文会按 `applyTo` 注入到对应 Agent 的提示词中。
 
 ### 3.3 @指令路由
 
@@ -670,12 +914,14 @@ class MyAgent(BaseAgent):
         with open("core/prompts/my_agent.md", "r", encoding="utf-8") as f:
             system_prompt = f.read()
         
-        # 选择工具
+        # 选择工具（仅声明内置工具，自定义 py 工具会自动追加）
         tools = get_tools_by_names(['read_file', 'write_file'])
         
         # 调用基类
+        # 基类会自动调用 _build_full_prompt()，将匹配的 Skill 提示词
+        # 追加到 system_prompt 末尾（根据 SKILL.md 的 applyTo 字段匹配）
         super().__init__(
-            name="my_agent",
+            name="my_agent",      # ← 此名称用于 Skill 提示词匹配
             system_prompt=system_prompt,
             tools=tools
         )
@@ -685,7 +931,18 @@ class MyAgent(BaseAgent):
 
 # 4. 在 parse_command() 中添加映射
 # '@我的指令': 'my_agent'
+
+# 5. （可选）创建自定义 Skill 为新 Agent 补充提示词
+# 在 core/tools/custom/my-skill/SKILL.md 中设置：
+# ---
+# name: my-skill
+# applyTo: my_agent    ← 会自动注入到上面创建的 Agent
+# ---
+# ## 额外规范
+# ...
 ```
+
+> **关于 Skill 提示词注入**：`BaseAgent` 的 `_init_agent_graph()` 方法会自动调用 `_build_full_prompt()`，根据 `core/tools/custom/*/SKILL.md` 中的 `applyTo` 字段，将匹配的 Skill 正文追加到 `system_prompt` 末尾。你不需要在 Agent 代码中手动处理提示词注入。
 
 #### 第 4 周：工作流引擎
 
@@ -733,48 +990,103 @@ class WritingWorkflow:
 
 ### 阶段 3：自定义工具系统（1 周）
 
-**目标**：实现 Skill 目录格式和热加载
+**目标**：实现 Skill 目录格式、提示词注入（applyTo）和热加载
 
 | 天 | 任务 |
 |----|------|
-| D1 | 设计 Skill 目录格式 |
-| D2 | 实现 `_load_custom_tools()` |
-| D3 | 创建示例工具 |
-| D4 | 编写文档 |
-| D5 | 测试热加载 |
+| D1 | 设计 Skill 目录格式（支持纯 Markdown 和带脚本两种模式） |
+| D2 | 实现 `_load_custom_tools()` + `_parse_skill_frontmatter()` |
+| D3 | 实现 Skill 提示词注入机制（`get_skill_prompts_for_agent` + `BaseAgent._build_full_prompt`） |
+| D4 | 创建示例工具（纯 Markdown + 带脚本各一个） |
+| D5 | 测试热加载（修改 SKILL.md / 增删 Skill 目录后验证） |
 
-**Skill 目录结构**：
+**Skill 目录结构（两种模式）**：
 
 ```
-core/tools/custom/my-tool/
-├── SKILL.md              # 必须：描述工具功能
-└── scripts/
-    └── my_tool.py        # 工具实现
+core/tools/custom/
+├── sumeru-write/              # 纯 Markdown Skill（无 scripts/）
+│   └── SKILL.md               #   正文注入到 applyTo 指定的 Agent
+├── sumeru-polish/
+│   └── SKILL.md               #   applyTo: content_polisher
+└── example-word-count/        # 带脚本的 Skill
+    ├── SKILL.md               #   applyTo: all（默认）
+    └── scripts/
+        └── word_count.py      #   @tool 函数 → 自动绑定所有 Agent
 ```
+
+**SKILL.md 格式（YAML frontmatter + Markdown 正文）**：
+
+```markdown
+---
+name: sumeru-write
+description: 须弥小说写作技能
+applyTo: writer                # 注入到哪些 Agent（逗号分隔，或 "all"）
+---
+
+## 写作规范
+
+1. 每次写作前先阅读大纲...
+2. 注意人物性格一致性...
+```
+
+**`applyTo` 字段说明**：
+- `writer` / `outline_polisher` / `content_polisher` / `chat` — 注入到指定 Agent
+- `all` — 注入到所有 Agent
+- 不填或不写 `applyTo` — 默认注入到所有 Agent
 
 **热加载关键代码**：
 
 ```python
 import importlib.util
 
-def _load_skill(skill_name: str, skill_dir: str):
-    scripts_dir = os.path.join(skill_dir, "scripts")
+def _load_skill(skill_name: str, skill_dir: str, skill_md_path: str) -> None:
+    """加载一个 Skill：解析 frontmatter → 存入 _skill_prompts → 加载 scripts/"""
+    with open(skill_md_path, 'r', encoding='utf-8') as f:
+        skill_content = f.read()
     
-    for filename in os.listdir(scripts_dir):
-        if filename.endswith(".py"):
-            # 从文件路径动态加载模块
-            spec = importlib.util.spec_from_file_location(
-                f"custom.{skill_name}.{filename[:-3]}",
-                os.path.join(scripts_dir, filename)
-            )
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
-            
-            # 扫描 @tool 函数并注册
-            for attr_name in dir(module):
-                attr = getattr(module, attr_name)
-                if isinstance(attr, BaseTool):
-                    register_tool(attr)
+    frontmatter = _parse_skill_frontmatter(skill_content)
+    body = _strip_frontmatter(skill_content)
+    
+    # 解析 applyTo 字段
+    apply_to_raw = frontmatter.get("applyTo", "")
+    if isinstance(apply_to_raw, list):
+        apply_to = [t.strip().lower() for t in apply_to_raw]
+    elif isinstance(apply_to_raw, str) and apply_to_raw:
+        apply_to = [t.strip().lower() for t in apply_to_raw.split(',')]
+    else:
+        apply_to = []  # 空 → 默认注入到所有 Agent
+    
+    _skill_prompts[skill_name] = {"content": body, "apply_to": apply_to}
+    
+    # 如果有 scripts/ 子目录，加载其中的 @tool 函数
+    scripts_dir = os.path.join(skill_dir, "scripts")
+    if os.path.isdir(scripts_dir):
+        for filename in os.listdir(scripts_dir):
+            if filename.endswith(".py"):
+                spec = importlib.util.spec_from_file_location(
+                    f"custom.{skill_name}.{filename[:-3]}",
+                    os.path.join(scripts_dir, filename)
+                )
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                
+                for attr_name in dir(module):
+                    attr = getattr(module, attr_name)
+                    if isinstance(attr, BaseTool):
+                        register_tool(attr)
+```
+
+**热重载会同时清空 Skill 提示词**：
+
+```python
+def reload_custom_tools() -> None:
+    """重新加载自定义工具（无需重启服务）"""
+    custom_names = [name for name in _tool_registry if not name.startswith("builtin_")]
+    for name in custom_names:
+        del _tool_registry[name]
+    
+    _skill_prompts.clear()    # 同时清空 Skill 提示词注册表
+    _load_custom_tools()
 ```
 
 ### 阶段 4：预览 + 导出 + 章节管理（1-2 周）
@@ -898,6 +1210,8 @@ class Translator(BaseAgent):
         )
 ```
 
+> **Skill 提示词注入**：基类 `BaseAgent` 会自动调用 `_build_full_prompt()`，将 `core/tools/custom/*/SKILL.md` 中 `applyTo` 字段匹配此 Agent 的 Skill 正文追加到 `system_prompt` 末尾。无需手动处理。
+
 **Step 3：注册 Agent**
 
 ```python
@@ -947,17 +1261,22 @@ def count_words(text: str) -> str:
 
 > 放在 `builtin/` 目录下会自动注册，无需额外操作。
 
-**方式 2：自定义工具**
+**方式 2：自定义工具（带 `applyTo` 的 Skill 格式）**
 
 ```
 core/tools/custom/word-counter/
-├── SKILL.md
+├── SKILL.md                # Skill 描述文档（含 YAML frontmatter）
 └── scripts/
-    └── counter.py
+    └── counter.py          # @tool 函数（自动绑定到所有 Agent）
 ```
 
 ```markdown
-<!-- SKILL.md -->
+---
+name: word-counter
+description: 字数统计工具
+applyTo: all               # 注入到所有 Agent（可指定 writer, outline_polisher 等）
+---
+
 # 字数统计工具
 
 统计文本的字数和行数。
@@ -974,6 +1293,8 @@ count_words("这是一段测试文本")
 ```
 ```
 
+> **说明**：SKILL.md 中 `---` 之间的 YAML frontmatter 会被系统解析。`applyTo` 字段控制正文注入到哪些 Agent 的 `system_prompt`；`scripts/` 中的 `@tool` 函数会被注册为可调用工具并自动绑定到所有 Agent。
+
 ```python
 # scripts/counter.py
 from langchain_core.tools import tool
@@ -985,6 +1306,31 @@ def count_words(text: str) -> str:
     line_count = text.count('\n') + 1
     return f"总字数：{char_count}，行数：{line_count}"
 ```
+
+**方式 3：纯 Markdown Skill（仅注入提示词，无可调用工具）**
+
+适用于为特定 Agent 补充额外指令或写作规范，无需创建 `scripts/` 目录：
+
+```
+core/tools/custom/my-style-guide/
+└── SKILL.md
+```
+
+```markdown
+---
+name: my-style-guide
+description: 写作风格指南
+applyTo: writer, content_polisher
+---
+
+# 写作风格规范
+
+1. 每段不超过 200 字，保持节奏紧凑
+2. 对话使用中文引号「」而非 ""
+3. 避免过多形容词堆砌，用动作和细节传达情感
+```
+
+> 这种 Skill 不会注册任何可调用工具，但其 Markdown 正文会在 Agent 初始化时自动追加到匹配 Agent（此处为 `writer` 和 `content_polisher`）的 `system_prompt` 末尾。
 
 ### 5.3 调试 Agent 行为
 

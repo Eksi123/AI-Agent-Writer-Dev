@@ -62,6 +62,12 @@ class AgentWriter:
         
         logger.info("Web Agent Writer 已初始化")
     
+    def reload_all_agents(self) -> None:
+        """重新加载所有 Agent 的 LLM 配置，用于设置变更后刷新大模型连接。"""
+        for agent in self.agents.values():
+            agent.reload_llm()
+        logger.info("所有 Agent 的 LLM 已重新加载")
+    
     def _auto_load_project(self) -> None:
         """Web 版特有：自动加载第一个存在的项目，方便用户打开即用"""
         try:
@@ -809,7 +815,8 @@ def api_update_settings():
                 enabled=True
             )
         else:
-            # 在线模型：更新 [LLM] 节
+            # 在线模型：禁用 Ollama，确保 get_llm_config() 走在线模型分支
+            config_manager.update_ollama_config(enabled=False)
             # 缺失的 api_url / model_name 用默认值填充，确保不报错
             if not api_url:
                 api_url = 'https://dashscope.aliyuncs.com/compatible-mode/v1'
@@ -827,6 +834,9 @@ def api_update_settings():
             # 如果提供了 API Key，设置环境变量
             if api_key:
                 os.environ['LLM_API_KEY'] = api_key
+        
+        # 设置变更后，重新加载所有 Agent 的 LLM 连接
+        agent_writer.reload_all_agents()
         
         return jsonify({
             'success': True,
@@ -956,7 +966,7 @@ def run_web_server(host='127.0.0.1', port=None, debug=False):
     if auto_open_browser:
         webbrowser.open(f'http://{host}:{port}')
     
-    app.run(host=host, port=port, debug=debug)
+    app.run(host=host, port=port, debug=debug, use_reloader=False)
 
 
 if __name__ == '__main__':

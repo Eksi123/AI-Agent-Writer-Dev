@@ -1,7 +1,7 @@
 """
 InfoQuery Agent
 
-查询小说内外的各种信息，支持小说内容检索和网络资料查询。
+查询小说内部的各种细节信息，支持情节、角色、地点等内容检索。
 """
 from typing import Optional
 from core.agents.base_agent import BaseAgent
@@ -13,7 +13,7 @@ from core.agent_logger import logger
 
 
 # 系统提示词
-INFO_QUERY_SYSTEM_PROMPT = """你是一个专业的信息查询助手，擅长查询小说内外的各种信息。
+INFO_QUERY_SYSTEM_PROMPT = """你是一个专业的信息查询助手，擅长查询小说内部的各种细节信息。
 
 ## 默认操作规则（必须遵守）
 
@@ -30,32 +30,32 @@ INFO_QUERY_SYSTEM_PROMPT = """你是一个专业的信息查询助手，擅长�
    - 查询特定地点的描述
    - 查询时间线信息
 
-2. **网络信息查询**：
-   - 查询历史背景资料
-   - 查询地理信息
-   - 查询文化知识
-   - 查询其他参考资料
+2. **设定信息检索**：
+   - 查询世界观设定
+   - 查询角色关系
+   - 查询势力/组织信息
+   - 查询物品/技能等设定
 
 ## 工作方式
 
 1. 理解用户的查询需求
-2. 确定查询来源（小说内容 or 网络）
+2. 在小说项目目录中检索相关文件
 3. 使用相应工具进行查询
 4. 整理并呈现查询结果
 
 ## 注意事项
 
 - 确保查询结果准确
-- 注明来源（小说第X章 or 网络链接）
+- 注明来源（小说第X卷第X章）
 - 对于不确定的信息，明确说明
 """
 
 
 class InfoQuery(BaseAgent):
     """
-    信息查询 Agent，负责查询小说内外的各种信息。
+    信息查询 Agent，负责查询小说内部的各种细节信息。
     
-    绑定的工具：read_file、glob_search、list_directory、fetch_url、ask_user
+    绑定的工具：read_file、glob_search、list_directory、ask_user
     """
     
     def __init__(self):
@@ -63,7 +63,6 @@ class InfoQuery(BaseAgent):
             'read_file',
             'glob_search',
             'list_directory',
-            'fetch_url',
             'ask_user'
         ])
         

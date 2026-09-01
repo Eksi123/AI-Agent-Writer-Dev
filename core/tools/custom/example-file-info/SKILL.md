@@ -1,3 +1,9 @@
+---
+name: file_info
+description: 获取文件详细信息（大小、时间、行数等）
+applyTo: all
+---
+
 # 文件信息查询工具
 
 ## 描述

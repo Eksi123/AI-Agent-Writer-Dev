@@ -25,6 +25,7 @@ class OutlinePolisher(BaseAgent):
             'read_file',
             'write_file',
             'edit_file',
+            'fetch_url',
             'ask_user'
         ])
         

@@ -10,7 +10,7 @@ from langchain_core.tools import BaseTool
 from core.agent_graph import AgentGraph, create_agent_graph
 from core.config_manager import config_manager
 from core.agent_logger import logger
-from core.tools import get_all_tools
+from core.tools import get_all_tools, get_skill_prompts_for_agent
 
 
 class BaseAgent:
@@ -48,19 +48,44 @@ class BaseAgent:
         self._init_agent_graph()
     
     def _init_agent_graph(self) -> None:
-        """初始化 Agent 图，从配置管理器读取 LLM 配置并创建 AgentGraph 实例。"""
+        """初始化 Agent 图，从配置管理器读取 LLM 配置并创建 AgentGraph 实例。
+        自动将匹配的 Skill 提示词追加到 system_prompt 末尾。
+        """
         config = config_manager.get_llm_config()
+        
+        # 拼接 Skill 提示词到 system_prompt
+        full_prompt = self._build_full_prompt()
         
         self.agent_graph: AgentGraph = create_agent_graph(
             base_url=config["api_url"],
             api_key=config["api_key"],
             model=config["model_name"],
             tools=self.tools,
-            system_prompt=self.system_prompt,
+            system_prompt=full_prompt,
             temperature=config["temperature"]
         )
         
         logger.debug(f"Agent 已初始化: {self.name}")
+    
+    def _build_full_prompt(self) -> str:
+        """
+        构建完整的 system_prompt：基础提示词 + 匹配的 Skill 提示词。
+        Skill 提示词追加在末尾，LLM 天然更重视后面的指令，实现"自定义优先"。
+        """
+        skill_prompts = get_skill_prompts_for_agent(self.name)
+        
+        if not skill_prompts:
+            return self.system_prompt
+        
+        separator = "\n\n---\n\n"
+        full_prompt = self.system_prompt + separator + separator.join(skill_prompts)
+        logger.info(f"[{self.name}] system_prompt 已注入 {len(skill_prompts)} 个 Skill 提示词")
+        return full_prompt
+    
+    def reload_llm(self) -> None:
+        """重新加载 LLM 配置，用于设置变更后刷新 Agent 的大模型连接。"""
+        self._init_agent_graph()
+        logger.info(f"Agent LLM 已重新加载: {self.name}")
     
     def chat(self, user_input: str, max_iterations: int = 30) -> dict:
         """

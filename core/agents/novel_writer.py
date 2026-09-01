@@ -28,6 +28,7 @@ class NovelWriter(BaseAgent):
             'edit_file',
             'glob_search',
             'list_directory',
+            'fetch_url',
             'ask_user'
         ])
         

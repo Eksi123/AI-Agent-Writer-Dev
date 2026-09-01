@@ -3,8 +3,13 @@
 
 管理 Agent 可用的工具，包括自动注册内置工具、热加载用户自定义工具、提供工具查询接口。
 工具注册表是一个全局字典，存储工具名称到 BaseTool 实例的映射。
+
+自定义 Skill 机制：
+- 纯 Markdown 的 SKILL.md 会被解析 frontmatter，根据 applyTo 字段注入到对应 Agent 的 system_prompt
+- 带 scripts/ 的 Skill 会被注册为可调用工具，自动绑定到所有 Agent
 """
 import os
+import re
 import importlib
 import importlib.util
 from typing import List, Dict, Any, Optional
@@ -14,6 +19,9 @@ from core.agent_logger import logger
 
 # 全局工具注册表，存储工具名称到 BaseTool 实例的映射
 _tool_registry: Dict[str, BaseTool] = {}
+
+# Skill 提示词注册表，存储 skill_name -> {"content": str, "apply_to": List[str]}
+_skill_prompts: Dict[str, Dict[str, Any]] = {}
 
 
 def register_tool(tool: BaseTool) -> None:
@@ -42,11 +50,103 @@ def get_all_tools() -> List[BaseTool]:
     return list(_tool_registry.values())
 
 
+def _get_custom_tool_names() -> List[str]:
+    """获取所有自定义工具的名称（非内置工具）"""
+    return [
+        name for name in _tool_registry.keys()
+        if not name.startswith("builtin_")
+    ]
+
+
+def _parse_skill_frontmatter(skill_content: str) -> Dict[str, Any]:
+    """
+    解析 SKILL.md 的 YAML frontmatter。
+    
+    格式示例：
+    ---
+    name: sumeru-write
+    description: 须弥写作技能
+    applyTo: writer, outline_polisher
+    ---
+    
+    Returns:
+        解析后的字典，包含 name, description, applyTo 等字段。
+        如果无 frontmatter 则返回空字典。
+    """
+    frontmatter_pattern = re.compile(r'^---\s*\n(.*?)\n---\s*\n', re.DOTALL)
+    match = frontmatter_pattern.match(skill_content)
+    
+    if not match:
+        return {}
+    
+    frontmatter_str = match.group(1)
+    result = {}
+    
+    for line in frontmatter_str.strip().split('\n'):
+        if ':' in line:
+            key, value = line.split(':', 1)
+            key = key.strip()
+            value = value.strip()
+            
+            # 处理逗号分隔的列表值（如 applyTo: writer, outline_polisher）
+            if ',' in value:
+                result[key] = [v.strip() for v in value.split(',')]
+            else:
+                result[key] = value
+    
+    return result
+
+
+def get_skill_prompts_for_agent(agent_name: str) -> List[str]:
+    """
+    获取应该注入到指定 Agent 的 system_prompt 的 Skill 提示词列表。
+    
+    匹配规则：
+    - Skill 的 applyTo 字段包含 agent_name（不区分大小写）
+    - Skill 的 applyTo 字段包含 "all"（不区分大小写）
+    - Skill 没有 applyTo 字段时，默认注入到所有 Agent
+    
+    Args:
+        agent_name: Agent 名称（如 "NovelWriter", "ContentPolisher"）
+    
+    Returns:
+        匹配的 Skill 提示词内容列表
+    """
+    agent_lower = agent_name.lower()
+    prompts = []
+    
+    for skill_name, skill_info in _skill_prompts.items():
+        apply_to = skill_info.get("apply_to", [])
+        
+        # 没有 applyTo 字段时，默认注入到所有 Agent
+        if not apply_to:
+            prompts.append(skill_info["content"])
+            logger.debug(f"Skill {skill_name} 无 applyTo，默认注入到 {agent_name}")
+            continue
+        
+        # 检查是否匹配
+        for target in apply_to:
+            target_lower = target.lower()
+            if target_lower == "all" or target_lower == agent_lower:
+                prompts.append(skill_info["content"])
+                logger.debug(f"Skill {skill_name} 匹配 {agent_name}（applyTo: {target}）")
+                break
+    
+    return prompts
+
+
 def get_tools_by_names(tool_names: List[str]) -> List[BaseTool]:
-    """根据名称列表获取工具，不存在的名称会被忽略"""
+    """
+    根据名称列表获取工具，不存在的名称会被忽略。
+    自动追加所有自定义 py 工具（带 scripts/ 的 Skill），使所有 Agent 都能使用。
+    """
+    # 合并用户指定的工具名和自定义工具名
+    custom_names = _get_custom_tool_names()
+    all_names = list(tool_names) + [n for n in custom_names if n not in tool_names]
+    
     return [
         _tool_registry[name] 
-        for name in tool_names 
+        for name in all_names 
         if name in _tool_registry
     ]
 
@@ -129,12 +229,43 @@ def _load_custom_tools() -> None:
             logger.error(f"加载自定义 Skill {skill_name} 失败: {e}")
 
 
+def _strip_frontmatter(skill_content: str) -> str:
+    """
+    去掉 SKILL.md 的 YAML frontmatter 部分，返回纯正文内容。
+    """
+    frontmatter_pattern = re.compile(r'^---\s*\n.*?\n---\s*\n', re.DOTALL)
+    return frontmatter_pattern.sub('', skill_content, count=1).strip()
+
+
 def _load_skill(skill_name: str, skill_dir: str, skill_md_path: str) -> None:
     """
-    加载单个 Skill：读取 SKILL.md 说明书，并动态加载 scripts/ 目录下的 Python 模块。
+    加载单个 Skill：
+    1. 读取 SKILL.md，解析 frontmatter 获取 applyTo 字段
+    2. 将 Skill 正文（去掉 frontmatter）存入 _skill_prompts 供 Agent 注入
+    3. 动态加载 scripts/ 目录下的 Python 模块注册为可调用工具
     """
     with open(skill_md_path, 'r', encoding='utf-8') as f:
         skill_content = f.read()
+    
+    # 解析 frontmatter
+    frontmatter = _parse_skill_frontmatter(skill_content)
+    body = _strip_frontmatter(skill_content)
+    
+    # 提取 applyTo 字段，转为小写列表
+    apply_to_raw = frontmatter.get("applyTo", "")
+    if isinstance(apply_to_raw, list):
+        apply_to = [t.strip().lower() for t in apply_to_raw]
+    elif isinstance(apply_to_raw, str) and apply_to_raw:
+        apply_to = [t.strip().lower() for t in apply_to_raw.split(',')]
+    else:
+        apply_to = []
+    
+    # 存储 Skill 提示词（正文部分）
+    _skill_prompts[skill_name] = {
+        "content": body,
+        "apply_to": apply_to,
+    }
+    logger.debug(f"Skill {skill_name} 提示词已存储（applyTo={apply_to or 'all'}, {len(body)} 字符）")
     
     # 查找并加载 scripts/ 目录下的所有 Python 文件
     scripts_dir = os.path.join(skill_dir, "scripts")
@@ -172,7 +303,7 @@ def _load_skill(skill_name: str, skill_dir: str, skill_md_path: str) -> None:
 def reload_custom_tools() -> None:
     """
     重新加载所有自定义工具（热加载）。
-    清空非内置工具后重新扫描 custom/ 目录。
+    清空非内置工具和 Skill 提示词后重新扫描 custom/ 目录。
     """
     # 清空非内置工具，保留内置工具
     custom_tool_names = [
@@ -182,8 +313,11 @@ def reload_custom_tools() -> None:
     for name in custom_tool_names:
         del _tool_registry[name]
     
+    # 清空 Skill 提示词注册表
+    _skill_prompts.clear()
+    
     _load_custom_tools()
-    logger.info(f"自定义工具已重新加载，当前工具总数: {len(_tool_registry)}")
+    logger.info(f"自定义工具已重新加载，当前工具总数: {len(_tool_registry)}，Skill提示词: {len(_skill_prompts)} 个")
 
 
 # 模块加载时自动注册内置工具和自定义工具

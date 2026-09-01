@@ -1,3 +1,9 @@
+---
+name: word_count
+description: 统计文本字数、字符数和行数
+applyTo: all
+---
+
 # 字数统计工具
 
 ## 描述

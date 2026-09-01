@@ -116,14 +116,16 @@ python main.py --web
 
 通过 `@指令` 在统一对话中切换不同职能的 Agent：
 
-| 指令           | Agent            | 职责                                                                         |
-| -------------- | ---------------- | ---------------------------------------------------------------------------- |
-| `@写作`      | NovelWriter      | 执行写作工作流（大纲审查→逐章写作→逻辑审查）                               |
-| `@大纲润色`  | OutlinePolisher  | 优化大纲结构、小说设定和章节安排                                             |
-| `@小说润色`  | ContentPolisher  | 章节内容润色、文笔优化                                                       |
-| `@汇总说明`  | SummaryGenerator | 生成小说各类信息汇总，包括人物汇总，地点汇总，剧情经历汇总，章节字数汇总等等 |
-| `@信息查询`  | InfoQuery        | 查询小说内各种细节信息以及网络上信息                                         |
-| 无指令（默认） | ChatAgent        | 自由对话，此时不支持编辑小说                                                 |
+| 指令           | Agent            | 职责                                                                         | 联网能力 |
+| -------------- | ---------------- | ---------------------------------------------------------------------------- | -------- |
+| `@写作`      | NovelWriter      | 执行写作工作流（大纲审查→逐章写作→逻辑审查）                               | ✅      |
+| `@大纲润色`  | OutlinePolisher  | 优化大纲结构、小说设定和章节安排                                             | ✅      |
+| `@小说润色`  | ContentPolisher  | 章节内容润色、文笔优化                                                       | ✅      |
+| `@汇总说明`  | SummaryGenerator | 生成小说各类信息汇总，包括人物汇总，地点汇总，剧情经历汇总，章节字数汇总等等 | ❌      |
+| `@信息查询`  | InfoQuery        | 查询小说内各种细节信息                                                       | ❌      |
+| 无指令（默认） | ChatAgent        | 自由对话，此时不支持编辑小说                                                 | ✅      |
+
+> **联网能力**：标记为 ✅ 的 Agent 可以使用 `fetch_url` 工具从互联网获取参考资料。InfoQuery 仅支持小说内部信息检索，不支持联网查询。
 
 ### 写作工作流（Writing Workflow）
 
@@ -170,11 +172,16 @@ python main.py --web
 
 用户可以在 `core/tools/custom/` 目录下创建自定义工具，系统会自动发现并热加载，无需重启服务。
 
+自定义工具支持两种模式：
+
+1. **纯 Markdown Skill**：只有 `SKILL.md`，其正文内容会作为提示词自动注入到对应 Agent 的 system_prompt 中
+2. **带脚本的 Skill**：`SKILL.md` + `scripts/` 目录，脚本中定义的 `@tool` 函数会被注册为可调用工具，自动绑定到所有 Agent
+
 **使用 Skill 目录格式创建工具：**
 
 1. 在 `core/tools/custom/` 下创建一个以工具名命名的目录（如 `my-tool/`）
 2. 在目录中创建 `SKILL.md` 文件（必需），描述工具功能、参数和使用示例
-3. 在 `scripts/` 子目录中创建 Python 脚本，实现工具函数
+3. 在 `scripts/` 子目录中创建 Python 脚本，实现工具函数（可选）
 4. 保存后系统自动加载
 
 **Skill 目录结构：**
@@ -183,19 +190,47 @@ python main.py --web
 custom/
 └── my-tool/                    # 工具目录（目录名即工具组名）
     ├── SKILL.md                # 工具描述文档（必需）
-    ├── scripts/                # Python 脚本目录
+    ├── scripts/                # Python 脚本目录（可选）
     │   └── my_tool.py          # 工具实现脚本
     ├── references/             # 参考文档（可选）
     └── assets/                 # 资源文件（可选）
 ```
 
-**工具规范：**
+**SKILL.md 格式（YAML frontmatter + Markdown 正文）：**
+
+```markdown
+---
+name: my-skill
+description: 工具功能描述
+applyTo: writer                # 注入到哪些 Agent（见下方说明）
+---
+
+## 工具详细说明
+
+这里是 Markdown 正文，会被注入到对应 Agent 的 system_prompt 中。
+```
+
+**`applyTo` 字段说明：**
+
+| 值                                        | 注入目标                          |
+| ----------------------------------------- | --------------------------------- |
+| `writer`                                | NovelWriter（@写作）              |
+| `outline_polisher`                      | OutlinePolisher（@大纲润色）      |
+| `content_polisher`                      | ContentPolisher（@小说润色）      |
+| `chat`                                  | ChatAgent（默认对话）              |
+| `writer, outline_polisher, content_polisher` | 同时注入到多个 Agent          |
+| `all`                                  | 注入到所有 Agent                  |
+| 不填 / 不写 `applyTo`                    | 默认 `all`，注入到所有 Agent      |
+
+> **提示词优先级**：自定义 Skill 内容追加在 Agent 默认提示词之后，LLM 天然更重视后面的指令，因此自定义内容会优先被遵循。
+
+**Python 脚本工具规范（scripts/ 目录）：**
 
 - 必须使用 `@tool` 装饰器（来自 `langchain_core.tools`）
 - 必须提供清晰的 docstring（作为工具描述展示给 LLM）
 - 所有参数必须有类型注解
 - 必须返回 `str` 类型结果
-- `SKILL.md` 必须包含工具描述、参数说明和使用示例
+- 带 `scripts/` 的 Skill 中定义的 py 工具会**自动绑定到所有 Agent**，无需手动修改 Agent 代码
 
 **示例：**
 
@@ -447,7 +482,7 @@ auto_open_browser = true
    - `@大纲润色` Agent（`outline_polisher.py`）- 大纲结构优化
    - `@汇总说明` Agent（`summary_generator.py`）- 生成汇总信息
    - `@小说润色` Agent（`content_polisher.py`）- 文笔润色
-   - `@信息查询` Agent（`info_query.py`）- 查询小说和网络信息
+   - `@信息查询` Agent（`info_query.py`）- 查询小说内部细节信息
    - 自由对话 Agent（`chat_agent.py`）- 默认模式
 3. **8 个内置工具**（启动时自动注册）
 
@@ -467,7 +502,7 @@ auto_open_browser = true
 - ✅ `@大纲润色` 能分析并优化大纲
 - ✅ `@汇总说明` 能生成各类汇总
 - ✅ `@小说润色` 能润色章节
-- ✅ `@信息查询` 能查询小说和网络信息
+- ✅ `@信息查询` 能查询小说内部信息
 
 ---
 
@@ -578,20 +613,39 @@ def parse_command(self, user_input: str) -> tuple:
 
 ### Agent 基类
 
-每个 Agent 继承自 `BaseAgent`，封装了 LangGraph 状态图的构建和调用：
+每个 Agent 继承自 `BaseAgent`，封装了 LangGraph 状态图的构建、Skill 提示词注入和 LLM 调用：
 
 ```python
 class BaseAgent:
-    def __init__(self, name: str, system_prompt: str, tool_names: List[str] = None):
+    def __init__(self, name: str, system_prompt: str, tools: List[BaseTool]):
         self.name = name
         self.system_prompt = system_prompt
-        self.tools = get_tools_by_names(tool_names or [])  # 从全局注册表获取工具
-        self.graph = self._build_graph()  # 构建 LangGraph 状态图
-  
+        self.tools = tools
+        self._init_agent_graph()  # 构建 LangGraph 状态图 + 注入 Skill 提示词
+    
+    def _init_agent_graph(self) -> None:
+        """初始化 Agent：自动拼接匹配的 Skill 提示词到 system_prompt"""
+        config = config_manager.get_llm_config()
+        full_prompt = self._build_full_prompt()
+        self.agent_graph = create_agent_graph(
+            base_url=config["api_url"], api_key=config["api_key"],
+            model=config["model_name"], tools=self.tools,
+            system_prompt=full_prompt, temperature=config["temperature"]
+        )
+    
+    def _build_full_prompt(self) -> str:
+        """构建完整 system_prompt：基础提示词 + 匹配的 Skill 提示词"""
+        skill_prompts = get_skill_prompts_for_agent(self.name)
+        if not skill_prompts:
+            return self.system_prompt
+        separator = "\n\n---\n\n"
+        full_prompt = self.system_prompt + separator + separator.join(skill_prompts)
+        return full_prompt
+    
     def chat(self, user_input: str) -> dict:
         """调用 Agent，返回回复和思考过程"""
-        result = self.graph.invoke({"messages": [HumanMessage(content=user_input)]})
-        return {"response": ai_message.content, "thought_process": [...]} 
+        result = self.agent_graph.invoke({"messages": [HumanMessage(content=user_input)]})
+        return {"response": ..., "thought_process": [...]}
 ```
 
 ### LangGraph Agent 状态图
@@ -604,12 +658,35 @@ START → llm_node → (有工具调用?) → tool_node → llm_node (循环) �
 
 ### 用户自定义工具
 
+自定义 Skill 支持两种模式：
+
+**模式 A：纯 Markdown Skill（提示词注入）**
+
 ```
 core/tools/custom/
-└── example-word-count/           # Skill 目录
-    ├── SKILL.md                  # 工具描述文档
+└── sumeru-write/                 # Skill 目录
+    └── SKILL.md                  # 正文注入到 applyTo 指定的 Agent
+```
+
+```markdown
+---
+name: sumeru-write
+description: 须弥小说写作技能
+applyTo: writer                   # 注入到 NovelWriter（@写作 Agent）
+---
+
+## 写作规范
+1. 每次写作前先阅读大纲对应章节...
+```
+
+**模式 B：带脚本的 Skill（提示词注入 + 可调用工具）**
+
+```
+core/tools/custom/
+└── example-word-count/
+    ├── SKILL.md                  # applyTo: all（默认注入所有 Agent）
     └── scripts/
-        └── word_count.py         # 工具实现
+        └── word_count.py         # @tool 函数自动绑定到所有 Agent
 ```
 
 ```python
@@ -621,7 +698,7 @@ def word_count(text: str) -> str:
     return f"总字数: {len(text)}"
 ```
 
-创建 `SKILL.md` + `scripts/` 目录后自动发现并注册，无需重启。
+创建或修改 Skill 目录后系统自动发现并注册，无需重启。
 
 ### 小说项目结构
 
