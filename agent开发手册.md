@@ -424,9 +424,9 @@ def _tool_node(self, state: AgentState) -> dict:
 
 工具是 Agent 与外部世界交互的接口。本项目的工具系统分为三个层次：
 
-1. **内置工具**（`core/tools/builtin/`）：系统自带的 `@tool` 函数，启动时自动注册
+1. **内置工具**（`core/tools/builtin/`）：系统自带的 `@tool` 函数，启动时自动注册，静态分配给各 Agent
 2. **自定义 Skill - 提示词注入**（纯 Markdown）：`SKILL.md` 正文按 `applyTo` 字段注入到对应 Agent 的 `system_prompt`
-3. **自定义 Skill - 可调用工具**（带 `scripts/`）：`scripts/` 中的 `@tool` 函数自动注册并绑定到所有 Agent
+3. **自定义 Skill - 可调用工具**（带 `scripts/`）：`scripts/` 中的 `@tool` 函数注册后，Agent 通过 `invoke_custom_tool` 根据工具的 name 和 description **动态决策**是否调用
 
 #### 3.2.1 内置工具注册
 
@@ -626,25 +626,85 @@ class BaseAgent:
 
 **提示词优先级**：自定义 Skill 内容追加在 Agent 默认提示词之后，用 `---` 分隔。LLM 天然更重视靠后的指令，因此自定义内容会优先被遵循。
 
-#### 3.2.4 自定义 py 工具自动绑定
+#### 3.2.4 自定义 py 工具动态决策
 
-带 `scripts/` 子目录的 Skill 中定义的 `@tool` 函数会被注册到全局 `_tool_registry`。Agent 通过 `get_tools_by_names()` 获取工具时，会**自动追加所有自定义 py 工具**，无需手动修改 Agent 代码：
+带 `scripts/` 子目录的 Skill 中定义的 `@tool` 函数会被注册到全局 `_tool_registry`，但**不会自动绑定到 Agent**。Agent 通过内置工具 `invoke_custom_tool` 间接调用自定义工具，并根据工具的 name 和 description **动态决策**是否使用。
+
+**获取自定义工具信息**：
 
 ```python
-def get_tools_by_names(tool_names: List[str]) -> List[BaseTool]:
-    """获取工具：用户声明的内置工具 + 所有自定义 py 工具"""
-    # 合并用户指定的工具名和自定义工具名
-    custom_names = _get_custom_tool_names()  # 所有非 builtin_ 前缀的工具
-    all_names = list(tool_names) + [n for n in custom_names if n not in tool_names]
-    
+def get_custom_tools_info() -> List[Dict[str, str]]:
+    """
+    获取所有自定义工具的名称和描述信息。
+    用于注入到 Agent 的 system_prompt，让 Agent 根据 description 动态决策是否调用。
+    """
+    custom_names = _get_custom_tool_names()
     return [
-        _tool_registry[name] 
-        for name in all_names 
+        {
+            "name": name,
+            "description": _tool_registry[name].description
+        }
+        for name in custom_names
         if name in _tool_registry
     ]
 ```
 
-这意味着：只要你在 `core/tools/custom/xxx/scripts/` 下新建一个 `.py` 文件并用 `@tool` 装饰器定义函数，所有 Agent 就都能调用它。
+**调用自定义工具**：
+
+```python
+@tool
+def invoke_custom_tool(tool_name: str, args: str) -> str:
+    """
+    调用自定义工具。根据工具名称和参数执行对应的自定义工具。
+    
+    Args:
+        tool_name: 自定义工具名称（如 word_count、file_info）
+        args: 工具参数（JSON 格式字符串）
+    
+    Returns:
+        工具执行结果
+    """
+    tool = _tool_registry.get(tool_name)
+    if not tool:
+        return f"错误：未找到名为 {tool_name} 的自定义工具"
+    
+    try:
+        kwargs = json.loads(args) if args else {}
+        return tool.invoke(kwargs)
+    except Exception as e:
+        return f"执行工具 {tool_name} 时出错：{str(e)}"
+```
+
+**Agent 初始化时注入工具清单**：
+
+```python
+def _build_full_prompt(self) -> str:
+    """构建完整 system_prompt：基础提示词 + Skill 提示词 + 自定义工具清单"""
+    skill_prompts = get_skill_prompts_for_agent(self.name)
+    custom_tools = get_custom_tools_info()
+    
+    parts = [self.system_prompt]
+    
+    # 追加 Skill 提示词
+    if skill_prompts:
+        parts.extend(skill_prompts)
+    
+    # 追加自定义工具清单
+    if custom_tools:
+        tools_desc = "\n".join([f"- {t['name']}: {t['description']}" for t in custom_tools])
+        custom_tools_section = f"""
+## 可用的自定义工具（通过 invoke_custom_tool 调用）
+{tools_desc}
+
+如需使用上述工具，请调用 invoke_custom_tool 工具，传入工具名称和参数。
+"""
+        parts.append(custom_tools_section)
+    
+    separator = "\n\n---\n\n"
+    return separator.join(parts)
+```
+
+这意味着：只要你在 `core/tools/custom/xxx/scripts/` 下新建一个 `.py` 文件并用 `@tool` 装饰器定义函数，Agent 会根据用户需求和工具描述**自主判断**是否需要调用它。
 
 #### 3.2.5 热加载机制
 
@@ -723,7 +783,7 @@ def count_words(text: str) -> str:
     return f"字数：{len(text)}"
 ```
 
-保存后，`count_words` 工具会自动绑定到所有 Agent，同时 `SKILL.md` 的正文会按 `applyTo` 注入到对应 Agent 的提示词中。
+保存后，`count_words` 工具会被注册到全局工具表，Agent 在初始化时会读取该工具的 name 和 description，并根据用户需求**动态决策**是否通过 `invoke_custom_tool` 调用它。同时 `SKILL.md` 的正文会按 `applyTo` 注入到对应 Agent 的提示词中。
 
 ### 3.3 @指令路由
 
@@ -918,8 +978,10 @@ class MyAgent(BaseAgent):
         tools = get_tools_by_names(['read_file', 'write_file'])
         
         # 调用基类
-        # 基类会自动调用 _build_full_prompt()，将匹配的 Skill 提示词
-        # 追加到 system_prompt 末尾（根据 SKILL.md 的 applyTo 字段匹配）
+        # 基类会自动调用 _build_full_prompt()，完成两件事：
+        # 1. 将匹配的 Skill 提示词追加到 system_prompt 末尾（根据 SKILL.md 的 applyTo 字段匹配）
+        # 2. 将所有自定义工具（带 scripts/ 的 Skill）的 name + description 注入到 system_prompt
+        #    Agent 可以通过 invoke_custom_tool 动态调用这些工具
         super().__init__(
             name="my_agent",      # ← 此名称用于 Skill 提示词匹配
             system_prompt=system_prompt,
@@ -938,6 +1000,11 @@ class MyAgent(BaseAgent):
 # name: my-skill
 # applyTo: my_agent    ← 会自动注入到上面创建的 Agent
 # ---
+#
+# 注意：自定义工具的调用机制
+# - 纯 Markdown Skill（无 scripts/）：仅注入提示词，无可调用工具
+# - 带 scripts/ 的 Skill：工具会被注册，但不会自动绑定到 Agent
+#   Agent 通过 invoke_custom_tool 工具动态调用，根据工具的 description 决策是否使用
 # ## 额外规范
 # ...
 ```
@@ -1210,7 +1277,11 @@ class Translator(BaseAgent):
         )
 ```
 
-> **Skill 提示词注入**：基类 `BaseAgent` 会自动调用 `_build_full_prompt()`，将 `core/tools/custom/*/SKILL.md` 中 `applyTo` 字段匹配此 Agent 的 Skill 正文追加到 `system_prompt` 末尾。无需手动处理。
+> **Skill 提示词注入**：基类 `BaseAgent` 会自动调用 `_build_full_prompt()`，完成两件事：
+> 1. 将 `core/tools/custom/*/SKILL.md` 中 `applyTo` 字段匹配此 Agent 的 Skill 正文追加到 `system_prompt` 末尾
+> 2. 将所有自定义工具（带 scripts/ 的 Skill）的 name + description 注入到 `system_prompt`，Agent 通过 `invoke_custom_tool` 动态调用
+>
+> 无需手动处理。
 
 **Step 3：注册 Agent**
 
@@ -1267,7 +1338,7 @@ def count_words(text: str) -> str:
 core/tools/custom/word-counter/
 ├── SKILL.md                # Skill 描述文档（含 YAML frontmatter）
 └── scripts/
-    └── counter.py          # @tool 函数（自动绑定到所有 Agent）
+    └── counter.py          # @tool 函数（注册为自定义工具，Agent 通过 invoke_custom_tool 动态调用）
 ```
 
 ```markdown
@@ -1293,7 +1364,7 @@ count_words("这是一段测试文本")
 ```
 ```
 
-> **说明**：SKILL.md 中 `---` 之间的 YAML frontmatter 会被系统解析。`applyTo` 字段控制正文注入到哪些 Agent 的 `system_prompt`；`scripts/` 中的 `@tool` 函数会被注册为可调用工具并自动绑定到所有 Agent。
+> **说明**：SKILL.md 中 `---` 之间的 YAML frontmatter 会被系统解析。`applyTo` 字段控制正文注入到哪些 Agent 的 `system_prompt`；`scripts/` 中的 `@tool` 函数会被注册为自定义工具，Agent 通过 `invoke_custom_tool` 根据工具的 description 动态决策是否调用。
 
 ```python
 # scripts/counter.py
@@ -1331,6 +1402,10 @@ applyTo: writer, content_polisher
 ```
 
 > 这种 Skill 不会注册任何可调用工具，但其 Markdown 正文会在 Agent 初始化时自动追加到匹配 Agent（此处为 `writer` 和 `content_polisher`）的 `system_prompt` 末尾。
+>
+> **自定义工具调用机制总结**：
+> - 纯 Markdown Skill：仅注入提示词，Agent 被动接收指令
+> - 带 scripts/ 的 Skill：工具注册后，Agent 通过 `invoke_custom_tool` 主动调用，根据工具的 description 动态决策是否使用
 
 ### 5.3 调试 Agent 行为
 

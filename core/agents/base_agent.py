@@ -10,7 +10,7 @@ from langchain_core.tools import BaseTool
 from core.agent_graph import AgentGraph, create_agent_graph
 from core.config_manager import config_manager
 from core.agent_logger import logger
-from core.tools import get_all_tools, get_skill_prompts_for_agent
+from core.tools import get_all_tools, get_skill_prompts_for_agent, get_custom_tools_info
 
 
 class BaseAgent:

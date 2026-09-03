@@ -175,7 +175,7 @@ python main.py --web
 自定义工具支持两种模式：
 
 1. **纯 Markdown Skill**：只有 `SKILL.md`，其正文内容会作为提示词自动注入到对应 Agent 的 system_prompt 中
-2. **带脚本的 Skill**：`SKILL.md` + `scripts/` 目录，脚本中定义的 `@tool` 函数会被注册为可调用工具，自动绑定到所有 Agent
+2. **带脚本的 Skill**：`SKILL.md` + `scripts/` 目录，脚本中定义的 `@tool` 函数会被注册为可调用工具，Agent 通过 `invoke_custom_tool` 根据工具的 name 和 description **动态决策**是否调用
 
 **使用 Skill 目录格式创建工具：**
 
@@ -227,10 +227,10 @@ applyTo: writer                # 注入到哪些 Agent（见下方说明）
 **Python 脚本工具规范（scripts/ 目录）：**
 
 - 必须使用 `@tool` 装饰器（来自 `langchain_core.tools`）
-- 必须提供清晰的 docstring（作为工具描述展示给 LLM）
+- 必须提供清晰的 docstring（作为工具描述展示给 LLM，**是 Agent 动态决策是否调用的关键依据**）
 - 所有参数必须有类型注解
 - 必须返回 `str` 类型结果
-- 带 `scripts/` 的 Skill 中定义的 py 工具会**自动绑定到所有 Agent**，无需手动修改 Agent 代码
+- 带 `scripts/` 的 Skill 中定义的 py 工具不会自动绑定到 Agent，而是通过 `invoke_custom_tool` 内置工具间接调用。Agent 在初始化时会读取所有自定义工具的 name + description，根据用户需求**动态决策**是否调用
 
 **示例：**
 
@@ -252,6 +252,16 @@ def word_count(text: str) -> str:
     char_count = len(text.replace(' ', ''))
     line_count = text.count('\n') + 1
     return f"字符数: {char_count}, 行数: {line_count}"
+```
+
+**自定义工具的动态决策机制：**
+
+带 `scripts/` 的 Skill 注册后，系统会在每个 Agent 的 `system_prompt` 末尾注入一段自定义工具清单（包含 name 和 description）。Agent 通过内置工具 `invoke_custom_tool(tool_name, args)` 来调用指定的自定义工具。这样 Agent 可以根据用户输入和工具描述，自主判断是否需要使用某个自定义工具。
+
+```
+## 可用的自定义工具（通过 invoke_custom_tool 调用）
+- word_count: 统计文本字数和行数
+- file_info: 获取文件的元信息（大小、修改时间等）
 ```
 
 **热加载：** 修改自定义工具后，调用 `reload_custom_tools()` 即可重新加载，无需重启服务。
@@ -634,13 +644,17 @@ class BaseAgent:
         )
     
     def _build_full_prompt(self) -> str:
-        """构建完整 system_prompt：基础提示词 + 匹配的 Skill 提示词"""
+        """构建完整 system_prompt：基础提示词 + Skill 提示词 + 自定义工具清单"""
         skill_prompts = get_skill_prompts_for_agent(self.name)
-        if not skill_prompts:
-            return self.system_prompt
+        custom_tools = get_custom_tools_info()  # 获取自定义工具 name + description
+        parts = [self.system_prompt]
+        if skill_prompts:
+            parts.extend(skill_prompts)
+        if custom_tools:
+            tools_desc = "\n".join([f"- {t['name']}: {t['description']}" for t in custom_tools])
+            parts.append(f"## 可用的自定义工具（通过 invoke_custom_tool 调用）\n{tools_desc}")
         separator = "\n\n---\n\n"
-        full_prompt = self.system_prompt + separator + separator.join(skill_prompts)
-        return full_prompt
+        return separator.join(parts)
     
     def chat(self, user_input: str) -> dict:
         """调用 Agent，返回回复和思考过程"""
@@ -686,7 +700,7 @@ core/tools/custom/
 └── example-word-count/
     ├── SKILL.md                  # applyTo: all（默认注入所有 Agent）
     └── scripts/
-        └── word_count.py         # @tool 函数自动绑定到所有 Agent
+        └── word_count.py         # @tool 函数注册为自定义工具
 ```
 
 ```python
@@ -697,6 +711,8 @@ def word_count(text: str) -> str:
     """统计文本字数"""
     return f"总字数: {len(text)}"
 ```
+
+> Agent 初始化时会读取所有自定义工具的 name 和 description，注入到 system_prompt 中。Agent 根据用户需求通过 `invoke_custom_tool` **动态决策**是否调用。
 
 创建或修改 Skill 目录后系统自动发现并注册，无需重启。
 

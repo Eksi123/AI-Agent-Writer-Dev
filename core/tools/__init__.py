@@ -135,18 +135,34 @@ def get_skill_prompts_for_agent(agent_name: str) -> List[str]:
     return prompts
 
 
+def get_custom_tools_info() -> List[Dict[str, str]]:
+    """
+    获取所有自定义工具（带 scripts/ 的 Skill）的名称和描述信息。
+    
+    用于注入到 Agent 的 system_prompt，让 Agent 根据 description 动态决策是否调用。
+    
+    Returns:
+        包含 {"name": str, "description": str} 的字典列表
+    """
+    custom_names = _get_custom_tool_names()
+    return [
+        {
+            "name": name,
+            "description": _tool_registry[name].description
+        }
+        for name in custom_names
+        if name in _tool_registry
+    ]
+
+
 def get_tools_by_names(tool_names: List[str]) -> List[BaseTool]:
     """
     根据名称列表获取工具，不存在的名称会被忽略。
-    自动追加所有自定义 py 工具（带 scripts/ 的 Skill），使所有 Agent 都能使用。
+    仅返回指定的内置工具，不再自动追加自定义工具。
     """
-    # 合并用户指定的工具名和自定义工具名
-    custom_names = _get_custom_tool_names()
-    all_names = list(tool_names) + [n for n in custom_names if n not in tool_names]
-    
     return [
         _tool_registry[name] 
-        for name in all_names 
+        for name in tool_names 
         if name in _tool_registry
     ]
 
