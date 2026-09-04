@@ -40,7 +40,7 @@ class ChatAgent(BaseAgent):
     """默认 Agent，用于自由对话，仅绑定 ask_user 和 fetch_url 工具。"""
     
     def __init__(self):
-        tools = get_tools_by_names(['ask_user', 'fetch_url'])
+        tools = get_tools_by_names(['ask_user', 'fetch_url', 'invoke_custom_tool'])
         
         super().__init__(
             name="ChatAgent",

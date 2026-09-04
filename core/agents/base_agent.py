@@ -69,18 +69,30 @@ class BaseAgent:
     
     def _build_full_prompt(self) -> str:
         """
-        构建完整的 system_prompt：基础提示词 + 匹配的 Skill 提示词。
-        Skill 提示词追加在末尾，LLM 天然更重视后面的指令，实现"自定义优先"。
+        构建完整的 system_prompt：基础提示词 + 匹配的 Skill 提示词 + 自定义工具列表。
+        Skill 提示词和自定义工具列表追加在末尾，LLM 天然更重视后面的指令。
         """
-        skill_prompts = get_skill_prompts_for_agent(self.name)
+        parts = [self.system_prompt]
         
-        if not skill_prompts:
-            return self.system_prompt
+        # 拼接 Skill 提示词
+        skill_prompts = get_skill_prompts_for_agent(self.name)
+        if skill_prompts:
+            separator = "\n\n---\n\n"
+            parts.extend(skill_prompts)
+            logger.info(f"[{self.name}] system_prompt 已注入 {len(skill_prompts)} 个 Skill 提示词")
+        
+        # 拼接自定义工具列表（通过 invoke_custom_tool 调用）
+        custom_tools = get_custom_tools_info()
+        if custom_tools:
+            tool_list_text = "\n\n## 可用的自定义工具（通过 invoke_custom_tool 调用）\n"
+            tool_list_text += "如需使用以下工具，请调用 invoke_custom_tool 工具，传入工具名称和参数。\n\n"
+            for tool_info in custom_tools:
+                tool_list_text += f"- **{tool_info['name']}**: {tool_info['description']}\n"
+            parts.append(tool_list_text)
+            logger.info(f"[{self.name}] system_prompt 已注入 {len(custom_tools)} 个自定义工具信息")
         
         separator = "\n\n---\n\n"
-        full_prompt = self.system_prompt + separator + separator.join(skill_prompts)
-        logger.info(f"[{self.name}] system_prompt 已注入 {len(skill_prompts)} 个 Skill 提示词")
-        return full_prompt
+        return separator.join(parts)
     
     def reload_llm(self) -> None:
         """重新加载 LLM 配置，用于设置变更后刷新 Agent 的大模型连接。"""

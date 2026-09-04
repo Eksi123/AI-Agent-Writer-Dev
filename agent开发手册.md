@@ -538,7 +538,7 @@ def _strip_frontmatter(skill_content: str) -> str:
     return frontmatter_pattern.sub('', skill_content, count=1).strip()
 
 def _load_skill(skill_name: str, skill_dir: str, skill_md_path: str) -> None:
-    """加载一个 Skill：解析 frontmatter → 存入 _skill_prompts → 加载 scripts/"""
+    """加载一个 Skill（懒加载模式）：解析 frontmatter → 存入 _skill_prompts → 记录 scripts/ 信息但不立即加载"""
     with open(skill_md_path, 'r', encoding='utf-8') as f:
         skill_content = f.read()
     
@@ -559,10 +559,18 @@ def _load_skill(skill_name: str, skill_dir: str, skill_md_path: str) -> None:
         "apply_to": apply_to,
     }
     
-    # 如果有 scripts/ 子目录，加载其中的 @tool 函数
+    # 如果有 scripts/ 子目录，记录到待加载列表（不立即加载）
     scripts_dir = os.path.join(skill_dir, "scripts")
     if os.path.isdir(scripts_dir):
-        _load_skill_scripts(skill_name, scripts_dir)
+        for filename in os.listdir(scripts_dir):
+            if filename.endswith(".py") and not filename.startswith("_"):
+                tool_name = filename[:-3]  # 去掉 .py 后缀
+                _pending_custom_tools[tool_name] = {
+                    "skill_name": skill_name,
+                    "scripts_dir": scripts_dir,
+                    "filename": filename,
+                    "loaded": False
+                }
 ```
 
 Agent 获取匹配提示词（`core/tools/__init__.py`）：
@@ -626,53 +634,136 @@ class BaseAgent:
 
 **提示词优先级**：自定义 Skill 内容追加在 Agent 默认提示词之后，用 `---` 分隔。LLM 天然更重视靠后的指令，因此自定义内容会优先被遵循。
 
-#### 3.2.4 自定义 py 工具动态决策
+#### 3.2.4 自定义 py 工具动态决策与懒加载
 
 带 `scripts/` 子目录的 Skill 中定义的 `@tool` 函数会被注册到全局 `_tool_registry`，但**不会自动绑定到 Agent**。Agent 通过内置工具 `invoke_custom_tool` 间接调用自定义工具，并根据工具的 name 和 description **动态决策**是否使用。
 
-**获取自定义工具信息**：
+**懒加载机制**：启动时仅解析 `SKILL.md` 的 frontmatter，将 `scripts/` 中的工具信息记录到 `_pending_custom_tools` 字典，**不立即执行 Python 脚本**。只有当 Agent 首次调用 `invoke_custom_tool` 时，才会动态加载对应的脚本文件。
+
+**待加载工具注册表**：
+
+```python
+# 待懒加载的自定义工具信息
+_pending_custom_tools: Dict[str, Dict[str, Any]] = {}
+# 结构：{
+#     "word_count": {
+#         "skill_name": "example-word-count",
+#         "scripts_dir": "core/tools/custom/example-word-count/scripts",
+#         "filename": "word_count.py",
+#         "loaded": False  # 是否已加载
+#     },
+#     ...
+# }
+```
+
+**获取自定义工具信息**（包括待懒加载的）：
 
 ```python
 def get_custom_tools_info() -> List[Dict[str, str]]:
     """
-    获取所有自定义工具的名称和描述信息。
+    获取所有自定义工具的名称和描述信息（包括已加载和待懒加载的）。
     用于注入到 Agent 的 system_prompt，让 Agent 根据 description 动态决策是否调用。
     """
+    result = []
+    
+    # 已加载的自定义工具
     custom_names = _get_custom_tool_names()
-    return [
-        {
-            "name": name,
-            "description": _tool_registry[name].description
-        }
-        for name in custom_names
-        if name in _tool_registry
-    ]
+    for name in custom_names:
+        if name in _tool_registry:
+            result.append({
+                "name": name,
+                "description": _tool_registry[name].description
+            })
+    
+    # 待懒加载的工具（从 SKILL.md 读取描述）
+    for tool_name, tool_info in _pending_custom_tools.items():
+        if not tool_info.get("loaded", False):
+            skill_name = tool_info["skill_name"]
+            if skill_name in _skill_prompts:
+                content = _skill_prompts[skill_name]["content"]
+                first_line = content.split('\n')[0].strip() if content else tool_name
+                result.append({
+                    "name": tool_name,
+                    "description": first_line
+                })
+    
+    return result
 ```
 
-**调用自定义工具**：
+**懒加载函数**：
+
+```python
+def _load_custom_tool_lazy(tool_name: str) -> bool:
+    """
+    懒加载单个自定义工具。首次调用时加载对应的 scripts/ 文件。
+    
+    Returns:
+        bool: 加载成功返回 True，失败返回 False
+    """
+    if tool_name not in _pending_custom_tools:
+        return False
+    
+    tool_info = _pending_custom_tools[tool_name]
+    if tool_info.get("loaded", False):
+        return True  # 已加载
+    
+    scripts_dir = tool_info["scripts_dir"]
+    filename = tool_info["filename"]
+    file_path = os.path.join(scripts_dir, filename)
+    
+    try:
+        # 动态加载模块
+        spec = importlib.util.spec_from_file_location(
+            f"core.tools.custom.{tool_info['skill_name']}.scripts.{tool_name}",
+            file_path
+        )
+        if spec and spec.loader:
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            
+            # 扫描并注册 @tool 函数
+            for attr_name in dir(module):
+                attr = getattr(module, attr_name)
+                if isinstance(attr, BaseTool):
+                    register_tool(attr)
+            
+            # 标记为已加载
+            _pending_custom_tools[tool_name]["loaded"] = True
+            return True
+    except Exception as e:
+        logger.error(f"懒加载工具 {tool_name} 失败: {e}")
+        return False
+```
+
+**调用自定义工具**（`core/tools/builtin/invoke_tool.py`）：
 
 ```python
 @tool
-def invoke_custom_tool(tool_name: str, args: str) -> str:
+def invoke_custom_tool(tool_name: str, args: str = "{}") -> str:
     """
-    调用自定义工具。根据工具名称和参数执行对应的自定义工具。
+    调用自定义工具。当你需要使用自定义 Skill 提供的工具时，调用此函数。
+    首次调用时会自动懒加载对应的脚本。
     
     Args:
-        tool_name: 自定义工具名称（如 word_count、file_info）
-        args: 工具参数（JSON 格式字符串）
+        tool_name: 要调用的工具名称（如 "word_count", "file_info"）
+        args: 工具参数，JSON 格式的字符串（如 '{"path": "test.txt"}'）
     
     Returns:
         工具执行结果
     """
-    tool = _tool_registry.get(tool_name)
-    if not tool:
-        return f"错误：未找到名为 {tool_name} 的自定义工具"
+    tool_instance = get_tool(tool_name)
     
-    try:
-        kwargs = json.loads(args) if args else {}
-        return tool.invoke(kwargs)
-    except Exception as e:
-        return f"执行工具 {tool_name} 时出错：{str(e)}"
+    if tool_instance is None:
+        # 尝试懒加载
+        loaded = _load_custom_tool_lazy(tool_name)
+        if not loaded:
+            return f"错误：找不到自定义工具 '{tool_name}'"
+        tool_instance = get_tool(tool_name)
+    
+    # 解析参数并调用工具
+    parsed_args = json.loads(args) if args else {}
+    result = tool_instance.invoke(parsed_args)
+    return str(result)
 ```
 
 **Agent 初始化时注入工具清单**：
@@ -721,11 +812,14 @@ def reload_custom_tools() -> None:
     # 2. 清空 Skill 提示词注册表
     _skill_prompts.clear()
     
-    # 3. 重新扫描 custom/ 目录
+    # 3. 清空待加载工具列表
+    _pending_custom_tools.clear()
+    
+    # 4. 重新扫描 custom/ 目录
     _load_custom_tools()
 ```
 
-热加载会同时重建**可调用工具**和**Skill 提示词**两部分。Web 端在修改在线模型设置后会自动触发 Agent 重载，进而重新注入最新的 Skill 提示词。
+热加载会同时重建**可调用工具**、**Skill 提示词**和**待懒加载工具列表**三部分。Web 端在修改在线模型设置后会自动触发 Agent 重载，进而重新注入最新的 Skill 提示词。
 
 #### 3.2.6 开发自定义 Skill 的两种模式
 
@@ -783,7 +877,7 @@ def count_words(text: str) -> str:
     return f"字数：{len(text)}"
 ```
 
-保存后，`count_words` 工具会被注册到全局工具表，Agent 在初始化时会读取该工具的 name 和 description，并根据用户需求**动态决策**是否通过 `invoke_custom_tool` 调用它。同时 `SKILL.md` 的正文会按 `applyTo` 注入到对应 Agent 的提示词中。
+保存后，`count_words` 工具的信息会被记录到待加载列表（**懒加载**），但脚本不会立即执行。Agent 在初始化时会读取该工具的 name 和 description，并根据用户需求**动态决策**是否通过 `invoke_custom_tool` 调用它。首次调用时才会加载并执行 `scripts/stats.py`。同时 `SKILL.md` 的正文会按 `applyTo` 注入到对应 Agent 的提示词中。
 
 ### 3.3 @指令路由
 
@@ -978,10 +1072,11 @@ class MyAgent(BaseAgent):
         tools = get_tools_by_names(['read_file', 'write_file'])
         
         # 调用基类
-        # 基类会自动调用 _build_full_prompt()，完成两件事：
+        # 基类会自动调用 _build_full_prompt()，完成三件事：
         # 1. 将匹配的 Skill 提示词追加到 system_prompt 末尾（根据 SKILL.md 的 applyTo 字段匹配）
-        # 2. 将所有自定义工具（带 scripts/ 的 Skill）的 name + description 注入到 system_prompt
+        # 2. 将所有自定义工具（含待懒加载的）的 name + description 注入到 system_prompt
         #    Agent 可以通过 invoke_custom_tool 动态调用这些工具
+        # 3. 自定义工具采用懒加载：首次调用时才执行 scripts/ 中的 Python 脚本
         super().__init__(
             name="my_agent",      # ← 此名称用于 Skill 提示词匹配
             system_prompt=system_prompt,
@@ -1001,10 +1096,11 @@ class MyAgent(BaseAgent):
 # applyTo: my_agent    ← 会自动注入到上面创建的 Agent
 # ---
 #
-# 注意：自定义工具的调用机制
+# 注意：自定义工具的懒加载机制
 # - 纯 Markdown Skill（无 scripts/）：仅注入提示词，无可调用工具
-# - 带 scripts/ 的 Skill：工具会被注册，但不会自动绑定到 Agent
-#   Agent 通过 invoke_custom_tool 工具动态调用，根据工具的 description 决策是否使用
+# - 带 scripts/ 的 Skill：启动时仅解析 frontmatter，不执行脚本
+#   Agent 通过 invoke_custom_tool 工具动态调用，首次调用时才懒加载脚本
+#   根据工具的 description 决策是否使用
 # ## 额外规范
 # ...
 ```

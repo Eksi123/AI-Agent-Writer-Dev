@@ -63,7 +63,8 @@ class InfoQuery(BaseAgent):
             'read_file',
             'glob_search',
             'list_directory',
-            'ask_user'
+            'ask_user',
+            'invoke_custom_tool'
         ])
         
         self._original_system_prompt = INFO_QUERY_SYSTEM_PROMPT

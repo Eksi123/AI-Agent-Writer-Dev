@@ -264,6 +264,8 @@ def word_count(text: str) -> str:
 - file_info: 获取文件的元信息（大小、修改时间等）
 ```
 
+**懒加载机制：** 带 `scripts/` 的自定义工具采用懒加载策略——启动时仅解析 `SKILL.md` 的 frontmatter 获取工具名称和描述，**不立即加载** `scripts/` 目录下的 Python 脚本。只有当 Agent 首次调用 `invoke_custom_tool` 时，才会动态加载对应的脚本文件。这样可以加快启动速度并减少内存占用。
+
 **热加载：** 修改自定义工具后，调用 `reload_custom_tools()` 即可重新加载，无需重启服务。
 
 详细说明参见 `core/tools/custom/README.md`。
@@ -644,9 +646,9 @@ class BaseAgent:
         )
     
     def _build_full_prompt(self) -> str:
-        """构建完整 system_prompt：基础提示词 + Skill 提示词 + 自定义工具清单"""
+        """构建完整 system_prompt：基础提示词 + Skill 提示词 + 自定义工具清单（含懒加载工具）"""
         skill_prompts = get_skill_prompts_for_agent(self.name)
-        custom_tools = get_custom_tools_info()  # 获取自定义工具 name + description
+        custom_tools = get_custom_tools_info()  # 获取自定义工具 name + description（包括待懒加载的）
         parts = [self.system_prompt]
         if skill_prompts:
             parts.extend(skill_prompts)

@@ -26,7 +26,8 @@ class OutlinePolisher(BaseAgent):
             'write_file',
             'edit_file',
             'fetch_url',
-            'ask_user'
+            'ask_user',
+            'invoke_custom_tool'
         ])
         
         self._original_system_prompt = get_prompt(OUTLINE_POLISHER_PROMPT)

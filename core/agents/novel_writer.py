@@ -29,7 +29,8 @@ class NovelWriter(BaseAgent):
             'glob_search',
             'list_directory',
             'fetch_url',
-            'ask_user'
+            'ask_user',
+            'invoke_custom_tool'
         ])
         
         self._original_system_prompt = get_prompt(WRITER_PROMPT)
