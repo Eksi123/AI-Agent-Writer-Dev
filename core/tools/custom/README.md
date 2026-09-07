@@ -2,9 +2,9 @@
 
 ## 概述
 
-用户可以在 `core/tools/custom/` 目录下创建自定义工具（Skill），系统会自动发现并热加载，无需重启服务。
+用户可以在 `core/tools/custom/` 目录下创建自定义技能（Skill），系统会自动发现并热加载，无需重启服务。
 
-每个 Skill 是一个独立的文件夹，包含说明书、脚本和可选的参考资源。
+每个 Skill 是一个独立的文件夹，包含说明书、脚本和可选的参考资源。所有 Skill 统一通过 `invoke_skill` 工具按 name + description 动态决策调用，Agent 根据 Skill 描述自主判断是否需要使用。所有 Skill 统一通过 `invoke_skill` 工具按 name + description 动态决策调用，Agent 根据 Skill 描述自主判断是否需要使用。
 
 ## Skill 目录结构
 
@@ -43,15 +43,20 @@ mkdir core/tools/custom/my-custom-tool
 
 ## SKILL.md 格式说明
 
-`SKILL.md` 是 Skill 的核心文档，应包含：
+`SKILL.md` 是 Skill 的核心文档，必须包含 YAML frontmatter 和正文内容：
 
 ```markdown
+---
+name: my-skill
+description: 清晰说明这个技能的用途和功能，Agent 会根据此描述决定是否调用
+---
+
 # 技能名称
 
 ## 描述
-清晰说明这个技能的用途和功能。
+详细说明这个技能的功能和使用场景。
 
-## 工具列表
+## 工具列表（如果有 scripts/）
 
 ### 工具1名称
 - **功能**: 工具功能描述
@@ -71,6 +76,29 @@ result = tool_name(param1="value", param2=10)
 - 使用限制或特殊说明
 ```
 
+### Frontmatter 字段说明
+
+| 字段 | 必需 | 说明 |
+|------|------|------|
+| `name` | ✅ | Skill 名称，用于 `invoke_skill` 调用 |
+| `description` | ✅ | Skill 描述，Agent 根据此描述动态决策是否调用 |
+
+**注意**：`description` 字段非常重要，它决定了 Agent 是否会在合适的场景下调用此 Skill。请清晰、准确地描述 Skill 的功能和适用场景。ult = tool_name(param1="value", param2=10)
+```
+
+## 注意事项
+- 使用限制或特殊说明
+```
+
+### Frontmatter 字段说明
+
+| 字段 | 必需 | 说明 |
+|------|------|------|
+| `name` | ✅ | Skill 名称，用于 `invoke_skill` 调用 |
+| `description` | ✅ | Skill 描述，Agent 根据此描述动态决策是否调用 |
+
+**注意**：`description` 字段非常重要，它决定了 Agent 是否会在合适的场景下调用此 Skill。请清晰、准确地描述 Skill 的功能和适用场景。
+
 ## 工具脚本规范
 
 ### 必须遵循的规则
@@ -89,7 +117,38 @@ result = tool_name(param1="value", param2=10)
 - `List[str]`: 字符串列表（需要在 docstring 中说明格式）
 
 ### 错误处理
+Skill 调用机制
 
+所有 Skill 统一通过内置工具 `invoke_skill` 调用：
+
+```python
+invoke_skill(skill_name: str, args: str = "{}")
+```
+
+### 调用行为
+
+- **纯 Markdown Skill**（无 scripts/）：返回 SKILL.md 正文内容，Agent 读取后按指令行事
+- **带 scripts/ 的 Skill**：懒加载脚本并执行对应工具函数，返回执行结果
+
+### 调用示例
+
+```python
+# 调用纯 Markdown Skill
+invoke_skill("sumeru-write", "{}")
+
+# 调用带 scripts/ 的 Skill
+invoke_skill("word_count", '{"path": "chapter1.md"}')
+```
+
+### 动态决策
+
+所有 Agent 的 system_prompt 中会注入可用 Skill 列表（name + description），Agent 根据描述自主判断是否需要调用某个 Skill。这种机制确保了：
+
+1. **灵活性**：Agent 可以根据上下文动态选择最合适的 Skill
+2. **效率**：只在需要时调用 Skill，避免不必要的开销
+3. **统一性**：所有 Skill 使用相同的调用接口，简化了 Agent 的工具使用逻辑
+
+## 
 工具内部应捕获异常并返回错误信息字符串，而不是抛出异常。
 
 ## 完整示例
@@ -102,6 +161,37 @@ example-word-count/
 └── scripts/
     └── word_count.py        # 工具实现
 ```
+
+## Skill 调用机制
+
+所有 Skill 统一通过内置工具 `invoke_skill` 调用：
+
+```python
+invoke_skill(skill_name: str, args: str = "{}")
+```
+
+### 调用行为
+
+- **纯 Markdown Skill**（无 scripts/）：返回 SKILL.md 正文内容，Agent 读取后按指令行事
+- **带 scripts/ 的 Skill**：懒加载脚本并执行对应工具函数，返回执行结果
+
+### 调用示例
+
+```python
+# 调用纯 Markdown Skill
+invoke_skill("sumeru-write", "{}")
+
+# 调用带 scripts/ 的 Skill
+invoke_skill("word_count", '{"path": "chapter1.md"}')
+```
+
+### 动态决策
+
+所有 Agent 的 system_prompt 中会注入可用 Skill 列表（name + description），Agent 根据描述自主判断是否需要调用某个 Skill。这种机制确保了：
+
+1. **灵活性**：Agent 可以根据上下文动态选择最合适的 Skill
+2. **效率**：只在需要时调用 Skill，避免不必要的开销
+3. **统一性**：所有 Skill 使用相同的调用接口，简化了 Agent 的工具使用逻辑
 
 ## 热加载
 

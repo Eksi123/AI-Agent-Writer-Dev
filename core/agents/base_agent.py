@@ -10,7 +10,7 @@ from langchain_core.tools import BaseTool
 from core.agent_graph import AgentGraph, create_agent_graph
 from core.config_manager import config_manager
 from core.agent_logger import logger
-from core.tools import get_all_tools, get_skill_prompts_for_agent, get_custom_tools_info
+from core.tools import get_all_tools, get_all_skills_info
 
 
 class BaseAgent:
@@ -69,27 +69,21 @@ class BaseAgent:
     
     def _build_full_prompt(self) -> str:
         """
-        构建完整的 system_prompt：基础提示词 + 匹配的 Skill 提示词 + 自定义工具列表。
-        Skill 提示词和自定义工具列表追加在末尾，LLM 天然更重视后面的指令。
+        构建完整的 system_prompt：基础提示词 + Skill 清单（通过 invoke_skill 调用）。
         """
         parts = [self.system_prompt]
         
-        # 拼接 Skill 提示词
-        skill_prompts = get_skill_prompts_for_agent(self.name)
-        if skill_prompts:
-            separator = "\n\n---\n\n"
-            parts.extend(skill_prompts)
-            logger.info(f"[{self.name}] system_prompt 已注入 {len(skill_prompts)} 个 Skill 提示词")
-        
-        # 拼接自定义工具列表（通过 invoke_custom_tool 调用）
-        custom_tools = get_custom_tools_info()
-        if custom_tools:
-            tool_list_text = "\n\n## 可用的自定义工具（通过 invoke_custom_tool 调用）\n"
-            tool_list_text += "如需使用以下工具，请调用 invoke_custom_tool 工具，传入工具名称和参数。\n\n"
-            for tool_info in custom_tools:
-                tool_list_text += f"- **{tool_info['name']}**: {tool_info['description']}\n"
-            parts.append(tool_list_text)
-            logger.info(f"[{self.name}] system_prompt 已注入 {len(custom_tools)} 个自定义工具信息")
+        # 拼接 Skill 清单（name + description），Agent 通过 invoke_skill 按需调用
+        skills_info = get_all_skills_info()
+        if skills_info:
+            skills_desc = "\n".join([f"- {s['name']}: {s['description']}" for s in skills_info])
+            skills_section = (
+                "\n\n## 可用的 Skill（通过 invoke_skill 调用）\n"
+                "如需使用上述 Skill，请调用 invoke_skill 工具，传入 Skill 名称和参数。\n\n"
+                f"{skills_desc}"
+            )
+            parts.append(skills_section)
+            logger.info(f"[{self.name}] system_prompt 已注入 {len(skills_info)} 个 Skill 信息")
         
         separator = "\n\n---\n\n"
         return separator.join(parts)

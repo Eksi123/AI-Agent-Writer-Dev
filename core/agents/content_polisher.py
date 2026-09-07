@@ -29,7 +29,7 @@ class ContentPolisher(BaseAgent):
             'list_directory',
             'fetch_url',
             'ask_user',
-            'invoke_custom_tool'
+            'invoke_skill'
         ])
         
         self._original_system_prompt = get_prompt(CONTENT_POLISHER_PROMPT)

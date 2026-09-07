@@ -30,14 +30,14 @@ Agent-Writer 是一个**AI 驱动的小说写作系统**。它不是简单的聊
 
 ### 你已掌握的技术 vs 本项目使用的技术
 
-| 你已掌握 | 本项目使用 | 差异说明 |
-|---------|-----------|---------|
-| ✅ Python | ✅ Python | 完全一致 |
-| ✅ LangChain | ✅ LangChain | 完全一致，主要用于 `@tool` 装饰器 |
-| ✅ LangGraph | ✅ LangGraph | **核心框架**，需要深入理解 `StateGraph` |
-| ✅ OpenAI API | ✅ OpenAI API | 完全一致，但使用兼容接口支持多模型 |
-| ⚠️ FastAPI | ❌ **Flask** | 本项目用 Flask，更轻量，学习成本低 |
-| ✅ HTML 基础 | ✅ HTML/CSS/JS | 前端是模块化 SPA（`web/index.html` + `web/css/` + `web/js/`），需要了解基础 JS |
+| 你已掌握      | 本项目使用        | 差异说明                                                                             |
+| ------------- | ----------------- | ------------------------------------------------------------------------------------ |
+| ✅ Python     | ✅ Python         | 完全一致                                                                             |
+| ✅ LangChain  | ✅ LangChain      | 完全一致，主要用于`@tool` 装饰器                                                   |
+| ✅ LangGraph  | ✅ LangGraph      | **核心框架**，需要深入理解 `StateGraph`                                      |
+| ✅ OpenAI API | ✅ OpenAI API     | 完全一致，但使用兼容接口支持多模型                                                   |
+| ⚠️ FastAPI  | ❌**Flask** | 本项目用 Flask，更轻量，学习成本低                                                   |
+| ✅ HTML 基础  | ✅ HTML/CSS/JS    | 前端是模块化 SPA（`web/index.html` + `web/css/` + `web/js/`），需要了解基础 JS |
 
 ### 重要提示
 
@@ -64,6 +64,7 @@ def hello():
 ```
 
 **主要区别**：
+
 - Flask 默认同步，FastAPI 默认异步（但本项目不需要异步）
 - Flask 用 `@app.route()`，FastAPI 用 `@app.get/post()`
 - Flask 更简单，学习曲线更低
@@ -114,6 +115,7 @@ def index():
 ```
 
 **学习资源**：
+
 - Flask 官方快速入门：https://flask.palletsprojects.com/quickstart/
 - 重点阅读：路由、请求对象、JSON 响应
 
@@ -132,6 +134,7 @@ class AgentState(TypedDict):
 ```
 
 **`add_messages` 的作用**：
+
 - 当节点返回 `{"messages": [新消息]}` 时，新消息会**自动追加**到列表末尾
 - 而不是覆盖整个列表
 - 这样可以累积多轮对话历史
@@ -147,14 +150,15 @@ graph.add_conditional_edges(
 ```
 
 **路由函数**：
+
 ```python
 def _should_continue(self, state: AgentState) -> str:
     last_message = state["messages"][-1]
-    
+  
     # 如果有工具调用请求，路由到工具节点
     if hasattr(last_message, "tool_calls") and last_message.tool_calls:
         return "tools"
-    
+  
     # 否则结束
     return "end"
 ```
@@ -182,6 +186,7 @@ self.graph = graph.compile()
 ```
 
 **执行流程**：
+
 ```
 START → llm_node → 有工具调用? → tool_node → llm_node（循环）
                    无工具调用? → END
@@ -211,9 +216,9 @@ async function sendMessage(message) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: message })
     });
-    
+  
     const data = await response.json();
-    
+  
     // 渲染回复
     displayMessage(data.data.response);
 }
@@ -242,6 +247,7 @@ element.innerHTML = html;
 ```
 
 **学习资源**：
+
 - MDN Web Docs：https://developer.mozilla.org/zh-CN/
 - 重点：fetch API、DOM 操作、事件监听
 
@@ -275,6 +281,7 @@ python demo/demo-langgraph.py
 ```
 
 **验证成功标志**：
+
 - 看到 "Agent-Loop 开始" 等日志输出
 - Agent 能够调用工具并返回结果
 
@@ -299,7 +306,7 @@ python demo/demo-langgraph.py
 │              业务逻辑层                              │
 │  core/workflow/          写作工作流引擎              │
 │  core/agents/            Agent 定义与注册            |
-|  core/prompts/           Agent 角色提示词            |                                             
+|  core/prompts/           Agent 角色提示词            |                                           
 │  core/project_manager.py 项目管理                    │
 └──────────────────────┬──────────────────────────────┘
                        │
@@ -315,19 +322,19 @@ python demo/demo-langgraph.py
 
 ### 2.2 文件职责速查表
 
-| 文件 | 职责 | 核心知识点 |
-|------|------|-----------|
-| `main.py` | 命令行入口 | argparse、@指令解析 |
-| `web/app.py` | Flask Web 服务 | Flask 路由、REST API |
-| `core/agent_graph.py` | **Agent-Loop 核心** | LangGraph StateGraph |
-| `core/agents/base_agent.py` | Agent 基类 | 继承、封装 |
-| `core/agents/*.py` | 具体 Agent | 系统提示词、工具绑定 |
-| `core/tools/__init__.py` | 工具注册表 | importlib 动态加载 |
-| `core/tools/builtin/*.py` | 内置工具 | @tool 装饰器 |
-| `core/workflow/*.py` | 写作工作流 | 三阶段编排 |
-| `core/project_manager.py` | 项目管理 | 文件读写、目录操作 |
-| `core/config_manager.py` | 配置管理 | ConfigParser |
-| `core/prompts/*.md` | 系统提示词 | Markdown 格式 |
+| 文件                          | 职责                      | 核心知识点           |
+| ----------------------------- | ------------------------- | -------------------- |
+| `main.py`                   | 命令行入口                | argparse、@指令解析  |
+| `web/app.py`                | Flask Web 服务            | Flask 路由、REST API |
+| `core/agent_graph.py`       | **Agent-Loop 核心** | LangGraph StateGraph |
+| `core/agents/base_agent.py` | Agent 基类                | 继承、封装           |
+| `core/agents/*.py`          | 具体 Agent                | 系统提示词、工具绑定 |
+| `core/tools/__init__.py`    | 工具注册表                | importlib 动态加载   |
+| `core/tools/builtin/*.py`   | 内置工具                  | @tool 装饰器         |
+| `core/workflow/*.py`        | 写作工作流                | 三阶段编排           |
+| `core/project_manager.py`   | 项目管理                  | 文件读写、目录操作   |
+| `core/config_manager.py`    | 配置管理                  | ConfigParser         |
+| `core/prompts/*.md`         | 系统提示词                | Markdown 格式        |
 
 ### 2.3 数据流示例
 
@@ -384,6 +391,7 @@ Agent-Loop 是 AI Agent 的运行模式：
 ```
 
 **类比**：就像一个人写文章
+
 1. **思考**：我需要先看看大纲写了什么
 2. **行动**：调用 `read_file` 读大纲
 3. **观察**：看到大纲内容了
@@ -399,10 +407,10 @@ def _llm_node(self, state: AgentState) -> dict:
     # 添加系统提示词
     system_msg = SystemMessage(content=self.system_prompt)
     messages = [system_msg] + state["messages"]
-    
+  
     # 调用 LLM
     response = self.llm_with_tools.invoke(messages)
-    
+  
     # 返回新消息（会自动追加到 state["messages"]）
     return {"messages": [response]}
 
@@ -410,31 +418,30 @@ def _tool_node(self, state: AgentState) -> dict:
     """行动节点：执行工具调用"""
     last_message = state["messages"][-1]
     tool_calls = last_message.tool_calls
-    
+  
     results = []
     for tool_call in tool_calls:
         tool_name = tool_call["name"]
         tool_args = tool_call["args"]
-        
+      
         # 执行工具
         tool_result = self.tool_map[tool_name].invoke(tool_args)
-        
+      
         # 构造 ToolMessage
         results.append(ToolMessage(
             content=tool_result,
             tool_call_id=tool_call["id"]
         ))
-    
+  
     return {"messages": results}
 ```
 
 ### 3.2 工具系统
 
-工具是 Agent 与外部世界交互的接口。本项目的工具系统分为三个层次：
+工具是 Agent 与外部世界交互的接口。本项目的工具系统分为两个层次：
 
 1. **内置工具**（`core/tools/builtin/`）：系统自带的 `@tool` 函数，启动时自动注册，静态分配给各 Agent
-2. **自定义 Skill - 提示词注入**（纯 Markdown）：`SKILL.md` 正文按 `applyTo` 字段注入到对应 Agent 的 `system_prompt`
-3. **自定义 Skill - 可调用工具**（带 `scripts/`）：`scripts/` 中的 `@tool` 函数注册后，Agent 通过 `invoke_custom_tool` 根据工具的 name 和 description **动态决策**是否调用
+2. **自定义 Skill**（`core/tools/custom/`）：统一通过 `invoke_skill` 工具调用，Agent 根据 Skill 的 name + description 动态决策是否使用
 
 #### 3.2.1 内置工具注册
 
@@ -447,12 +454,12 @@ from langchain_core.tools import tool
 @tool
 def read_file(file_path: str, start_line: int = 1, end_line: int = -1) -> str:
     """读取文件内容
-    
+  
     Args:
         file_path: 文件路径
         start_line: 起始行号
         end_line: 结束行号
-    
+  
     Returns:
         文件内容
     """
@@ -467,24 +474,22 @@ def read_file(file_path: str, start_line: int = 1, end_line: int = -1) -> str:
 tools = get_tools_by_names(['read_file', 'write_file', 'edit_file'])
 ```
 
-#### 3.2.2 自定义 Skill 与 `applyTo` 提示词注入
+#### 3.2.2 自定义 Skill 统一调用机制
 
-这是本项目自定义工具的核心机制。每个 Skill 目录下有一个 `SKILL.md`，其 YAML frontmatter 中的 `applyTo` 字段决定该 Skill 的 Markdown 正文注入到哪些 Agent 的 `system_prompt` 中。
+所有自定义 Skill 统一通过 `invoke_skill(skill_name, args)` 工具调用。不再区分"提示词注入"和"可调用工具"两种模式，也不再使用 `applyTo` 字段。
 
 **Skill 目录结构**：
 
 ```
 core/tools/custom/
 ├── sumeru-write/          # 纯 Markdown Skill（无 scripts/）
-│   └── SKILL.md           #   applyTo: writer  → 注入到 NovelWriter
+│   └── SKILL.md           #   调用时返回 Markdown 正文
 ├── sumeru-polish/
-│   └── SKILL.md           #   applyTo: content_polisher
-├── sumeru-worldbuilder/
-│   └── SKILL.md           #   applyTo: writer, outline_polisher, content_polisher
+│   └── SKILL.md
 ├── example-word-count/    # 带脚本的 Skill
-│   ├── SKILL.md           #   applyTo: all（默认）
+│   ├── SKILL.md           #   调用时懒加载 scripts/ 并执行 @tool 函数
 │   └── scripts/
-│       └── word_count.py  #   @tool 函数 → 自动绑定到所有 Agent
+│       └── word_count.py
 └── ...
 ```
 
@@ -494,316 +499,110 @@ core/tools/custom/
 ---
 name: sumeru-write
 description: 须弥小说写作技能
-applyTo: writer
 ---
 
 ## 写作规范
 
 1. 每次写作前先阅读大纲对应章节...
 2. 注意人物性格一致性...
-...（此处内容会被注入到 NovelWriter 的 system_prompt）
 ```
 
-**`applyTo` 字段取值**：
+**调用流程**：
 
-| 值                                           | 注入目标                            |
-| -------------------------------------------- | ----------------------------------- |
-| `writer`                                   | NovelWriter（@写作 Agent）          |
-| `outline_polisher`                         | OutlinePolisher（@大纲润色 Agent）  |
-| `content_polisher`                         | ContentPolisher（@小说润色 Agent）  |
-| `chat`                                     | ChatAgent（默认对话 Agent）         |
-| `writer, outline_polisher, content_polisher` | 同时注入到多个 Agent（逗号分隔）  |
-| `all`                                    | 注入到所有 Agent                    |
-| 不填 / 不写 `applyTo`                      | 默认等同 `all`，注入到所有 Agent    |
+1. Agent 初始化时，`_build_full_prompt()` 在 `system_prompt` 末尾追加 Skill 清单（name + description）
+2. Agent 根据用户需求和 description 自主决策是否调用 `invoke_skill`
+3. 纯 Markdown Skill → 返回 SKILL.md 正文内容
+4. 带脚本的 Skill → 懒加载 `scripts/` 目录，执行指定的 `@tool` 函数并返回结果
 
-#### 3.2.3 Skill 提示词注入的内部实现
+#### 3.2.3 内部实现
 
-加载流程（`core/tools/__init__.py`）：
+**统一注册表**（`core/tools/__init__.py`）：
 
 ```python
-# 全局 Skill 提示词注册表
-_skill_prompts: Dict[str, Dict[str, Any]] = {}
+# 全局 Skill 注册表
+_skill_registry: Dict[str, Dict[str, Any]] = {}
 # 结构：{
 #   "sumeru-write": {
-#       "content": "<SKILL.md 正文，去掉 frontmatter>",
-#       "apply_to": ["writer"]
+#       "name": "sumeru-write",
+#       "description": "须弥小说写作技能",
+#       "content": "<SKILL.md 正文>",
+#       "has_scripts": False,
+#       "scripts_dir": None,
+#       "skill_dir": "...",
+#       "scripts_loaded": False
 #   },
-#   ...
-# }
-
-def _parse_skill_frontmatter(skill_content: str) -> Dict[str, Any]:
-    """解析 SKILL.md 的 YAML frontmatter（正则提取 --- ... --- 段）"""
-    frontmatter_pattern = re.compile(r'^---\s*\n(.*?)\n---\s*\n', re.DOTALL)
-    match = frontmatter_pattern.match(skill_content)
-    if not match:
-        return {}
-    # 按行解析 key: value，逗号分隔的值转为列表
-    ...
-
-def _strip_frontmatter(skill_content: str) -> str:
-    """去掉 frontmatter 后的纯 Markdown 正文"""
-    frontmatter_pattern = re.compile(r'^---\s*\n.*?\n---\s*\n', re.DOTALL)
-    return frontmatter_pattern.sub('', skill_content, count=1).strip()
-
-def _load_skill(skill_name: str, skill_dir: str, skill_md_path: str) -> None:
-    """加载一个 Skill（懒加载模式）：解析 frontmatter → 存入 _skill_prompts → 记录 scripts/ 信息但不立即加载"""
-    with open(skill_md_path, 'r', encoding='utf-8') as f:
-        skill_content = f.read()
-    
-    frontmatter = _parse_skill_frontmatter(skill_content)
-    body = _strip_frontmatter(skill_content)
-    
-    # 解析 applyTo 字段
-    apply_to_raw = frontmatter.get("applyTo", "")
-    if isinstance(apply_to_raw, list):
-        apply_to = [t.strip().lower() for t in apply_to_raw]
-    elif isinstance(apply_to_raw, str) and apply_to_raw:
-        apply_to = [t.strip().lower() for t in apply_to_raw.split(',')]
-    else:
-        apply_to = []  # 空 → 默认注入到所有 Agent
-    
-    _skill_prompts[skill_name] = {
-        "content": body,
-        "apply_to": apply_to,
-    }
-    
-    # 如果有 scripts/ 子目录，记录到待加载列表（不立即加载）
-    scripts_dir = os.path.join(skill_dir, "scripts")
-    if os.path.isdir(scripts_dir):
-        for filename in os.listdir(scripts_dir):
-            if filename.endswith(".py") and not filename.startswith("_"):
-                tool_name = filename[:-3]  # 去掉 .py 后缀
-                _pending_custom_tools[tool_name] = {
-                    "skill_name": skill_name,
-                    "scripts_dir": scripts_dir,
-                    "filename": filename,
-                    "loaded": False
-                }
-```
-
-Agent 获取匹配提示词（`core/tools/__init__.py`）：
-
-```python
-def get_skill_prompts_for_agent(agent_name: str) -> List[str]:
-    """获取应该注入到指定 Agent 的 system_prompt 的 Skill 提示词列表"""
-    agent_lower = agent_name.lower()
-    prompts = []
-    
-    for skill_name, skill_info in _skill_prompts.items():
-        apply_to = skill_info.get("apply_to", [])
-        
-        # 没有 applyTo 字段时，默认注入到所有 Agent
-        if not apply_to:
-            prompts.append(skill_info["content"])
-            continue
-        
-        # 检查 applyTo 中是否包含 "all" 或当前 Agent 名
-        for target in apply_to:
-            target_lower = target.lower()
-            if target_lower == "all" or target_lower == agent_lower:
-                prompts.append(skill_info["content"])
-                break
-    
-    return prompts
-```
-
-Agent 注入提示词（`core/agents/base_agent.py`）：
-
-```python
-class BaseAgent:
-    def _init_agent_graph(self) -> None:
-        """初始化 Agent：自动拼接匹配的 Skill 提示词到 system_prompt"""
-        config = config_manager.get_llm_config()
-        
-        # 拼接 Skill 提示词到 system_prompt
-        full_prompt = self._build_full_prompt()
-        
-        self.agent_graph = create_agent_graph(
-            base_url=config["api_url"],
-            api_key=config["api_key"],
-            model=config["model_name"],
-            tools=self.tools,
-            system_prompt=full_prompt,  # ← 使用的是拼接后的完整提示词
-            temperature=config["temperature"]
-        )
-    
-    def _build_full_prompt(self) -> str:
-        """构建完整 system_prompt：基础提示词 + Skill 提示词"""
-        skill_prompts = get_skill_prompts_for_agent(self.name)
-        
-        if not skill_prompts:
-            return self.system_prompt
-        
-        separator = "\n\n---\n\n"
-        full_prompt = self.system_prompt + separator + separator.join(skill_prompts)
-        logger.info(f"[{self.name}] system_prompt 已注入 {len(skill_prompts)} 个 Skill 提示词")
-        return full_prompt
-```
-
-**提示词优先级**：自定义 Skill 内容追加在 Agent 默认提示词之后，用 `---` 分隔。LLM 天然更重视靠后的指令，因此自定义内容会优先被遵循。
-
-#### 3.2.4 自定义 py 工具动态决策与懒加载
-
-带 `scripts/` 子目录的 Skill 中定义的 `@tool` 函数会被注册到全局 `_tool_registry`，但**不会自动绑定到 Agent**。Agent 通过内置工具 `invoke_custom_tool` 间接调用自定义工具，并根据工具的 name 和 description **动态决策**是否使用。
-
-**懒加载机制**：启动时仅解析 `SKILL.md` 的 frontmatter，将 `scripts/` 中的工具信息记录到 `_pending_custom_tools` 字典，**不立即执行 Python 脚本**。只有当 Agent 首次调用 `invoke_custom_tool` 时，才会动态加载对应的脚本文件。
-
-**待加载工具注册表**：
-
-```python
-# 待懒加载的自定义工具信息
-_pending_custom_tools: Dict[str, Dict[str, Any]] = {}
-# 结构：{
-#     "word_count": {
-#         "skill_name": "example-word-count",
-#         "scripts_dir": "core/tools/custom/example-word-count/scripts",
-#         "filename": "word_count.py",
-#         "loaded": False  # 是否已加载
-#     },
-#     ...
+#   "example-word-count": {
+#       "name": "example-word-count",
+#       "description": "字数统计工具",
+#       "content": "...",
+#       "has_scripts": True,
+#       "scripts_dir": ".../scripts",
+#       "skill_dir": "...",
+#       "scripts_loaded": False  # 懒加载标记
+#   }
 # }
 ```
 
-**获取自定义工具信息**（包括待懒加载的）：
-
-```python
-def get_custom_tools_info() -> List[Dict[str, str]]:
-    """
-    获取所有自定义工具的名称和描述信息（包括已加载和待懒加载的）。
-    用于注入到 Agent 的 system_prompt，让 Agent 根据 description 动态决策是否调用。
-    """
-    result = []
-    
-    # 已加载的自定义工具
-    custom_names = _get_custom_tool_names()
-    for name in custom_names:
-        if name in _tool_registry:
-            result.append({
-                "name": name,
-                "description": _tool_registry[name].description
-            })
-    
-    # 待懒加载的工具（从 SKILL.md 读取描述）
-    for tool_name, tool_info in _pending_custom_tools.items():
-        if not tool_info.get("loaded", False):
-            skill_name = tool_info["skill_name"]
-            if skill_name in _skill_prompts:
-                content = _skill_prompts[skill_name]["content"]
-                first_line = content.split('\n')[0].strip() if content else tool_name
-                result.append({
-                    "name": tool_name,
-                    "description": first_line
-                })
-    
-    return result
-```
-
-**懒加载函数**：
-
-```python
-def _load_custom_tool_lazy(tool_name: str) -> bool:
-    """
-    懒加载单个自定义工具。首次调用时加载对应的 scripts/ 文件。
-    
-    Returns:
-        bool: 加载成功返回 True，失败返回 False
-    """
-    if tool_name not in _pending_custom_tools:
-        return False
-    
-    tool_info = _pending_custom_tools[tool_name]
-    if tool_info.get("loaded", False):
-        return True  # 已加载
-    
-    scripts_dir = tool_info["scripts_dir"]
-    filename = tool_info["filename"]
-    file_path = os.path.join(scripts_dir, filename)
-    
-    try:
-        # 动态加载模块
-        spec = importlib.util.spec_from_file_location(
-            f"core.tools.custom.{tool_info['skill_name']}.scripts.{tool_name}",
-            file_path
-        )
-        if spec and spec.loader:
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
-            
-            # 扫描并注册 @tool 函数
-            for attr_name in dir(module):
-                attr = getattr(module, attr_name)
-                if isinstance(attr, BaseTool):
-                    register_tool(attr)
-            
-            # 标记为已加载
-            _pending_custom_tools[tool_name]["loaded"] = True
-            return True
-    except Exception as e:
-        logger.error(f"懒加载工具 {tool_name} 失败: {e}")
-        return False
-```
-
-**调用自定义工具**（`core/tools/builtin/invoke_tool.py`）：
-
-```python
-@tool
-def invoke_custom_tool(tool_name: str, args: str = "{}") -> str:
-    """
-    调用自定义工具。当你需要使用自定义 Skill 提供的工具时，调用此函数。
-    首次调用时会自动懒加载对应的脚本。
-    
-    Args:
-        tool_name: 要调用的工具名称（如 "word_count", "file_info"）
-        args: 工具参数，JSON 格式的字符串（如 '{"path": "test.txt"}'）
-    
-    Returns:
-        工具执行结果
-    """
-    tool_instance = get_tool(tool_name)
-    
-    if tool_instance is None:
-        # 尝试懒加载
-        loaded = _load_custom_tool_lazy(tool_name)
-        if not loaded:
-            return f"错误：找不到自定义工具 '{tool_name}'"
-        tool_instance = get_tool(tool_name)
-    
-    # 解析参数并调用工具
-    parsed_args = json.loads(args) if args else {}
-    result = tool_instance.invoke(parsed_args)
-    return str(result)
-```
-
-**Agent 初始化时注入工具清单**：
+**Skill 清单注入**（`core/agents/base_agent.py`）：
 
 ```python
 def _build_full_prompt(self) -> str:
-    """构建完整 system_prompt：基础提示词 + Skill 提示词 + 自定义工具清单"""
-    skill_prompts = get_skill_prompts_for_agent(self.name)
-    custom_tools = get_custom_tools_info()
-    
+    """构建完整 system_prompt：基础提示词 + Skill 清单"""
+    skills_info = get_all_skills_info()  # 获取所有 Skill 的 name + description
+  
     parts = [self.system_prompt]
-    
-    # 追加 Skill 提示词
-    if skill_prompts:
-        parts.extend(skill_prompts)
-    
-    # 追加自定义工具清单
-    if custom_tools:
-        tools_desc = "\n".join([f"- {t['name']}: {t['description']}" for t in custom_tools])
-        custom_tools_section = f"""
-## 可用的自定义工具（通过 invoke_custom_tool 调用）
-{tools_desc}
+  
+    if skills_info:
+        skills_desc = "\n".join([f"- {s['name']}: {s['description']}" for s in skills_info])
+        skills_section = f"""
+## 可用的 Skill（通过 invoke_skill 调用）
+{skills_desc}
 
-如需使用上述工具，请调用 invoke_custom_tool 工具，传入工具名称和参数。
+如需使用上述 Skill，请调用 invoke_skill 工具，传入 Skill 名称和参数。
 """
-        parts.append(custom_tools_section)
-    
+        parts.append(skills_section)
+  
     separator = "\n\n---\n\n"
     return separator.join(parts)
 ```
 
-这意味着：只要你在 `core/tools/custom/xxx/scripts/` 下新建一个 `.py` 文件并用 `@tool` 装饰器定义函数，Agent 会根据用户需求和工具描述**自主判断**是否需要调用它。
+**invoke_skill 工具**（`core/tools/builtin/invoke_skill.py`）：
+
+```python
+@tool
+def invoke_skill(skill_name: str, args: str = "{}") -> str:
+    """
+    调用自定义 Skill。根据 Skill 名称和参数执行对应的功能。
+  
+    Args:
+        skill_name: Skill 名称
+        args: Skill 参数，JSON 格式的字符串
+  
+    Returns:
+        Skill 执行结果
+    """
+    skill_info = get_skill_info(skill_name)
+    if not skill_info:
+        return f"错误：找不到 Skill '{skill_name}'"
+  
+    # 纯 Markdown Skill → 返回正文内容
+    if not skill_info["has_scripts"]:
+        return skill_info["content"]
+  
+    # 带脚本的 Skill → 懒加载并调用
+    if not skill_info["scripts_loaded"]:
+        load_skill_scripts(skill_name)
+  
+    # 从 args 中提取 tool_name，默认使用 skill_name
+    parsed_args = json.loads(args) if args else {}
+    tool_name = parsed_args.pop("tool_name", skill_name)
+  
+    tool_instance = get_tool(tool_name)
+    if not tool_instance:
+        return f"错误：Skill '{skill_name}' 中没有工具 '{tool_name}'"
+  
+    return str(tool_instance.invoke(parsed_args))
+```
 
 #### 3.2.5 热加载机制
 
@@ -816,13 +615,13 @@ def reload_custom_tools() -> None:
     custom_names = [name for name in _tool_registry if not name.startswith("builtin_")]
     for name in custom_names:
         del _tool_registry[name]
-    
+  
     # 2. 清空 Skill 提示词注册表
     _skill_prompts.clear()
-    
+  
     # 3. 清空待加载工具列表
     _pending_custom_tools.clear()
-    
+  
     # 4. 重新扫描 custom/ 目录
     _load_custom_tools()
 ```
@@ -875,10 +674,10 @@ from langchain_core.tools import tool
 @tool
 def count_words(text: str) -> str:
     """统计文本字数
-    
+  
     Args:
         text: 待统计的文本
-    
+  
     Returns:
         字数统计结果
     """
@@ -895,7 +694,7 @@ def count_words(text: str) -> str:
 def parse_command(self, user_input: str) -> tuple:
     """
     解析 @指令
-    
+  
     "@写作 第1章"  →  ("writer", "第1章")
     "@大纲润色 优化结构"  →  ("outline_polisher", "优化结构")
     "今天天气不错"  →  ("chat", "今天天气不错")
@@ -904,7 +703,7 @@ def parse_command(self, user_input: str) -> tuple:
         parts = user_input.split(maxsplit=1)  # 分成两部分
         command = parts[0]                     # "@写作"
         actual_input = parts[1] if len(parts) > 1 else ""
-        
+      
         command_map = {
             '@写作': 'writer',
             '@大纲润色': 'outline_polisher',
@@ -912,10 +711,10 @@ def parse_command(self, user_input: str) -> tuple:
             '@汇总说明': 'summary',
             '@信息查询': 'info_query'
         }
-        
+      
         if command in command_map:
             return command_map[command], actual_input
-    
+  
     return 'chat', user_input  # 默认自由对话
 ```
 
@@ -934,12 +733,14 @@ output/
 ```
 
 **ProjectManager 职责**：
+
 - `list_projects()` - 扫描 output/ 目录
 - `create_project(name)` - 创建目录 + 初始化 outline.md
 - `load_project(name)` - 加载项目
 - `delete_project(name)` - 删除项目
 
 **NovelProject 职责**：
+
 - `read_outline()` - 读取大纲
 - `write_outline(content)` - 写入大纲
 - `read_chapter(vol, ch)` - 读取章节
@@ -962,13 +763,13 @@ output/
 
 #### 第 1 周：基础设施
 
-| 天 | 任务 | 涉及文件 | 核心知识点 |
-|----|------|---------|-----------|
-| D1 | 配置管理 | `config_manager.py` | ConfigParser |
-| D2 | 日志模块 | `agent_logger.py` | logging 模块 |
-| D3 | LLM 客户端 | `agent_llm.py` | ChatOpenAI |
-| D4 | Agent 状态图 | `agent_graph.py` | **LangGraph StateGraph** |
-| D5 | Agent 基类 | `base_agent.py` | 继承、封装 |
+| 天 | 任务         | 涉及文件              | 核心知识点                     |
+| -- | ------------ | --------------------- | ------------------------------ |
+| D1 | 配置管理     | `config_manager.py` | ConfigParser                   |
+| D2 | 日志模块     | `agent_logger.py`   | logging 模块                   |
+| D3 | LLM 客户端   | `agent_llm.py`      | ChatOpenAI                     |
+| D4 | Agent 状态图 | `agent_graph.py`    | **LangGraph StateGraph** |
+| D5 | Agent 基类   | `base_agent.py`     | 继承、封装                     |
 
 **D1：config_manager.py**
 
@@ -980,7 +781,7 @@ class ConfigManager:
     def __init__(self):
         self.config = configparser.ConfigParser()
         self.config.read('config.ini', encoding='utf-8')
-    
+  
     def get_llm_config(self) -> dict:
         return {
             "api_url": self.config.get("LLM", "api_url"),
@@ -1010,11 +811,11 @@ class AgentGraph:
         self.tool_map = {tool.name: tool for tool in tools}
         self.system_prompt = system_prompt
         self.graph = self._build_graph()
-    
+  
     def _build_graph(self):
         graph = StateGraph(AgentState)
         graph.add_node("llm", self._llm_node)
-        
+      
         if self.tools:
             graph.add_node("tools", self._tool_node)
             graph.add_edge(START, "llm")
@@ -1027,21 +828,22 @@ class AgentGraph:
         else:
             graph.add_edge(START, "llm")
             graph.add_edge("llm", END)
-        
+      
         return graph.compile()
 ```
 
 #### 第 2 周：工具系统 + 项目管理
 
-| 天 | 任务 | 涉及文件 |
-|----|------|---------|
-| D1 | 工具注册表 | `core/tools/__init__.py` |
-| D2 | 基础工具 | `read_tool.py`、`write_tool.py`、`list_tool.py` |
-| D3 | 更多工具 | `edit_tool.py`、`glob_tool.py`、`ask_tool.py` |
-| D4 | 项目管理 | `project_manager.py` |
-| D5 | @指令路由 | `main.py` 中的 AgentWriter |
+| 天 | 任务       | 涉及文件                                              |
+| -- | ---------- | ----------------------------------------------------- |
+| D1 | 工具注册表 | `core/tools/__init__.py`                            |
+| D2 | 基础工具   | `read_tool.py`、`write_tool.py`、`list_tool.py` |
+| D3 | 更多工具   | `edit_tool.py`、`glob_tool.py`、`ask_tool.py`   |
+| D4 | 项目管理   | `project_manager.py`                                |
+| D5 | @指令路由  | `main.py` 中的 AgentWriter                          |
 
 **验证清单**：
+
 - [ ] `python main.py` 能启动
 - [ ] 输入消息能收到回复
 - [ ] `@写作 第1章` 能切换到 writer Agent
@@ -1053,13 +855,13 @@ class AgentGraph:
 
 #### 第 3 周：Agent 开发
 
-| 天 | 任务 | 涉及文件 |
-|----|------|---------|
-| D1 | ChatAgent | `chat_agent.py` |
-| D2 | NovelWriter | `novel_writer.py` |
-| D3 | 提示词模板 | `prompts/being_writer.md` |
-| D4 | OutlinePolisher + ContentPolisher | 对应文件 |
-| D5 | SummaryGenerator + InfoQuery | 对应文件 |
+| 天 | 任务                              | 涉及文件                    |
+| -- | --------------------------------- | --------------------------- |
+| D1 | ChatAgent                         | `chat_agent.py`           |
+| D2 | NovelWriter                       | `novel_writer.py`         |
+| D3 | 提示词模板                        | `prompts/being_writer.md` |
+| D4 | OutlinePolisher + ContentPolisher | 对应文件                    |
+| D5 | SummaryGenerator + InfoQuery      | 对应文件                    |
 
 **创建新 Agent 的步骤**：
 
@@ -1075,10 +877,10 @@ class MyAgent(BaseAgent):
         # 读取提示词
         with open("core/prompts/my_agent.md", "r", encoding="utf-8") as f:
             system_prompt = f.read()
-        
+      
         # 选择工具（仅声明内置工具，自定义 py 工具会自动追加）
         tools = get_tools_by_names(['read_file', 'write_file'])
-        
+      
         # 调用基类
         # 基类会自动调用 _build_full_prompt()，完成三件事：
         # 1. 将匹配的 Skill 提示词追加到 system_prompt 末尾（根据 SKILL.md 的 applyTo 字段匹配）
@@ -1117,12 +919,12 @@ class MyAgent(BaseAgent):
 
 #### 第 4 周：工作流引擎
 
-| 天 | 任务 | 涉及文件 |
-|----|------|---------|
-| D1 | OutlineReviewer | `outline_reviewer.py` |
-| D2 | LogicReviewer | `logic_reviewer.py` |
+| 天   | 任务            | 涉及文件                |
+| ---- | --------------- | ----------------------- |
+| D1   | OutlineReviewer | `outline_reviewer.py` |
+| D2   | LogicReviewer   | `logic_reviewer.py`   |
 | D3-4 | WritingWorkflow | `writing_workflow.py` |
-| D5 | 集成测试 | 全流程测试 |
+| D5   | 集成测试        | 全流程测试              |
 
 **工作流控制器**：
 
@@ -1132,19 +934,19 @@ class WritingWorkflow:
         self.writer = writer
         self.outline_reviewer = OutlineReviewer()
         self.logic_reviewer = LogicReviewer()
-    
+  
     def write_chapter(self, volume: int, chapter: int) -> dict:
         # Step 1: 大纲审查
         outline_section = self._extract_outline_section(volume, chapter)
         outline_review = self.outline_reviewer.review(outline_section)
-        
+      
         # Step 2: 章节写作
         chapter_content = self._write_chapter_content(volume, chapter)
-        
+      
         # Step 3: 逻辑审查
         previous_chapters = self._get_all_previous_chapters(volume, chapter)
         logic_review = self.logic_reviewer.review(chapter_content, previous_chapters)
-        
+      
         return {
             "success": True,
             "chapter_content": chapter_content,
@@ -1154,6 +956,7 @@ class WritingWorkflow:
 ```
 
 **验证清单**：
+
 - [ ] `@写作 第1卷 第1章` 能触发完整工作流
 - [ ] 大纲审查能检测问题
 - [ ] 章节能正确写入文件
@@ -1163,13 +966,13 @@ class WritingWorkflow:
 
 **目标**：实现 Skill 目录格式、提示词注入（applyTo）和热加载
 
-| 天 | 任务 |
-|----|------|
-| D1 | 设计 Skill 目录格式（支持纯 Markdown 和带脚本两种模式） |
-| D2 | 实现 `_load_custom_tools()` + `_parse_skill_frontmatter()` |
+| 天 | 任务                                                                                            |
+| -- | ----------------------------------------------------------------------------------------------- |
+| D1 | 设计 Skill 目录格式（支持纯 Markdown 和带脚本两种模式）                                         |
+| D2 | 实现`_load_custom_tools()` + `_parse_skill_frontmatter()`                                   |
 | D3 | 实现 Skill 提示词注入机制（`get_skill_prompts_for_agent` + `BaseAgent._build_full_prompt`） |
-| D4 | 创建示例工具（纯 Markdown + 带脚本各一个） |
-| D5 | 测试热加载（修改 SKILL.md / 增删 Skill 目录后验证） |
+| D4 | 创建示例工具（纯 Markdown + 带脚本各一个）                                                      |
+| D5 | 测试热加载（修改 SKILL.md / 增删 Skill 目录后验证）                                             |
 
 **Skill 目录结构（两种模式）**：
 
@@ -1201,6 +1004,7 @@ applyTo: writer                # 注入到哪些 Agent（逗号分隔，或 "all
 ```
 
 **`applyTo` 字段说明**：
+
 - `writer` / `outline_polisher` / `content_polisher` / `chat` — 注入到指定 Agent
 - `all` — 注入到所有 Agent
 - 不填或不写 `applyTo` — 默认注入到所有 Agent
@@ -1214,10 +1018,10 @@ def _load_skill(skill_name: str, skill_dir: str, skill_md_path: str) -> None:
     """加载一个 Skill：解析 frontmatter → 存入 _skill_prompts → 加载 scripts/"""
     with open(skill_md_path, 'r', encoding='utf-8') as f:
         skill_content = f.read()
-    
+  
     frontmatter = _parse_skill_frontmatter(skill_content)
     body = _strip_frontmatter(skill_content)
-    
+  
     # 解析 applyTo 字段
     apply_to_raw = frontmatter.get("applyTo", "")
     if isinstance(apply_to_raw, list):
@@ -1226,9 +1030,9 @@ def _load_skill(skill_name: str, skill_dir: str, skill_md_path: str) -> None:
         apply_to = [t.strip().lower() for t in apply_to_raw.split(',')]
     else:
         apply_to = []  # 空 → 默认注入到所有 Agent
-    
+  
     _skill_prompts[skill_name] = {"content": body, "apply_to": apply_to}
-    
+  
     # 如果有 scripts/ 子目录，加载其中的 @tool 函数
     scripts_dir = os.path.join(skill_dir, "scripts")
     if os.path.isdir(scripts_dir):
@@ -1240,7 +1044,7 @@ def _load_skill(skill_name: str, skill_dir: str, skill_md_path: str) -> None:
                 )
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
-                
+              
                 for attr_name in dir(module):
                     attr = getattr(module, attr_name)
                     if isinstance(attr, BaseTool):
@@ -1255,28 +1059,30 @@ def reload_custom_tools() -> None:
     custom_names = [name for name in _tool_registry if not name.startswith("builtin_")]
     for name in custom_names:
         del _tool_registry[name]
-    
+  
     _skill_prompts.clear()    # 同时清空 Skill 提示词注册表
     _load_custom_tools()
 ```
 
 ### 阶段 4：预览 + 导出 + 章节管理（1-2 周）
 
-| 天 | 任务 |
-|----|------|
-| D1-2 | 章节列表 API + 章节目录树 API |
-| D3 | 卷/章节的创建、删除、重命名 API（`POST/DELETE/PUT`） |
-| D4 | 前端章节目录树 UI（卷/章节增删改按钮） |
-| D5 | 导出为 ZIP |
-| D6 | 集成测试 |
+| 天   | 任务                                                   |
+| ---- | ------------------------------------------------------ |
+| D1-2 | 章节列表 API + 章节目录树 API                          |
+| D3   | 卷/章节的创建、删除、重命名 API（`POST/DELETE/PUT`） |
+| D4   | 前端章节目录树 UI（卷/章节增删改按钮）                 |
+| D5   | 导出为 ZIP                                             |
+| D6   | 集成测试                                               |
 
 **命名规则**（默认生成 + 解析均遵循）：
+
 - 卷目录：`第X卷-{卷名}`（中划线分隔），例如 `第一卷-命运的邂逅/`；未命名时仅 `第一卷`
 - 章节文件：`第X卷_第Y章_{章节名}.md`（下划线分隔），例如 `第一卷_第1章_命运的邂逅.md`；未命名时为 `第一卷_第1章.md`
 - 中文数字由 `core.project_manager.num_to_cn()` 生成（1→一、2→二、...、11→十一、23→二十三）
 - 解析兼容旧格式 `第X卷_卷名` 与 `vol{N}` 目录，保证历史项目可继续读取
 
 **命名规则校验**（`core.project_manager.validate_name()`）：
+
 - 禁止字符：`/ \ : * ? " < > | - _`（这些字符会与命名规范或文件系统冲突）
 - 长度限制：不超过50个字符
 - 前端 `validateName()` 函数在用户输入时即时校验，弹出提示框显示规则和示例
@@ -1284,6 +1090,7 @@ def reload_custom_tools() -> None:
 - API 层捕获 `ValueError` 并返回400错误，附带清晰的错误信息
 
 **REST API（卷/章节管理）**：
+
 - `POST   /api/projects/{name}/volume` — 新建卷（body: `{name}`）
 - `DELETE /api/projects/{name}/volume/{vol}` — 删除卷及其所有章节
 - `PUT    /api/projects/{name}/volume/{vol}` — 重命名卷（body: `{name}`）
@@ -1292,6 +1099,7 @@ def reload_custom_tools() -> None:
 - `PUT    /api/projects/{name}/chapter/{vol}/{ch}` — 重命名章节（body: `{name}`）
 
 **前端交互（右侧栏【章节】面板）**：
+
 - 工具栏：`🔄 刷新` + `＋ 新建卷`
 - 每个卷标题右侧悬浮：`＋`（新建章节）、`✏`（重命名卷）、`✕`（删除卷）
 - 每个章节项悬浮：`✏`（重命名章节）、`✕`（删除章节）
@@ -1299,14 +1107,14 @@ def reload_custom_tools() -> None:
 
 ### 阶段 5：Web 界面整合（1-2 周）
 
-| 天 | 任务 |
-|----|------|
-| D1 | Flask 路由骨架 |
-| D2 | 项目管理 API |
-| D3 | 对话 API |
-| D4-5 | 前端页面 |
-| D6-7 | 设置面板 + Ollama |
-| D8-10 | UI 优化与测试 |
+| 天    | 任务              |
+| ----- | ----------------- |
+| D1    | Flask 路由骨架    |
+| D2    | 项目管理 API      |
+| D3    | 对话 API          |
+| D4-5  | 前端页面          |
+| D6-7  | 设置面板 + Ollama |
+| D8-10 | UI 优化与测试     |
 
 **Flask 路由示例**：
 
@@ -1315,9 +1123,9 @@ def reload_custom_tools() -> None:
 def api_chat():
     data = request.json
     user_input = data.get('message', '')
-    
+  
     result = agent_writer.chat(user_input)
-    
+  
     return jsonify({
         'success': True,
         'data': result
@@ -1369,10 +1177,10 @@ class Translator(BaseAgent):
         )
         with open(prompt_path, "r", encoding="utf-8") as f:
             system_prompt = f.read()
-        
+      
         # 选择工具
         tools = get_tools_by_names(['read_file', 'write_file'])
-        
+      
         # 调用基类
         super().__init__(
             name="translator",
@@ -1382,6 +1190,7 @@ class Translator(BaseAgent):
 ```
 
 > **Skill 提示词注入**：基类 `BaseAgent` 会自动调用 `_build_full_prompt()`，完成两件事：
+>
 > 1. 将 `core/tools/custom/*/SKILL.md` 中 `applyTo` 字段匹配此 Agent 的 Skill 正文追加到 `system_prompt` 末尾
 > 2. 将所有自定义工具（带 scripts/ 的 Skill）的 name + description 注入到 `system_prompt`，Agent 通过 `invoke_custom_tool` 动态调用
 >
@@ -1423,10 +1232,10 @@ from langchain_core.tools import tool
 @tool
 def count_words(text: str) -> str:
     """统计文本字数
-    
+  
     Args:
         text: 要统计的文本
-    
+  
     Returns:
         字数统计结果
     """
@@ -1466,6 +1275,7 @@ applyTo: all               # 注入到所有 Agent（可指定 writer, outline_p
 count_words("这是一段测试文本")
 # 返回："总字数：8，行数：1"
 ```
+
 ```
 
 > **说明**：SKILL.md 中 `---` 之间的 YAML frontmatter 会被系统解析。`applyTo` 字段控制正文注入到哪些 Agent 的 `system_prompt`；`scripts/` 中的 `@tool` 函数会被注册为自定义工具，Agent 通过 `invoke_custom_tool` 根据工具的 description 动态决策是否调用。
@@ -1508,6 +1318,7 @@ applyTo: writer, content_polisher
 > 这种 Skill 不会注册任何可调用工具，但其 Markdown 正文会在 Agent 初始化时自动追加到匹配 Agent（此处为 `writer` 和 `content_polisher`）的 `system_prompt` 末尾。
 >
 > **自定义工具调用机制总结**：
+>
 > - 纯 Markdown Skill：仅注入提示词，Agent 被动接收指令
 > - 带 scripts/ 的 Skill：工具注册后，Agent 通过 `invoke_custom_tool` 主动调用，根据工具的 description 动态决策是否使用
 
@@ -1550,15 +1361,15 @@ python demo/demo-langgraph.py
 
 ### 6.1 常见错误速查表
 
-| 错误现象 | 可能原因 | 解决方案 |
-|---------|---------|---------|
+| 错误现象                 | 可能原因       | 解决方案                     |
+| ------------------------ | -------------- | ---------------------------- |
 | `API Key 无效或已过期` | 环境变量未设置 | `$env:LLM_API_KEY = "xxx"` |
-| `无法连接到模型服务` | API URL 错误 | 检查 config.ini |
-| `工具 xxx 不存在` | 工具未注册 | 检查 builtin/ 或 custom/ |
-| Agent 无限循环 | 提示词问题 | 设置 `max_iterations` |
-| `ModuleNotFoundError` | 导入路径错误 | 检查 `__init__.py` |
-| 前端请求 404 | 路由未注册 | 检查 `@app.route()` |
-| 跨域错误 | CORS 未启用 | 确保 `CORS(app)` |
+| `无法连接到模型服务`   | API URL 错误   | 检查 config.ini              |
+| `工具 xxx 不存在`      | 工具未注册     | 检查 builtin/ 或 custom/     |
+| Agent 无限循环           | 提示词问题     | 设置`max_iterations`       |
+| `ModuleNotFoundError`  | 导入路径错误   | 检查`__init__.py`          |
+| 前端请求 404             | 路由未注册     | 检查`@app.route()`         |
+| 跨域错误                 | CORS 未启用    | 确保`CORS(app)`            |
 
 ### 6.2 调试流程
 
@@ -1613,7 +1424,7 @@ def create_llm(api_url, api_key, model, temperature=0.7):
 class PolishWorkflow:
     def __init__(self, polisher: ContentPolisher):
         self.polisher = polisher
-    
+  
     def polish_chapter(self, volume: int, chapter: int) -> dict:
         # 1. 读取章节
         # 2. 调用润色 Agent
@@ -1638,13 +1449,13 @@ class PolishWorkflow:
 
 ## 附录：学习资源
 
-| 资源 | 用途 | 链接 |
-|------|------|------|
-| LangGraph 文档 | 状态图 | https://langchain-ai.github.io/langgraph/ |
-| LangChain 工具 | @tool 装饰器 | https://python.langchain.com/docs/how_to/custom_tools/ |
-| Flask 文档 | Web 框架 | https://flask.palletsprojects.com/ |
-| OpenAI API | Function Calling | https://platform.openai.com/docs/guides/function-calling |
-| MDN Web Docs | HTML/CSS/JS | https://developer.mozilla.org/zh-CN/ |
+| 资源           | 用途             | 链接                                                     |
+| -------------- | ---------------- | -------------------------------------------------------- |
+| LangGraph 文档 | 状态图           | https://langchain-ai.github.io/langgraph/                |
+| LangChain 工具 | @tool 装饰器     | https://python.langchain.com/docs/how_to/custom_tools/   |
+| Flask 文档     | Web 框架         | https://flask.palletsprojects.com/                       |
+| OpenAI API     | Function Calling | https://platform.openai.com/docs/guides/function-calling |
+| MDN Web Docs   | HTML/CSS/JS      | https://developer.mozilla.org/zh-CN/                     |
 
 ---
 

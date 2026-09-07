@@ -12,7 +12,7 @@ Agent-Writer 是一个基于 langchain + langgraph + openai 实现的写作智�
 - 多 Agent 协作（通过 @指令切换不同职能 Agent，默认Agent不用@切换）
 - 小说预览与导出
 - 小说内容优化与调整
-- 用户自定义工具（Python 脚本热加载）
+- 用户自定义 Skill（统一通过 invoke_skill 调用，支持热加载）
 - LLM 配置管理（Web 页面可修改 API URL / Key，支持切换本地离线模型如 Ollama）
 
 **交互方式：**
@@ -170,25 +170,15 @@ python main.py --web
 
 ### 用户自定义工具
 
-用户可以在 `core/tools/custom/` 目录下创建自定义工具，系统会自动发现并热加载，无需重启服务。
+用户可以在 `core/tools/custom/` 目录下创建自定义 Skill，系统会自动发现并热加载，无需重启服务。
 
-自定义工具支持两种模式：
-
-1. **纯 Markdown Skill**：只有 `SKILL.md`，其正文内容会作为提示词自动注入到对应 Agent 的 system_prompt 中
-2. **带脚本的 Skill**：`SKILL.md` + `scripts/` 目录，脚本中定义的 `@tool` 函数会被注册为可调用工具，Agent 通过 `invoke_custom_tool` 根据工具的 name 和 description **动态决策**是否调用
-
-**使用 Skill 目录格式创建工具：**
-
-1. 在 `core/tools/custom/` 下创建一个以工具名命名的目录（如 `my-tool/`）
-2. 在目录中创建 `SKILL.md` 文件（必需），描述工具功能、参数和使用示例
-3. 在 `scripts/` 子目录中创建 Python 脚本，实现工具函数（可选）
-4. 保存后系统自动加载
+**统一调用机制：** 所有 Skill 都通过 `invoke_skill(skill_name, args)` 工具调用。Agent 在初始化时会读取所有 Skill 的 name 和 description，根据用户需求动态决策是否调用。
 
 **Skill 目录结构：**
 
 ```
 custom/
-└── my-tool/                    # 工具目录（目录名即工具组名）
+└── my-tool/                    # 工具目录
     ├── SKILL.md                # 工具描述文档（必需）
     ├── scripts/                # Python 脚本目录（可选）
     │   └── my_tool.py          # 工具实现脚本
@@ -202,35 +192,24 @@ custom/
 ---
 name: my-skill
 description: 工具功能描述
-applyTo: writer                # 注入到哪些 Agent（见下方说明）
 ---
 
 ## 工具详细说明
 
-这里是 Markdown 正文，会被注入到对应 Agent 的 system_prompt 中。
+这里是 Markdown 正文，调用 invoke_skill 时会返回此内容。
 ```
 
-**`applyTo` 字段说明：**
+**两种使用模式：**
 
-| 值                                        | 注入目标                          |
-| ----------------------------------------- | --------------------------------- |
-| `writer`                                | NovelWriter（@写作）              |
-| `outline_polisher`                      | OutlinePolisher（@大纲润色）      |
-| `content_polisher`                      | ContentPolisher（@小说润色）      |
-| `chat`                                  | ChatAgent（默认对话）              |
-| `writer, outline_polisher, content_polisher` | 同时注入到多个 Agent          |
-| `all`                                  | 注入到所有 Agent                  |
-| 不填 / 不写 `applyTo`                    | 默认 `all`，注入到所有 Agent      |
-
-> **提示词优先级**：自定义 Skill 内容追加在 Agent 默认提示词之后，LLM 天然更重视后面的指令，因此自定义内容会优先被遵循。
+1. **纯 Markdown Skill**：只有 `SKILL.md`，调用 `invoke_skill` 时返回 Markdown 正文内容
+2. **带脚本的 Skill**：`SKILL.md` + `scripts/` 目录，调用 `invoke_skill` 时会懒加载脚本，然后调用脚本中定义的 `@tool` 函数
 
 **Python 脚本工具规范（scripts/ 目录）：**
 
 - 必须使用 `@tool` 装饰器（来自 `langchain_core.tools`）
-- 必须提供清晰的 docstring（作为工具描述展示给 LLM，**是 Agent 动态决策是否调用的关键依据**）
+- 必须提供清晰的 docstring（作为工具描述）
 - 所有参数必须有类型注解
 - 必须返回 `str` 类型结果
-- 带 `scripts/` 的 Skill 中定义的 py 工具不会自动绑定到 Agent，而是通过 `invoke_custom_tool` 内置工具间接调用。Agent 在初始化时会读取所有自定义工具的 name + description，根据用户需求**动态决策**是否调用
 
 **示例：**
 
@@ -254,9 +233,7 @@ def word_count(text: str) -> str:
     return f"字符数: {char_count}, 行数: {line_count}"
 ```
 
-**自定义工具的动态决策机制：**
-
-带 `scripts/` 的 Skill 注册后，系统会在每个 Agent 的 `system_prompt` 末尾注入一段自定义工具清单（包含 name 和 description）。Agent 通过内置工具 `invoke_custom_tool(tool_name, args)` 来调用指定的自定义工具。这样 Agent 可以根据用户输入和工具描述，自主判断是否需要使用某个自定义工具。
+**调用流程：** Agent 看到 Skill 清单 → 根据 description 决策 → 调用 `invoke_skill("my-skill", '{"tool_name": "word_count", "text": "..."}')` → 系统懒加载脚本 → 执行工具 → 返回结果
 
 ```
 ## 可用的自定义工具（通过 invoke_custom_tool 调用）

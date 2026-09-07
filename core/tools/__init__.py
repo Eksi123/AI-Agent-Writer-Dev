@@ -5,8 +5,9 @@
 工具注册表是一个全局字典，存储工具名称到 BaseTool 实例的映射。
 
 自定义 Skill 机制：
-- 纯 Markdown 的 SKILL.md 会被解析 frontmatter，根据 applyTo 字段注入到对应 Agent 的 system_prompt
-- 带 scripts/ 的 Skill 会被注册为可调用工具，自动绑定到所有 Agent
+- 所有 Skill 统一通过 invoke_skill 工具按 name + description 动态决策调用
+- 纯 Markdown Skill：调用时返回 SKILL.md 正文内容
+- 带 scripts/ 的 Skill：调用时懒加载并执行对应工具函数
 """
 import os
 import re
@@ -20,11 +21,16 @@ from core.agent_logger import logger
 # 全局工具注册表，存储工具名称到 BaseTool 实例的映射
 _tool_registry: Dict[str, BaseTool] = {}
 
-# Skill 提示词注册表，存储 skill_name -> {"content": str, "apply_to": List[str]}
-_skill_prompts: Dict[str, Dict[str, Any]] = {}
-
-# 待懒加载的自定义工具信息，存储 tool_name -> {"skill_name": str, "scripts_dir": str, "loaded": bool}
-_pending_custom_tools: Dict[str, Dict[str, Any]] = {}
+# 统一 Skill 注册表，存储 skill_name -> {
+#   "name": str,           # Skill 名称（来自 frontmatter）
+#   "description": str,    # Skill 描述（来自 frontmatter）
+#   "content": str,        # SKILL.md 正文（去掉 frontmatter）
+#   "has_scripts": bool,   # 是否有 scripts/ 目录
+#   "scripts_dir": str,    # scripts/ 目录路径
+#   "skill_dir": str,      # Skill 根目录路径
+#   "scripts_loaded": bool # scripts 是否已懒加载
+# }
+_skill_registry: Dict[str, Dict[str, Any]] = {}
 
 
 def register_tool(tool: BaseTool) -> None:
@@ -51,14 +57,6 @@ def get_tool(tool_name: str) -> Optional[BaseTool]:
 def get_all_tools() -> List[BaseTool]:
     """获取所有已注册的工具"""
     return list(_tool_registry.values())
-
-
-def _get_custom_tool_names() -> List[str]:
-    """获取所有自定义工具的名称（非内置工具）"""
-    return [
-        name for name in _tool_registry.keys()
-        if not name.startswith("builtin_")
-    ]
 
 
 def _parse_skill_frontmatter(skill_content: str) -> Dict[str, Any]:
@@ -100,80 +98,50 @@ def _parse_skill_frontmatter(skill_content: str) -> Dict[str, Any]:
     return result
 
 
-def get_skill_prompts_for_agent(agent_name: str) -> List[str]:
+def get_all_skills_info() -> List[Dict[str, str]]:
     """
-    获取应该注入到指定 Agent 的 system_prompt 的 Skill 提示词列表。
+    获取所有已注册 Skill 的名称和描述信息。
     
-    匹配规则：
-    - Skill 的 applyTo 字段包含 agent_name（不区分大小写）
-    - Skill 的 applyTo 字段包含 "all"（不区分大小写）
-    - Skill 没有 applyTo 字段时，默认注入到所有 Agent
-    
-    Args:
-        agent_name: Agent 名称（如 "NovelWriter", "ContentPolisher"）
-    
-    Returns:
-        匹配的 Skill 提示词内容列表
-    """
-    agent_lower = agent_name.lower()
-    prompts = []
-    
-    for skill_name, skill_info in _skill_prompts.items():
-        apply_to = skill_info.get("apply_to", [])
-        
-        # 没有 applyTo 字段时，默认注入到所有 Agent
-        if not apply_to:
-            prompts.append(skill_info["content"])
-            logger.debug(f"Skill {skill_name} 无 applyTo，默认注入到 {agent_name}")
-            continue
-        
-        # 检查是否匹配
-        for target in apply_to:
-            target_lower = target.lower()
-            if target_lower == "all" or target_lower == agent_lower:
-                prompts.append(skill_info["content"])
-                logger.debug(f"Skill {skill_name} 匹配 {agent_name}（applyTo: {target}）")
-                break
-    
-    return prompts
-
-
-def get_custom_tools_info() -> List[Dict[str, str]]:
-    """
-    获取所有自定义工具（带 scripts/ 的 Skill）的名称和描述信息。
-    
-    用于注入到 Agent 的 system_prompt，让 Agent 根据 description 动态决策是否调用。
-    包括已加载和待懒加载的工具。
+    用于注入到所有 Agent 的 system_prompt，让 Agent 根据 description 动态决策是否调用。
     
     Returns:
         包含 {"name": str, "description": str} 的字典列表
     """
     result = []
-    
-    # 已加载的自定义工具
-    custom_names = _get_custom_tool_names()
-    for name in custom_names:
-        if name in _tool_registry:
-            result.append({
-                "name": name,
-                "description": _tool_registry[name].description
-            })
-    
-    # 待懒加载的工具（从 SKILL.md 读取描述）
-    for tool_name, tool_info in _pending_custom_tools.items():
-        if not tool_info.get("loaded", False):
-            skill_name = tool_info["skill_name"]
-            # 从 _skill_prompts 中获取描述
-            if skill_name in _skill_prompts:
-                # 使用 SKILL.md 的第一行作为描述
-                content = _skill_prompts[skill_name]["content"]
-                first_line = content.split('\n')[0].strip() if content else tool_name
-                result.append({
-                    "name": tool_name,
-                    "description": first_line
-                })
-    
+    for skill_name, skill_info in _skill_registry.items():
+        result.append({
+            "name": skill_info["name"],
+            "description": skill_info["description"]
+        })
     return result
+
+
+def get_skill_content(skill_name: str) -> Optional[str]:
+    """
+    获取指定 Skill 的 SKILL.md 正文内容（去掉 frontmatter）。
+    
+    Args:
+        skill_name: Skill 名称
+    
+    Returns:
+        Skill 正文内容，不存在时返回 None
+    """
+    if skill_name not in _skill_registry:
+        return None
+    return _skill_registry[skill_name].get("content", "")
+
+
+def get_skill_info(skill_name: str) -> Optional[Dict[str, Any]]:
+    """
+    获取指定 Skill 的完整注册信息。
+    
+    Args:
+        skill_name: Skill 名称
+    
+    Returns:
+        Skill 注册信息字典，不存在时返回 None
+    """
+    return _skill_registry.get(skill_name)
 
 
 def get_tools_by_names(tool_names: List[str]) -> List[BaseTool]:
@@ -276,10 +244,10 @@ def _strip_frontmatter(skill_content: str) -> str:
 
 def _load_skill(skill_name: str, skill_dir: str, skill_md_path: str) -> None:
     """
-    加载单个 Skill（懒加载模式）：
-    1. 读取 SKILL.md，解析 frontmatter 获取 applyTo 字段
-    2. 将 Skill 正文（去掉 frontmatter）存入 _skill_prompts 供 Agent 注入
-    3. 如果存在 scripts/ 目录，仅记录信息到 _pending_custom_tools，不立即加载
+    加载单个 Skill 到统一注册表：
+    1. 读取 SKILL.md，解析 frontmatter 获取 name 和 description
+    2. 将完整信息存入 _skill_registry
+    3. 如果存在 scripts/ 目录，记录路径信息但不立即加载
     """
     with open(skill_md_path, 'r', encoding='utf-8') as f:
         skill_content = f.read()
@@ -288,107 +256,102 @@ def _load_skill(skill_name: str, skill_dir: str, skill_md_path: str) -> None:
     frontmatter = _parse_skill_frontmatter(skill_content)
     body = _strip_frontmatter(skill_content)
     
-    # 提取 applyTo 字段，转为小写列表
-    apply_to_raw = frontmatter.get("applyTo", "")
-    if isinstance(apply_to_raw, list):
-        apply_to = [t.strip().lower() for t in apply_to_raw]
-    elif isinstance(apply_to_raw, str) and apply_to_raw:
-        apply_to = [t.strip().lower() for t in apply_to_raw.split(',')]
-    else:
-        apply_to = []
+    # 从 frontmatter 获取 name 和 description
+    skill_display_name = frontmatter.get("name", skill_name)
+    skill_description = frontmatter.get("description", "")
     
-    # 存储 Skill 提示词（正文部分）
-    _skill_prompts[skill_name] = {
-        "content": body,
-        "apply_to": apply_to,
-    }
-    logger.debug(f"Skill {skill_name} 提示词已存储（applyTo={apply_to or 'all'}, {len(body)} 字符）")
+    # 如果没有 frontmatter 中的 description，使用正文第一行
+    if not skill_description:
+        first_line = body.split('\n')[0].strip() if body else skill_name
+        # 去掉 Markdown 标题前缀
+        if first_line.startswith('#'):
+            first_line = first_line.lstrip('#').strip()
+        skill_description = first_line
     
-    # 查找 scripts/ 目录，如果存在则记录到待加载列表
+    # 检查 scripts/ 目录
     scripts_dir = os.path.join(skill_dir, "scripts")
+    has_scripts = os.path.exists(scripts_dir)
     
-    if os.path.exists(scripts_dir):
-        # 扫描 scripts/ 目录，为每个工具创建待加载记录
-        for filename in os.listdir(scripts_dir):
-            if filename.endswith(".py") and not filename.startswith("_"):
-                module_name = filename[:-3]
-                # 使用文件名作为工具名称（去掉 .py）
-                tool_name = module_name
-                
-                # 记录待加载信息
-                _pending_custom_tools[tool_name] = {
-                    "skill_name": skill_name,
-                    "scripts_dir": scripts_dir,
-                    "filename": filename,
-                    "loaded": False
-                }
-                logger.debug(f"自定义工具 {tool_name} 已标记为待懒加载")
+    # 存入统一注册表
+    _skill_registry[skill_name] = {
+        "name": skill_display_name,
+        "description": skill_description,
+        "content": body,
+        "has_scripts": has_scripts,
+        "scripts_dir": scripts_dir if has_scripts else "",
+        "skill_dir": skill_dir,
+        "scripts_loaded": False,
+    }
     
-    logger.debug(f"Skill {skill_name} 的 SKILL.md 已读取（{len(skill_content)} 字符）")
+    logger.debug(f"Skill {skill_name} 已注册（has_scripts={has_scripts}, {len(body)} 字符）")
 
 
-def _load_custom_tool_lazy(tool_name: str) -> bool:
+def load_skill_scripts(skill_name: str) -> bool:
     """
-    懒加载单个自定义工具。
+    懒加载指定 Skill 的 scripts/ 目录中的所有工具。
     
     Args:
-        tool_name: 工具名称
+        skill_name: Skill 名称
     
     Returns:
         bool: 加载成功返回 True，失败返回 False
     """
-    if tool_name not in _pending_custom_tools:
-        logger.warning(f"工具 {tool_name} 不在待加载列表中")
+    if skill_name not in _skill_registry:
+        logger.warning(f"Skill {skill_name} 不在注册表中")
         return False
     
-    tool_info = _pending_custom_tools[tool_name]
+    skill_info = _skill_registry[skill_name]
     
-    if tool_info.get("loaded", False):
-        logger.debug(f"工具 {tool_name} 已加载，跳过")
+    if not skill_info["has_scripts"]:
+        logger.debug(f"Skill {skill_name} 没有 scripts/ 目录")
+        return False
+    
+    if skill_info.get("scripts_loaded", False):
+        logger.debug(f"Skill {skill_name} 的 scripts 已加载，跳过")
         return True
     
-    skill_name = tool_info["skill_name"]
-    scripts_dir = tool_info["scripts_dir"]
-    filename = tool_info["filename"]
-    file_path = os.path.join(scripts_dir, filename)
+    scripts_dir = skill_info["scripts_dir"]
+    loaded_count = 0
     
     try:
-        # 使用 importlib.util 从文件路径动态加载模块
-        spec = importlib.util.spec_from_file_location(
-            f"core.tools.custom.{skill_name}.scripts.{tool_name}",
-            file_path
-        )
-        if spec and spec.loader:
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
-            
-            # 扫描模块属性，查找并注册 BaseTool 实例
-            loaded_count = 0
-            for attr_name in dir(module):
-                attr = getattr(module, attr_name)
-                if isinstance(attr, BaseTool):
-                    register_tool(attr)
-                    loaded_count += 1
-                elif hasattr(attr, "__wrapped__") and isinstance(getattr(attr, "__wrapped__", None), BaseTool):
-                    register_tool(attr)
-                    loaded_count += 1
-            
-            # 标记为已加载
-            _pending_custom_tools[tool_name]["loaded"] = True
-            logger.info(f"自定义工具 {tool_name} 懒加载成功，注册了 {loaded_count} 个工具")
-            return True
+        for filename in os.listdir(scripts_dir):
+            if filename.endswith(".py") and not filename.startswith("_"):
+                module_name = filename[:-3]
+                file_path = os.path.join(scripts_dir, filename)
+                
+                # 使用 importlib.util 从文件路径动态加载模块
+                spec = importlib.util.spec_from_file_location(
+                    f"core.tools.custom.{skill_name}.scripts.{module_name}",
+                    file_path
+                )
+                if spec and spec.loader:
+                    module = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(module)
+                    
+                    # 扫描模块属性，查找并注册 BaseTool 实例
+                    for attr_name in dir(module):
+                        attr = getattr(module, attr_name)
+                        if isinstance(attr, BaseTool):
+                            register_tool(attr)
+                            loaded_count += 1
+                        elif hasattr(attr, "__wrapped__") and isinstance(getattr(attr, "__wrapped__", None), BaseTool):
+                            register_tool(attr)
+                            loaded_count += 1
+        
+        # 标记为已加载
+        _skill_registry[skill_name]["scripts_loaded"] = True
+        logger.info(f"Skill {skill_name} 的 scripts 懒加载成功，注册了 {loaded_count} 个工具")
+        return True
     
     except Exception as e:
-        logger.error(f"懒加载工具 {tool_name} 失败: {e}")
+        logger.error(f"懒加载 Skill {skill_name} 的 scripts 失败: {e}")
         return False
-    
-    return False
 
 
 def reload_custom_tools() -> None:
     """
     重新加载所有自定义工具（热加载）。
-    清空非内置工具、Skill 提示词和待加载列表后重新扫描 custom/ 目录。
+    清空非内置工具和 Skill 注册表后重新扫描 custom/ 目录。
     """
     # 清空非内置工具，保留内置工具
     custom_tool_names = [
@@ -398,14 +361,11 @@ def reload_custom_tools() -> None:
     for name in custom_tool_names:
         del _tool_registry[name]
     
-    # 清空 Skill 提示词注册表
-    _skill_prompts.clear()
-    
-    # 清空待加载工具列表
-    _pending_custom_tools.clear()
+    # 清空 Skill 注册表
+    _skill_registry.clear()
     
     _load_custom_tools()
-    logger.info(f"自定义工具已重新加载，当前工具总数: {len(_tool_registry)}，待懒加载: {len(_pending_custom_tools)} 个，Skill提示词: {len(_skill_prompts)} 个")
+    logger.info(f"自定义工具已重新加载，当前工具总数: {len(_tool_registry)}，Skill 数量: {len(_skill_registry)} 个")
 
 
 # 模块加载时自动注册内置工具和自定义工具

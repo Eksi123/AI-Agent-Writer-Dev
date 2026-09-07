@@ -77,7 +77,7 @@ class SummaryGenerator(BaseAgent):
             'glob_search',
             'list_directory',
             'ask_user',
-            'invoke_custom_tool'
+            'invoke_skill'
         ])
         
         self._original_system_prompt = SUMMARY_SYSTEM_PROMPT
