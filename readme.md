@@ -329,7 +329,16 @@ ai-agent-writer-dev/
 │
 ├── web/                              # Web 界面
 │   ├── app.py                        # Flask Web 服务 + REST API
-│   └── index.html                    # 前端页面（单文件，含 HTML/CSS/JS）
+│   ├── index.html                    # 前端页面入口（HTML 结构）
+│   ├── css/
+│   │   └── style.css                 # 前端样式
+│   └── js/                           # 前端 JavaScript 模块
+│       ├── app.js                    # 全局状态、初始化、工具函数（必须最先加载）
+│       ├── project.js                # 项目 CRUD 与管理
+│       ├── chat.js                   # 对话与 Agent 切换
+│       ├── outline.js                # 大纲面板管理
+│       ├── chapters.js               # 章节目录树与内容管理
+│       └── settings.js               # 设置面板与配置向导
 │
 ├── output/                           # 小说产出目录
 │   └── {小说名}/
@@ -569,9 +578,9 @@ auto_open_browser = true
 
 **已完成功能：**
 
-1. 前端页面（`web/index.html`）
+1. 前端页面（`web/index.html` + `web/css/` + `web/js/`）
 
-   - 单文件 HTML（内嵌 CSS + JS）
+   - 模块化 SPA（HTML + 独立 CSS/JS 文件）
    - 多项目管理：创建、导入、删除、切换
    - 项目侧边栏
    - 对话界面、大纲查看器、章节预览器
@@ -790,7 +799,7 @@ flask-cors==6.0.2         # Flask 跨域支持
 - **Flask** — 轻量级 Web 框架，提供 REST API
 - **LangChain + LangGraph** — Agent 框架 + 状态图引擎，实现 Agent-Loop
 - **OpenAI 兼容接口** — 统一封装在线/本地模型调用
-- **HTML 单页应用** — 单文件前端（内嵌 CSS/JS），点击即可打开
+- **HTML 单页应用** — 模块化前端（HTML + 独立 CSS/JS 文件），点击即可打开
 - **统一对话 + @指令** — 简化 UI，用户无需切换窗口
 - **小说项目制** — 每个大纲对应一个项目，独立管理
 - **用户自定义工具** — 支持 Python 脚本热加载，扩展性强

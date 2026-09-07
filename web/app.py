@@ -25,7 +25,8 @@ from core.agent_logger import logger
 
 app = Flask(__name__, 
             template_folder=os.path.dirname(os.path.abspath(__file__)),
-            static_folder=os.path.dirname(os.path.abspath(__file__)))
+            static_folder=os.path.dirname(os.path.abspath(__file__)),
+            static_url_path='')
 CORS(app)
 
 

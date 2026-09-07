@@ -37,7 +37,7 @@ Agent-Writer 是一个**AI 驱动的小说写作系统**。它不是简单的聊
 | ✅ LangGraph | ✅ LangGraph | **核心框架**，需要深入理解 `StateGraph` |
 | ✅ OpenAI API | ✅ OpenAI API | 完全一致，但使用兼容接口支持多模型 |
 | ⚠️ FastAPI | ❌ **Flask** | 本项目用 Flask，更轻量，学习成本低 |
-| ✅ HTML 基础 | ✅ HTML/CSS/JS | 前端是单文件 SPA，需要了解基础 JS |
+| ✅ HTML 基础 | ✅ HTML/CSS/JS | 前端是模块化 SPA（`web/index.html` + `web/css/` + `web/js/`），需要了解基础 JS |
 
 ### 重要提示
 
@@ -189,7 +189,15 @@ START → llm_node → 有工具调用? → tool_node → llm_node（循环）
 
 ### 1.3 HTML/CSS/JS 基础（预计 2-3 小时）
 
-本项目的前端是一个**单文件 SPA**（单页应用），所有代码都在 `web/index.html` 中。
+本项目的前端是一个**模块化 SPA**（单页应用），入口为 `web/index.html`，样式和脚本拆分为独立文件：
+
+- `web/css/style.css` — 所有样式
+- `web/js/app.js` — 全局状态、初始化、工具函数（**必须最先加载**）
+- `web/js/project.js` — 项目 CRUD 与管理
+- `web/js/chat.js` — 对话与 Agent 切换
+- `web/js/outline.js` — 大纲面板管理
+- `web/js/chapters.js` — 章节目录树与内容管理
+- `web/js/settings.js` — 设置面板与配置向导
 
 你需要掌握：
 
@@ -279,7 +287,7 @@ python demo/demo-langgraph.py
 ```
 ┌─────────────────────────────────────────────────────┐
 │                   用户界面层                         │
-│  web/index.html（单文件 SPA：HTML + CSS + JS）       │
+│  web/index.html + web/css/ + web/js/（模块化 SPA）    │
 └──────────────────────┬──────────────────────────────┘
                        │ REST API (/api/*)
 ┌──────────────────────┼──────────────────────────────┐
