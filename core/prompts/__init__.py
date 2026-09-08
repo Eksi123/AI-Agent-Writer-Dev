@@ -58,10 +58,13 @@ def get_prompt(name: str) -> str:
 
 # 预定义的提示词名称
 WRITER_PROMPT = "being_writer"
-OUTLINE_REVIEW_PROMPT = "outline_review"
-LOGIC_REVIEW_PROMPT = "logic_review"
+PRE_WRITING_PROMPT = "pre_writing"
+POST_WRITING_PROMPT = "post_writing"
 OUTLINE_POLISHER_PROMPT = "outline_polisher"
 CONTENT_POLISHER_PROMPT = "content_polisher"
+CHAT_AGENT_PROMPT = "chat_agent"
+INFO_QUERY_PROMPT = "info_query"
+SUMMARY_GENERATOR_PROMPT = "summary_generator"
 
 
 if __name__ == '__main__':
@@ -70,5 +73,5 @@ if __name__ == '__main__':
     print(get_prompt(WRITER_PROMPT))
     print("\n" + "="*50 + "\n")
     
-    print("大纲审查提示词:")
-    print(get_prompt(OUTLINE_REVIEW_PROMPT))
+    print("写作前审查提示词:")
+    print(get_prompt(PRE_WRITING_PROMPT))

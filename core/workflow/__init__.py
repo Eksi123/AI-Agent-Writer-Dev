@@ -3,7 +3,7 @@
 包含写作工作流的所有组件
 """
 from core.workflow.writing_workflow import WritingWorkflow
-from core.workflow.outline_reviewer import OutlineReviewer
-from core.workflow.logic_reviewer import LogicReviewer
+from core.workflow.pre_writing import PreWritingReviewer
+from core.workflow.post_writing import PostWritingReviewer
 
-__all__ = ['WritingWorkflow', 'OutlineReviewer', 'LogicReviewer']
+__all__ = ['WritingWorkflow', 'PreWritingReviewer', 'PostWritingReviewer']

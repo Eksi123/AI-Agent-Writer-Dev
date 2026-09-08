@@ -1,56 +1,64 @@
 """
 写作工作流控制器
 
-协调完整的单章写作流程：大纲审查 → 章节写作 → 逻辑审查。
+协调完整的单章写作流程：写作前审查 → 章节写作 → 写作后审查（最多3次重试）→ 保存文件。
 每个步骤由独立的审查器或 Agent 执行，工作流负责编排和状态管理。
 """
 from typing import Optional, List
 from core.agents.novel_writer import NovelWriter
-from core.workflow.outline_reviewer import OutlineReviewer
-from core.workflow.logic_reviewer import LogicReviewer
+from core.workflow.pre_writing import PreWritingReviewer
+from core.workflow.post_writing import PostWritingReviewer
 from core.agent_logger import logger
 from core.tools import get_all_tools
 
 
 class WritingWorkflow:
-    """写作工作流控制器，协调大纲审查、章节写作和逻辑审查三个阶段。"""
+    """写作工作流控制器，协调写作前审查、章节写作和写作后审查三个阶段。"""
     
-    def __init__(self, writer: NovelWriter):
+    def __init__(self, writer: NovelWriter, max_retries: int = 3):
         """
         初始化写作工作流
         
         Args:
             writer: NovelWriter 实例
+            max_retries: post_writing 审查失败后的最大重试次数，默认 3 次
         """
         self.writer = writer
-        self.outline_reviewer = OutlineReviewer()
-        self.logic_reviewer = LogicReviewer()
+        self.pre_writing_reviewer = PreWritingReviewer()
+        self.post_writing_reviewer = PostWritingReviewer()
+        self.max_retries = max_retries
         
         self.current_volume = 1
         self.current_chapter = 1
         
-        logger.info("写作工作流已初始化")
+        logger.info(f"写作工作流已初始化（最大重试次数: {max_retries}）")
     
-    def write_chapter(self, volume: int, chapter: int, chapter_name: str = "") -> dict:
+    def write_chapter(self, volume: int, chapter: int, chapter_name: str = "", 
+                     user_request: str = "") -> dict:
         """
         执行单章写作工作流
         
         流程：
-        1. 大纲审查 - 审查当前章节对应的大纲部分
+        1. 写作前审查 - 理解用户要求，匹配大纲章节，审查大纲质量
         2. 章节写作 - 基于大纲完成写作
-        3. 逻辑审查 - 审查本章与前面所有章节的逻辑一致性
+        3. 写作后审查 - 审查章节是否符合大纲、剧情合理、与前文衔接（最多重试3次）
+        4. 保存文件 - 审查通过后保存章节到文件
         
         Args:
             volume: 卷号
             chapter: 章节号
             chapter_name: 章节名
+            user_request: 用户的写作要求（可选，用于 pre_writing 审查）
         
         Returns:
             {
-                "success": bool,           # 是否成功完成
-                "chapter_content": str,    # 章节内容
-                "outline_review": dict,    # 大纲审查结果
-                "logic_review": dict       # 逻辑审查结果
+                "success": bool,              # 是否成功完成
+                "chapter_content": str,       # 章节内容
+                "pre_writing_review": dict,   # 写作前审查结果
+                "post_writing_review": dict,  # 写作后审查结果
+                "write_to_file": bool,        # 是否写入文件
+                "retry_count": int,           # 重试次数
+                "free_writing": bool          # 是否为自由写作模式
             }
         """
         logger.info(f"开始写作: 第{volume}卷 第{chapter}章")
@@ -58,42 +66,90 @@ class WritingWorkflow:
         result = {
             "success": False,
             "chapter_content": "",
-            "outline_review": None,
-            "logic_review": None
+            "pre_writing_review": None,
+            "post_writing_review": None,
+            "write_to_file": True,
+            "retry_count": 0,
+            "free_writing": False
         }
         
-        # Step 1: 大纲审查 - 检查当前章节大纲与已有内容的一致性
-        logger.info("Step 1: 大纲审查")
-        outline_section = self._extract_outline_section(volume, chapter)
+        # Step 1: 写作前审查
+        logger.info("Step 1: 写作前审查")
+        outline = self._get_full_outline()
         previous_content = self._get_previous_content()
         
-        outline_review = self.outline_reviewer.review(outline_section, previous_content)
-        result["outline_review"] = outline_review
+        # 如果没有提供用户要求，使用默认格式
+        if not user_request:
+            user_request = f"基于大纲第{volume}卷第{chapter}章生成小说"
         
-        if not outline_review["passed"]:
-            logger.warning("大纲审查未通过，用户确认后继续")
+        pre_writing_review = self.pre_writing_reviewer.review(user_request, outline, previous_content)
+        result["pre_writing_review"] = pre_writing_review
         
-        # Step 2: 章节写作 - 调用 NovelWriter Agent 生成章节内容
+        # 判断是否为自由写作模式
+        if not pre_writing_review["matched"]:
+            logger.warning("自由写作模式：内容将只在对话框输出，不写入文件")
+            result["free_writing"] = True
+            result["write_to_file"] = False
+            
+            # 自由写作：生成内容但不保存
+            chapter_content = self._write_free_content(user_request)
+            result["chapter_content"] = chapter_content
+            result["success"] = True
+            return result
+        
+        # 匹配成功但审查未通过
+        if not pre_writing_review["passed"]:
+            logger.warning("大纲审查未通过，建议用户修改大纲")
+            result["success"] = False
+            return result
+        
+        # 使用审查器提取的大纲片段（如果有），否则使用默认提取
+        outline_section = pre_writing_review.get("outline_section") or self._extract_outline_section(volume, chapter)
+        
+        # Step 2: 章节写作（带重试机制）
         logger.info("Step 2: 章节写作")
         chapter_content = self._write_chapter_content(volume, chapter, chapter_name, outline_section)
         result["chapter_content"] = chapter_content
         
-        # 保存章节到文件
-        if self.writer.current_project:
+        # Step 3: 写作后审查（最多重试 max_retries 次）
+        logger.info("Step 3: 写作后审查")
+        previous_chapters = self._get_previous_three_chapters(volume, chapter)
+        
+        retry_count = 0
+        while retry_count < self.max_retries:
+            post_writing_review = self.post_writing_reviewer.review(
+                chapter_content, outline_section, previous_chapters
+            )
+            result["post_writing_review"] = post_writing_review
+            
+            if post_writing_review["passed"]:
+                logger.info("写作后审查通过")
+                break
+            
+            if post_writing_review["should_regenerate"]:
+                retry_count += 1
+                result["retry_count"] = retry_count
+                logger.warning(f"写作后审查未通过，第 {retry_count} 次重新生成")
+                
+                # 重新生成章节
+                chapter_content = self._write_chapter_content(volume, chapter, chapter_name, outline_section)
+                result["chapter_content"] = chapter_content
+            else:
+                # 不需要重新生成，标记为成功但有问题
+                logger.warning("写作后审查发现问题，但不需要重新生成")
+                break
+        
+        # 如果重试后仍未通过，标记问题
+        if retry_count >= self.max_retries and not post_writing_review["passed"]:
+            logger.error(f"重试 {self.max_retries} 次后仍未通过审查，标记问题待用户确认")
+        
+        # Step 4: 保存文件
+        if result["write_to_file"] and self.writer.current_project:
             self.writer.current_project.write_chapter(volume, chapter, chapter_content, chapter_name)
             logger.info(f"章节已保存: 第{volume}卷 第{chapter}章")
         
-        # Step 3: 逻辑审查 - 检查本章与前面所有章节的逻辑一致性
-        logger.info("Step 3: 逻辑审查")
-        previous_chapters = self._get_all_previous_chapters(volume, chapter)
-        logic_review = self.logic_reviewer.review(chapter_content, previous_chapters)
-        result["logic_review"] = logic_review
-        
-        if not logic_review["passed"]:
-            logger.warning("逻辑审查未通过，标记为成功待用户确认")
-        
         result["success"] = True
-        logger.info(f"第{volume}卷 第{chapter}章 写作完成")
+        logger.info(f"第{volume}卷 第{chapter}章 写作完成（重试次数: {retry_count}）")
         
         # 更新当前进度
         self.current_volume = volume
@@ -149,36 +205,59 @@ class WritingWorkflow:
         # 构建写作提示，要求 3000-5000 字，Markdown 格式
         prompt = f"""请根据以下大纲写第{volume}卷第{chapter}章的内容。
 
-章节名：{chapter_name}
+            章节名：{chapter_name}
 
-大纲：
-{outline_section}
+            大纲：
+            {outline_section}
 
-要求：
-1. 严格按照大纲写作
-2. 字数 3000-5000 字
-3. 保持风格一致
-4. 直接输出正文，使用 Markdown 格式
-"""
+            要求：
+            1. 严格按照大纲写作
+            2. 字数 3000-5000 字
+            3. 保持风格一致
+            4. 直接输出正文，使用 Markdown 格式
+            """
         
         # 调用写作 Agent，max_iterations=0 表示不限制循环次数
         result = self.writer.chat(prompt, max_iterations=0)
         
         return result['response']
     
-    def _get_all_previous_chapters(self, volume: int, chapter: int) -> List[str]:
-        """获取前面所有章节的内容，用于逻辑审查时比对前文"""
+    def _get_previous_three_chapters(self, volume: int, chapter: int) -> List[str]:
+        """获取前面最多三章的内容，用于写作后审查时比对前文"""
         if not self.writer.current_project:
             return []
         
         chapters = self.writer.current_project.list_chapters()
         contents = []
         
-        for chapter_path in chapters:
+        # 只取最后三章
+        for chapter_path in chapters[-3:]:
             with open(chapter_path, 'r', encoding='utf-8') as f:
                 contents.append(f.read())
         
         return contents
+    
+    def _get_full_outline(self) -> str:
+        """获取完整大纲内容"""
+        if not self.writer.current_project:
+            return ""
+        
+        return self.writer.current_project.read_outline()
+    
+    def _write_free_content(self, user_request: str) -> str:
+        """自由写作模式：生成内容但不写入文件"""
+        prompt = f"""请根据用户的要求自由创作：
+
+            用户要求：{user_request}
+
+            要求：
+            1. 直接输出正文
+            2. 字数 1000-3000 字
+            3. 使用 Markdown 格式
+            """
+        
+        result = self.writer.chat(prompt, max_iterations=0)
+        return result['response']
 
 
 if __name__ == '__main__':

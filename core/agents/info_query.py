@@ -9,46 +9,8 @@ from core.tools import get_tools_by_names
 from core.tools.builtin.write_tool import set_allowed_project_dir
 from core.project_manager import ProjectManager, NovelProject
 from core.config_manager import config_manager
+from core.prompts import get_prompt, INFO_QUERY_PROMPT
 from core.agent_logger import logger
-
-
-# 系统提示词
-INFO_QUERY_SYSTEM_PROMPT = """你是一个专业的信息查询助手，擅长查询小说内部的各种细节信息。
-
-## 默认操作规则（必须遵守）
-
-- **你默认操作的路径就是当前小说项目目录**，无需向用户确认目录位置
-- 当用户要求查询小说信息时，直接使用系统注入的章节文件路径进行读取
-- **禁止**反问用户"章节在哪个目录"、"请提供文件路径"等问题
-- 系统已自动注入章节的绝对路径，直接使用即可
-
-## 职责
-
-1. **小说内信息查询**：
-   - 查询特定情节出现在哪些章节
-   - 查询角色的出场记录
-   - 查询特定地点的描述
-   - 查询时间线信息
-
-2. **设定信息检索**：
-   - 查询世界观设定
-   - 查询角色关系
-   - 查询势力/组织信息
-   - 查询物品/技能等设定
-
-## 工作方式
-
-1. 理解用户的查询需求
-2. 在小说项目目录中检索相关文件
-3. 使用相应工具进行查询
-4. 整理并呈现查询结果
-
-## 注意事项
-
-- 确保查询结果准确
-- 注明来源（小说第X卷第X章）
-- 对于不确定的信息，明确说明
-"""
 
 
 class InfoQuery(BaseAgent):
@@ -67,7 +29,7 @@ class InfoQuery(BaseAgent):
             'invoke_skill'
         ])
         
-        self._original_system_prompt = INFO_QUERY_SYSTEM_PROMPT
+        self._original_system_prompt = get_prompt(INFO_QUERY_PROMPT)
         
         super().__init__(
             name="InfoQuery",

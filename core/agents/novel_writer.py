@@ -72,19 +72,19 @@ class NovelWriter(BaseAgent):
             chapters_dir = project.chapters_dir
             self.system_prompt = f"""## 当前项目信息
 
-**项目目录**：`{project.base_dir}`
-**大纲文件**：`{outline_path}`
-**章节目录**：`{chapters_dir}`
+                **项目目录**：`{project.base_dir}`
+                **大纲文件**：`{outline_path}`
+                **章节目录**：`{chapters_dir}`
 
-## 文件操作规则（必须严格遵守）
+                ## 文件操作规则（必须严格遵守）
 
-1. **只能查询、操作、更新当前小说目录下的文件**
-2. 大纲文件路径：`{outline_path}`
-3. 章节文件路径：`{chapters_dir}/...`
-4. **禁止**在项目目录外创建或修改任何文件
-5. 使用工具时必须使用上述绝对路径
+                1. **只能查询、操作、更新当前小说目录下的文件**
+                2. 大纲文件路径：`{outline_path}`
+                3. 章节文件路径：`{chapters_dir}/...`
+                4. **禁止**在项目目录外创建或修改任何文件
+                5. 使用工具时必须使用上述绝对路径
 
-{self._original_system_prompt}"""
+                {self._original_system_prompt}"""
             logger.info(f"已注入项目路径信息到 {self.name}: {project.base_dir}")
             
             self._init_agent_graph()
@@ -134,35 +134,6 @@ class NovelWriter(BaseAgent):
     
     def list_chapters(self) -> list:
         """列出当前项目的所有章节"""
-        if not self.current_project:
-            return []
-        
-        return self.current_project.list_chapters()
-    
-    def get_outline(self) -> str:
-        """获取当前项目的大纲"""
-        if not self.current_project:
-            return "错误: 未选择项目"
-        
-        return self.current_project.read_outline()
-    
-    def get_chapter_content(self, volume: int, chapter: int) -> str:
-        """获取章节内容"""
-        if not self.current_project:
-            return "错误: 未选择项目"
-        
-        return self.current_project.read_chapter(volume, chapter)
-    
-    def save_chapter(self, volume: int, chapter: int, content: str, 
-                    chapter_name: str = "") -> str:
-        """保存章节"""
-        if not self.current_project:
-            return "错误: 未选择项目"
-        
-        return self.current_project.write_chapter(volume, chapter, content, chapter_name)
-    
-    def list_chapters(self) -> list:
-        """列出所有章节"""
         if not self.current_project:
             return []
         

@@ -9,58 +9,8 @@ from core.tools import get_tools_by_names
 from core.tools.builtin.write_tool import set_allowed_project_dir
 from core.project_manager import ProjectManager, NovelProject
 from core.config_manager import config_manager
+from core.prompts import get_prompt, SUMMARY_GENERATOR_PROMPT
 from core.agent_logger import logger
-
-
-# 系统提示词
-SUMMARY_SYSTEM_PROMPT = """你是一个专业的小说信息汇总专家，擅长从小说内容中提取和整理各类信息。
-
-## 默认操作规则（必须遵守）
-
-- **你默认操作的路径就是当前小说项目目录**，无需向用户确认目录位置
-- 当用户要求生成汇总时，直接使用系统注入的章节文件路径进行读取
-- **禁止**反问用户"章节在哪个目录"、"请提供文件路径"等问题
-- 系统已自动注入章节的绝对路径，直接使用即可
-
-## 职责
-
-1. **人物汇总**：提取小说中出现的所有角色，包括主角、配角、路人等
-2. **地点汇总**：提取小说中出现的所有地点
-3. **剧情汇总**：梳理小说的主要剧情线索
-4. **字数统计**：统计各章节字数和总字数
-
-## 输出格式
-
-### 人物汇总
-
-| 角色名 | 身份 | 性格特点 | 重要事件 |
-|--------|------|----------|----------|
-| ... | ... | ... | ... |
-
-### 地点汇总
-
-| 地点名 | 描述 | 出现章节 |
-|--------|------|----------|
-| ... | ... | ... |
-
-### 剧情汇总
-
-1. **主线剧情**：...
-2. **支线剧情**：...
-
-### 字数统计
-
-- 第1章：XXXX 字
-- 第2章：XXXX 字
-- ...
-- 总计：XXXX 字
-
-## 注意事项
-
-- 确保信息准确完整
-- 按章节顺序整理
-- 突出重要信息
-"""
 
 
 class SummaryGenerator(BaseAgent):
@@ -80,7 +30,7 @@ class SummaryGenerator(BaseAgent):
             'invoke_skill'
         ])
         
-        self._original_system_prompt = SUMMARY_SYSTEM_PROMPT
+        self._original_system_prompt = get_prompt(SUMMARY_GENERATOR_PROMPT)
         
         super().__init__(
             name="SummaryGenerator",
@@ -119,19 +69,19 @@ class SummaryGenerator(BaseAgent):
             chapters_dir = project.chapters_dir
             self.system_prompt = f"""## 当前项目信息
 
-**项目目录**：`{project.base_dir}`
-**大纲文件**：`{outline_path}`
-**章节目录**：`{chapters_dir}`
+                **项目目录**：`{project.base_dir}`
+                **大纲文件**：`{outline_path}`
+                **章节目录**：`{chapters_dir}`
 
-## 文件操作规则（必须严格遵守）
+                ## 文件操作规则（必须严格遵守）
 
-1. **只能查询、操作、更新当前小说目录下的文件**
-2. 大纲文件路径：`{outline_path}`
-3. 章节文件路径：`{chapters_dir}/...`
-4. **禁止**在项目目录外创建或修改任何文件
-5. 使用工具时必须使用上述绝对路径
+                1. **只能查询、操作、更新当前小说目录下的文件**
+                2. 大纲文件路径：`{outline_path}`
+                3. 章节文件路径：`{chapters_dir}/...`
+                4. **禁止**在项目目录外创建或修改任何文件
+                5. 使用工具时必须使用上述绝对路径
 
-{self._original_system_prompt}"""
+                {self._original_system_prompt}"""
             logger.info(f"已注入项目路径信息到 {self.name}: {project.base_dir}")
             
             self._init_agent_graph()

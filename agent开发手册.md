@@ -23,9 +23,9 @@
 
 Agent-Writer 是一个**AI 驱动的小说写作系统**。它不是简单的聊天机器人，而是一个能够：
 
-1. **自主审查大纲** → 检查情节逻辑、角色行为是否合理
+1. **写作前审查** → 匹配大纲章节，按优先级审查大纲质量（高：剧情衔接、中：剧情逻辑、低：剧情刻画）
 2. **逐章写作** → 基于大纲生成 3000-5000 字的章节正文
-3. **逻辑审查** → 检查新章节与前面所有章节是否矛盾
+3. **写作后审查** → 检查章节是否符合大纲、剧情是否合理、与前3章衔接是否自然（最多重试3次）合理、与前3章衔接是否自然（最多重试3次）
 4. **多 Agent 协作** → 不同 Agent 负责不同任务（写作、润色、查询等）
 
 ### 你已掌握的技术 vs 本项目使用的技术
@@ -304,16 +304,15 @@ python demo/demo-langgraph.py
                        │
 ┌──────────────────────┼──────────────────────────────┐
 │              业务逻辑层                              │
-│  core/workflow/          写作工作流引擎              │
+│  core/workflow/          写作工作流引擎（写作前审查→写作→写作后审查）查）│
 │  core/agents/            Agent 定义与注册            |
-|  core/prompts/           Agent 角色提示词            |                                           
+|  core/prompts/           Agent 角色提示词            |                                         
 │  core/project_manager.py 项目管理                    │
 └──────────────────────┬──────────────────────────────┘
                        │
 ┌──────────────────────┼──────────────────────────────┐
 │              基础设施层                               │
 │  core/agent_graph.py     LangGraph 状态图引擎         │
-│  core/agent_llm.py       LLM 客户端封装              │
 │  core/config_manager.py  配置管理                    │
 │  core/tools/             工具注册表                  │
 │  core/agent_logger.py    日志模块                    │
@@ -331,7 +330,7 @@ python demo/demo-langgraph.py
 | `core/agents/*.py`          | 具体 Agent                | 系统提示词、工具绑定 |
 | `core/tools/__init__.py`    | 工具注册表                | importlib 动态加载   |
 | `core/tools/builtin/*.py`   | 内置工具                  | @tool 装饰器         |
-| `core/workflow/*.py`        | 写作工作流                | 三阶段编排           |
+| `core/workflow/*.py`        | 写作工作流                | 三阶段编排（写作前审查→写作→写作后审查）写作后审查） |
 | `core/project_manager.py`   | 项目管理                  | 文件读写、目录操作   |
 | `core/config_manager.py`    | 配置管理                  | ConfigParser         |
 | `core/prompts/*.md`         | 系统提示词                | Markdown 格式        |
@@ -350,10 +349,10 @@ python demo/demo-langgraph.py
     WritingWorkflow.write_chapter(1, 1)
          ↓
     ┌─────────────────────────────────────┐
-    │ Step 1: OutlineReviewer.review()    │
-    │   → 读取大纲                        │
-    │   → LLM 审查大纲合理性              │
-    │   → 返回审查结果                    │
+    │ Step 1: PreWritingReviewer.review() │
+    │   → 匹配大纲章节                    │
+    │   → LLM 审查大纲质量（高/中/低优先级）│
+    │   → 返回匹配结果和审查建议          │
     └─────────────────────────────────────┘
          ↓
     ┌─────────────────────────────────────┐
@@ -367,10 +366,10 @@ python demo/demo-langgraph.py
     └─────────────────────────────────────┘
          ↓
     ┌─────────────────────────────────────┐
-    │ Step 3: LogicReviewer.review()      │
-    │   → 读取所有前文章节                │
-    │   → LLM 检查逻辑一致性              │
-    │   → 返回审查结果                    │
+    │ Step 3: PostWritingReviewer.review()│
+    │   → 检查大纲符合度 + 剧情合理性     │
+    │   → 检查与前3章衔接                 │
+    │   → 严重问题则重新生成（最多3次）   │
     └─────────────────────────────────────┘
          ↓
     返回结果给前端
@@ -423,10 +422,10 @@ def _tool_node(self, state: AgentState) -> dict:
     for tool_call in tool_calls:
         tool_name = tool_call["name"]
         tool_args = tool_call["args"]
-      
+    
         # 执行工具
         tool_result = self.tool_map[tool_name].invoke(tool_args)
-      
+    
         # 构造 ToolMessage
         results.append(ToolMessage(
             content=tool_result,
@@ -703,7 +702,7 @@ def parse_command(self, user_input: str) -> tuple:
         parts = user_input.split(maxsplit=1)  # 分成两部分
         command = parts[0]                     # "@写作"
         actual_input = parts[1] if len(parts) > 1 else ""
-      
+    
         command_map = {
             '@写作': 'writer',
             '@大纲润色': 'outline_polisher',
@@ -711,7 +710,7 @@ def parse_command(self, user_input: str) -> tuple:
             '@汇总说明': 'summary',
             '@信息查询': 'info_query'
         }
-      
+    
         if command in command_map:
             return command_map[command], actual_input
   
@@ -767,9 +766,8 @@ output/
 | -- | ------------ | --------------------- | ------------------------------ |
 | D1 | 配置管理     | `config_manager.py` | ConfigParser                   |
 | D2 | 日志模块     | `agent_logger.py`   | logging 模块                   |
-| D3 | LLM 客户端   | `agent_llm.py`      | ChatOpenAI                     |
-| D4 | Agent 状态图 | `agent_graph.py`    | **LangGraph StateGraph** |
-| D5 | Agent 基类   | `base_agent.py`     | 继承、封装                     |
+| D3 | Agent 状态图 | `agent_graph.py`    | **LangGraph StateGraph** |
+| D4 | Agent 基类   | `base_agent.py`     | 继承、封装                     |
 
 **D1：config_manager.py**
 
@@ -815,7 +813,7 @@ class AgentGraph:
     def _build_graph(self):
         graph = StateGraph(AgentState)
         graph.add_node("llm", self._llm_node)
-      
+    
         if self.tools:
             graph.add_node("tools", self._tool_node)
             graph.add_edge(START, "llm")
@@ -828,7 +826,7 @@ class AgentGraph:
         else:
             graph.add_edge(START, "llm")
             graph.add_edge("llm", END)
-      
+    
         return graph.compile()
 ```
 
@@ -877,10 +875,10 @@ class MyAgent(BaseAgent):
         # 读取提示词
         with open("core/prompts/my_agent.md", "r", encoding="utf-8") as f:
             system_prompt = f.read()
-      
+    
         # 选择工具（仅声明内置工具，自定义 py 工具会自动追加）
         tools = get_tools_by_names(['read_file', 'write_file'])
-      
+    
         # 调用基类
         # 基类会自动调用 _build_full_prompt()，完成三件事：
         # 1. 将匹配的 Skill 提示词追加到 system_prompt 末尾（根据 SKILL.md 的 applyTo 字段匹配）
@@ -919,12 +917,12 @@ class MyAgent(BaseAgent):
 
 #### 第 4 周：工作流引擎
 
-| 天   | 任务            | 涉及文件                |
-| ---- | --------------- | ----------------------- |
-| D1   | OutlineReviewer | `outline_reviewer.py` |
-| D2   | LogicReviewer   | `logic_reviewer.py`   |
-| D3-4 | WritingWorkflow | `writing_workflow.py` |
-| D5   | 集成测试        | 全流程测试              |
+| 天   | 任务                       | 涉及文件                |
+| ---- | -------------------------- | ----------------------- |
+| D1   | PreWritingReviewer         | `pre_writing.py`        |
+| D2   | PostWritingReviewer        | `post_writing.py`       |
+| D3-4 | WritingWorkflow            | `writing_workflow.py`   |
+| D5   | 集成测试                   | 全流程测试              |
 
 **工作流控制器**：
 
@@ -932,35 +930,45 @@ class MyAgent(BaseAgent):
 class WritingWorkflow:
     def __init__(self, writer: NovelWriter):
         self.writer = writer
-        self.outline_reviewer = OutlineReviewer()
-        self.logic_reviewer = LogicReviewer()
+        self.pre_reviewer = PreWritingReviewer()     # 写作前审查
+        self.post_reviewer = PostWritingReviewer()   # 写作后审查
   
-    def write_chapter(self, volume: int, chapter: int) -> dict:
-        # Step 1: 大纲审查
-        outline_section = self._extract_outline_section(volume, chapter)
-        outline_review = self.outline_reviewer.review(outline_section)
-      
-        # Step 2: 章节写作
-        chapter_content = self._write_chapter_content(volume, chapter)
-      
-        # Step 3: 逻辑审查
-        previous_chapters = self._get_all_previous_chapters(volume, chapter)
-        logic_review = self.logic_reviewer.review(chapter_content, previous_chapters)
-      
-        return {
-            "success": True,
-            "chapter_content": chapter_content,
-            "outline_review": outline_review,
-            "logic_review": logic_review
-        }
+    def write_chapter(self, volume: int, chapter: int, user_request: str) -> dict:
+        # Step 1: 写作前审查（匹配大纲 + 审查质量）
+        pre_result = self.pre_reviewer.review(user_request)
+        if not pre_result["matched"]:
+            # 未匹配到大纲章节 → 自由写作模式
+            return self.writer.write(user_request, save=False)
+        
+        outline_section = pre_result["outline_section"]
+        
+        # Step 2: 章节写作（最多重试3次）
+        for attempt in range(3):
+            chapter_content = self._write_chapter_content(volume, chapter)
+            
+            # Step 3: 写作后审查（大纲符合度 + 剧情合理性 + 前文衔接）
+            post_result = self.post_reviewer.review(chapter_content, outline_section)
+            
+            if post_result["passed"]:
+                break  # 审查通过
+        
+        # 保存章节到文件
+        self._save_chapter(volume, chapter, chapter_content)
+        return {"success": True, "chapter_content": chapter_content}
 ```
 
 **验证清单**：
 
 - [ ] `@写作 第1卷 第1章` 能触发完整工作流
-- [ ] 大纲审查能检测问题
+- [ ] 写作前审查能匹配大纲章节并检测质量问题
 - [ ] 章节能正确写入文件
-- [ ] 逻辑审查能检查与前文的矛盾
+- [ ] 写作后审查能检测大纲偏离、剧情矛盾与前文冲突
+- [ ] 自由写作模式下内容只在对话框输出，不写入文件
+- [ ] `@写作 第1卷 第1章` 能触发完整工作流
+- [ ] 写作前审查能匹配大纲章节并检测质量问题
+- [ ] 章节能正确写入文件
+- [ ] 写作后审查能检测大纲偏离、剧情矛盾与前文冲突
+- [ ] 自由写作模式下内容只在对话框输出，不写入文件
 
 ### 阶段 3：自定义工具系统（1 周）
 
@@ -1044,7 +1052,7 @@ def _load_skill(skill_name: str, skill_dir: str, skill_md_path: str) -> None:
                 )
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
-              
+            
                 for attr_name in dir(module):
                     attr = getattr(module, attr_name)
                     if isinstance(attr, BaseTool):
@@ -1177,10 +1185,10 @@ class Translator(BaseAgent):
         )
         with open(prompt_path, "r", encoding="utf-8") as f:
             system_prompt = f.read()
-      
+    
         # 选择工具
         tools = get_tools_by_names(['read_file', 'write_file'])
-      
+    
         # 调用基类
         super().__init__(
             name="translator",
@@ -1396,7 +1404,7 @@ python demo/demo-langgraph.py
 
 ### 7.1 添加新的 LLM 提供商
 
-修改 `core/agent_llm.py`：
+修改 `config.ini` 中的 LLM 配置，或通过 Web 页面动态修改：
 
 ```python
 from langchain_openai import ChatOpenAI

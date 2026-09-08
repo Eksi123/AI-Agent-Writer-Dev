@@ -8,7 +8,7 @@ Agent-Writer 是一个基于 langchain + langgraph + openai 实现的写作智�
 
 - 小说大纲导入或创建
 - 小说项目管理（每个大纲对应一个项目）
-- 固定写作工作流（大纲审查 → 逐章写作 → 逻辑审查）
+- 固定写作工作流（写作前审查 → 逐章写作 → 写作后审查，支持自动重试）
 - 多 Agent 协作（通过 @指令切换不同职能 Agent，默认Agent不用@切换）
 - 小说预览与导出
 - 小说内容优化与调整
@@ -70,7 +70,7 @@ python main.py --web
 
 服务启动后会自动打开浏览器加载 Web 界面。
 
-![Agent-Writer Web页面](/web页面展示.png)
+![Agent-Writer Web页面](</web页面展示.png>)
 
 ### 5. 基本使用流程
 
@@ -118,55 +118,58 @@ python main.py --web
 
 | 指令           | Agent            | 职责                                                                         | 联网能力 |
 | -------------- | ---------------- | ---------------------------------------------------------------------------- | -------- |
-| `@写作`      | NovelWriter      | 执行写作工作流（大纲审查→逐章写作→逻辑审查）                               | ✅      |
-| `@大纲润色`  | OutlinePolisher  | 优化大纲结构、小说设定和章节安排                                             | ✅      |
-| `@小说润色`  | ContentPolisher  | 章节内容润色、文笔优化                                                       | ✅      |
-| `@汇总说明`  | SummaryGenerator | 生成小说各类信息汇总，包括人物汇总，地点汇总，剧情经历汇总，章节字数汇总等等 | ❌      |
-| `@信息查询`  | InfoQuery        | 查询小说内各种细节信息                                                       | ❌      |
-| 无指令（默认） | ChatAgent        | 自由对话，此时不支持编辑小说                                                 | ✅      |
+| `@写作`      | NovelWriter      | 执行写作工作流（写作前审查→逐章写作→写作后审查，最多重试3次）                | ✅       |
+| `@大纲润色`  | OutlinePolisher  | 优化大纲结构、小说设定和章节安排                                             | ✅       |
+| `@小说润色`  | ContentPolisher  | 章节内容润色、文笔优化                                                       | ✅       |
+| `@汇总说明`  | SummaryGenerator | 生成小说各类信息汇总，包括人物汇总，地点汇总，剧情经历汇总，章节字数汇总等等 | ❌       |
+| `@信息查询`  | InfoQuery        | 查询小说内各种细节信息                                                       | ❌       |
+| 无指令（默认） | ChatAgent        | 自由对话，此时不支持编辑小说                                                 | ✅       |
 
 > **联网能力**：标记为 ✅ 的 Agent 可以使用 `fetch_url` 工具从互联网获取参考资料。InfoQuery 仅支持小说内部信息检索，不支持联网查询。
 
 ### 写作工作流（Writing Workflow）
 
-小说写作采用固定的工作流，每次写作前必须经过审查，确保质量：
+小说写作采用固定的工作流，通过写作前审查和写作后审查双重保障，确保章节质量：
 
 ```
 开始写作（@写作 第X章）
         │
         ▼
-┌─────────────────────┐
-│  Step 1: 大纲审查    │  审查当前章节对应的大纲部分
-│  - 大纲是否合理      │  - 情节逻辑是否自洽
-│  - 与前文是否衔接    │  - 角色行为是否符合设定
-│  - 有问题则询问用户  │
-└────────┬────────────┘
-         │ 审查通过 / 用户确认修改后
+┌──────────────────────────┐
+│  Step 1: 写作前审查       │  理解用户要求，匹配大纲章节
+│  - 匹配大纲章节           │  - 按优先级审查大纲质量
+│    (高) 剧情衔接是否合理   │    (中) 剧情发展是否符合逻辑
+│    (低) 剧情刻画是否丰富   │  - 未匹配则进入自由写作模式
+│  - 有问题则建议修改大纲    │    （只输出，不写入文件）
+└────────┬─────────────────┘
+         │ 审查通过
          ▼
-┌─────────────────────┐
-│  Step 2: 章节写作    │  基于大纲逐章完成写作
-│  - 逐章节完成        │  - 参考世界观、角色设定
-│  - 参考前文内容      │  - 保持风格一致性
-│  - 输出：章节正文    │
-└────────┬────────────┘
+┌──────────────────────────┐
+│  Step 2: 章节写作         │  基于大纲逐章完成写作
+│  - 严格按照大纲写作       │  - 参考世界观、角色设定
+│  - 参考前文内容           │  - 保持风格一致性
+│  - 输出：章节正文         │
+└────────┬─────────────────┘
          │ 本章写作完成
          ▼
-┌─────────────────────┐
-│  Step 3: 逻辑审查    │  审查本章正文与前面所有正文
-│  - 情节逻辑是否严密  │  - 角色行为是否矛盾
-│  - 时间线是否一致    │  - 伏笔/设定是否冲突
-│  - 有问题则询问用户  │
-└────────┬────────────┘
-         │ 审查通过 / 用户确认修改后
+┌──────────────────────────┐
+│  Step 3: 写作后审查       │  审查生成的章节质量
+│  - 是否按大纲剧情写作     │  - 剧情本身是否合理
+│  - 与前3章衔接是否自然    │  - 严重问题则重新生成
+│  - 最多重试 3 次          │  - 3次后仍有问题则交用户确认
+└────────┬─────────────────┘
+         │ 审查通过
          ▼
-    本章完成，可进入下一章
+    保存章节，可进入下一章
 ```
 
 **关键规则：**
 
-- 每章写作前**必须**先审查对应大纲部分是否合理正确
-- 审查完成后才开始写作，必须**逐章节**完成（不能跳章）
-- 每章写作完成后**必须**审查本章正文与前面所有正文的逻辑一致性
+- 每章写作前**必须**先通过写作前审查（pre_writing），确认大纲质量
+- 写作要求未匹配到大纲章节时，进入**自由写作模式**，内容只在对话框输出，不写入 output 目录
+- 每章写作完成后**必须**通过写作后审查（post_writing），确保章节符合大纲、剧情合理、与前文衔接
+- 写作后审查发现严重问题时**自动重新生成**，最多重试 3 次
+- Agent 在未经允许情况下**不主动修改大纲**，但允许重新生成章节
 
 ### 用户自定义工具
 
@@ -254,7 +257,7 @@ def word_count(text: str) -> str:
 ```
 ai-agent-writer-dev/
 ├── core/                              # 核心模块
-│   ├── agent_llm.py                  # LLM 客户端封装（支持 OpenAI / Ollama）
+
 │   ├── agent_logger.py               # 日志模块
 │   ├── agent_graph.py                # LangGraph Agent 状态图（Agent-Loop 实现）
 │   ├── config_manager.py             # 配置管理（运行时动态修改 LLM 配置）
@@ -270,9 +273,9 @@ ai-agent-writer-dev/
 │   │   └── chat_agent.py             # 自由对话 Agent（默认，无 @指令时使用）
 │   │
 │   ├── workflow/                     # 写作工作流引擎
-│   │   ├── writing_workflow.py       # 工作流控制器（大纲审查→写作→逻辑审查）
-│   │   ├── outline_reviewer.py       # 大纲审查逻辑
-│   │   └── logic_reviewer.py         # 正文逻辑审查逻辑
+│   │   ├── writing_workflow.py       # 工作流控制器（写作前审查→写作→写作后审查，最多重试3次）
+│   │   ├── pre_writing.py            # 写作前审查（匹配大纲 + 审查大纲质量）
+│   │   └── post_writing.py           # 写作后审查（大纲符合度 + 剧情合理性 + 前文衔接）
 │   │
 │   ├── tools/                        # Agent 工具系统
 │   │   ├── __init__.py               # 工具注册表（自动加载 + 热加载）
@@ -282,9 +285,9 @@ ai-agent-writer-dev/
 │   │   │   ├── edit_tool.py          # 文件编辑（文本替换）
 │   │   │   ├── glob_tool.py          # 文件搜索（glob 模式匹配）
 │   │   │   ├── list_tool.py          # 目录列表（文件和文件夹）
-│   │   │   ├── todo_tool.py          # 任务清单管理
 │   │   │   ├── ask_tool.py           # 向用户提问
-│   │   │   └── online_tool.py        # 网络请求（获取网页内容）
+│   │   │   ├── online_tool.py        # 网络请求（获取网页内容）
+│   │   │   └── invoke_skill.py       # 自定义 Skill 统一调用入口
 │   │   │
 │   │   └── custom/                   # 用户自定义工具（Skill 格式，热加载）
 │   │       ├── README.md             # 工具开发指南
@@ -292,17 +295,34 @@ ai-agent-writer-dev/
 │   │       │   ├── SKILL.md          # 工具描述文档
 │   │       │   └── scripts/
 │   │       │       └── word_count.py # 工具实现
-│   │       └── example-file-info/    # 示例：文件信息工具
-│   │           ├── SKILL.md
-│   │           └── scripts/
-│   │               └── file_info.py
+│   │       ├── example-file-info/    # 示例：文件信息工具
+│   │       │   ├── SKILL.md
+│   │       │   └── scripts/
+│   │       │       └── file_info.py
+│   │       ├── sumeru-outline/       # 大纲编写技能
+│   │       │   ├── SKILL.md
+│   │       │   └── references/       # 风格参考文档
+│   │       ├── sumeru-polish/        # 内容润色技能
+│   │       │   └── SKILL.md
+│   │       ├── sumeru-review/        # 内容审查技能
+│   │       │   ├── SKILL.md
+│   │       │   └── scripts/
+│   │       │       └── chapter-word-counter.py
+│   │       ├── sumeru-write/         # 正文写作技能
+│   │       │   └── SKILL.md
+│   │       ├── sumeru-topic/         # 题材选择技能
+│   │       │   └── SKILL.md
+│   │       ├── sumeru-finalize/      # 完结收尾技能
+│   │       │   └── SKILL.md
+│   │       └── sumeru-worldbuilder/  # 世界观构建技能
+│   │           └── SKILL.md
 │   │
 │   └── prompts/                      # 系统提示词模板（Markdown 格式）
 │       ├── being_writer.md           # 写作 Agent 提示词
 │       ├── outline_polisher.md       # 大纲润色提示词
 │       ├── content_polisher.md       # 内容润色提示词
-│       ├── outline_review.md         # 大纲审查提示词
-│       └── logic_review.md           # 逻辑审查提示词
+│       ├── pre_writing.md            # 写作前审查提示词
+│       └── post_writing.md           # 写作后审查提示词
 │
 ├── web/                              # Web 界面
 │   ├── app.py                        # Flask Web 服务 + REST API
@@ -331,7 +351,8 @@ ai-agent-writer-dev/
 │
 ├── config.ini                        # 配置文件（LLM / Ollama / Web Server）
 ├── requirements.txt                  # Python 依赖
-└── main.py                           # 命令行入口（支持 --web 参数）
+├── main.py                           # 命令行入口（支持 --web 参数）
+└── web页面展示.png                    # Web 界面截图
 ```
 
 ### config.ini 配置说明
@@ -390,9 +411,9 @@ auto_open_browser = true
                      │
 ┌────────────────────┼──────────────────────────────┐
 │  core/workflow/ (写作工作流引擎)                   │
-│  状态机: REVIEW_OUTLINE → WRITING → REVIEW_LOGIC   │
-│  - 大纲审查: outline_reviewer.py                   │
-│  - 逻辑审查: logic_reviewer.py                     │
+│  状态机: PRE_WRITING → WRITING → POST_WRITING      │
+│  - 写作前审查: pre_writing.py（匹配大纲+审查质量） │
+│  - 写作后审查: post_writing.py（符合度+合理性+衔接）│
 └────────────────────┬──────────────────────────────┘
                      │
 ┌────────────────────┼──────────────────────────────┐
@@ -413,33 +434,33 @@ auto_open_browser = true
 
 ### REST API
 
-| 方法       | 路径                                        | 说明                                  |
-| ---------- | ------------------------------------------- | ------------------------------------- |
-| `GET`    | `/api/projects`                           | 获取所有小说项目列表 + 当前项目名     |
-| `POST`   | `/api/projects`                           | 创建新项目（自动用模板初始化大纲）    |
-| `POST`   | `/api/projects/import`                    | 导入项目（上传 .md 文件作为大纲）     |
-| `POST`   | `/api/projects/{name}/switch`             | 切换到指定项目                        |
-| `DELETE` | `/api/projects/{name}`                    | 删除项目                              |
-| `GET`    | `/api/projects/{name}/export`             | 导出整个项目为 ZIP 文件               |
-| `GET`    | `/api/projects/{name}/outline`            | 读取大纲内容                          |
-| `PUT`    | `/api/projects/{name}/outline`            | 保存大纲内容                          |
-| `GET`    | `/api/projects/{name}/chapters`           | 获取章节列表                          |
-| `GET`    | `/api/projects/{name}/chapter-tree`       | 获取章节目录树（按卷分组，含预览）    |
-| `GET`    | `/api/projects/{name}/chapter?file=xxx`   | 读取指定章节内容                      |
-| `PUT`    | `/api/projects/{name}/chapter`            | 保存章节内容                          |
-| `POST`   | `/api/projects/{name}/volume`             | 新建卷（body:`{name, volume?}`）    |
-| `DELETE` | `/api/projects/{name}/volume/{vol}`       | 删除卷及其所有章节                    |
-| `PUT`    | `/api/projects/{name}/volume/{vol}`       | 重命名卷（body:`{name}`）           |
+| 方法       | 路径                                        | 说明                                          |
+| ---------- | ------------------------------------------- | --------------------------------------------- |
+| `GET`    | `/api/projects`                           | 获取所有小说项目列表 + 当前项目名             |
+| `POST`   | `/api/projects`                           | 创建新项目（自动用模板初始化大纲）            |
+| `POST`   | `/api/projects/import`                    | 导入项目（上传 .md 文件作为大纲）             |
+| `POST`   | `/api/projects/{name}/switch`             | 切换到指定项目                                |
+| `DELETE` | `/api/projects/{name}`                    | 删除项目                                      |
+| `GET`    | `/api/projects/{name}/export`             | 导出整个项目为 ZIP 文件                       |
+| `GET`    | `/api/projects/{name}/outline`            | 读取大纲内容                                  |
+| `PUT`    | `/api/projects/{name}/outline`            | 保存大纲内容                                  |
+| `GET`    | `/api/projects/{name}/chapters`           | 获取章节列表                                  |
+| `GET`    | `/api/projects/{name}/chapter-tree`       | 获取章节目录树（按卷分组，含预览）            |
+| `GET`    | `/api/projects/{name}/chapter?file=xxx`   | 读取指定章节内容                              |
+| `PUT`    | `/api/projects/{name}/chapter`            | 保存章节内容                                  |
+| `POST`   | `/api/projects/{name}/volume`             | 新建卷（body:`{name, volume?}`）            |
+| `DELETE` | `/api/projects/{name}/volume/{vol}`       | 删除卷及其所有章节                            |
+| `PUT`    | `/api/projects/{name}/volume/{vol}`       | 重命名卷（body:`{name}`）                   |
 | `POST`   | `/api/projects/{name}/chapter/create`     | 新建章节（body:`{volume, name, chapter?}`） |
-| `DELETE` | `/api/projects/{name}/chapter/{vol}/{ch}` | 删除章节                              |
-| `PUT`    | `/api/projects/{name}/chapter/{vol}/{ch}` | 重命名章节（body:`{name}`）         |
-| `POST`   | `/api/chat`                               | 发送消息并获取 Agent 回复             |
-| `GET`    | `/api/agent/current`                      | 获取当前激活的 Agent                  |
-| `GET`    | `/api/settings`                           | 获取当前 LLM 配置（API Key 掩码处理） |
-| `POST`   | `/api/settings`                           | 更新 LLM 配置                         |
-| `GET`    | `/api/settings/status`                    | 检查配置状态（是否完整）               |
-| `POST`   | `/api/settings/test`                      | 测试 LLM 连接                         |
-| `GET`    | `/api/llm/ollama/models`                  | 获取 Ollama 本地可用模型列表          |
+| `DELETE` | `/api/projects/{name}/chapter/{vol}/{ch}` | 删除章节                                      |
+| `PUT`    | `/api/projects/{name}/chapter/{vol}/{ch}` | 重命名章节（body:`{name}`）                 |
+| `POST`   | `/api/chat`                               | 发送消息并获取 Agent 回复                     |
+| `GET`    | `/api/agent/current`                      | 获取当前激活的 Agent                          |
+| `GET`    | `/api/settings`                           | 获取当前 LLM 配置（API Key 掩码处理）         |
+| `POST`   | `/api/settings`                           | 更新 LLM 配置                                 |
+| `GET`    | `/api/settings/status`                    | 检查配置状态（是否完整）                      |
+| `POST`   | `/api/settings/test`                      | 测试 LLM 连接                                 |
+| `GET`    | `/api/llm/ollama/models`                  | 获取 Ollama 本地可用模型列表                  |
 
 ---
 
@@ -472,8 +493,8 @@ auto_open_browser = true
 1. **写作工作流引擎** (`core/workflow/`)
 
    - 工作流控制器（`writing_workflow.py`）
-   - 大纲审查逻辑（`outline_reviewer.py`）
-   - 正文逻辑审查（`logic_reviewer.py`）
+   - 写作前审查（`pre_writing.py`）— 匹配大纲章节 + 审查大纲质量
+   - 写作后审查（`post_writing.py`）— 大纲符合度 + 剧情合理性 + 前文衔接（最多重试3次）
 2. **6 个预置 Agent**
 
    - `@写作` Agent（`novel_writer.py`）- 执行写作工作流
@@ -482,11 +503,10 @@ auto_open_browser = true
    - `@小说润色` Agent（`content_polisher.py`）- 文笔润色
    - `@信息查询` Agent（`info_query.py`）- 查询小说内部细节信息
    - 自由对话 Agent（`chat_agent.py`）- 默认模式
-3. **8 个内置工具**（启动时自动注册）
+3. **7 个内置工具**（启动时自动注册）
 
    - 文件读写：`read_tool`、`write_tool`、`edit_tool`
    - 目录操作：`glob_tool`、`list_tool`
-   - 任务管理：`todo_tool`
    - 用户交互：`ask_tool`
    - 网络请求：`online_tool`
 4. **提示词模板** (`core/prompts/`)
@@ -594,7 +614,7 @@ def parse_command(self, user_input: str) -> tuple:
         parts = user_input.split(maxsplit=1)
         command = parts[0]
         actual_input = parts[1] if len(parts) > 1 else ""
-      
+    
         command_map = {
             '@写作': 'writer',
             '@大纲润色': 'outline_polisher',
@@ -602,7 +622,7 @@ def parse_command(self, user_input: str) -> tuple:
             '@汇总说明': 'summary',
             '@信息查询': 'info_query'
         }
-      
+    
         if command in command_map:
             return command_map[command], actual_input
   
@@ -620,7 +640,7 @@ class BaseAgent:
         self.system_prompt = system_prompt
         self.tools = tools
         self._init_agent_graph()  # 构建 LangGraph 状态图 + 注入 Skill 提示词
-    
+  
     def _init_agent_graph(self) -> None:
         """初始化 Agent：自动拼接匹配的 Skill 提示词到 system_prompt"""
         config = config_manager.get_llm_config()
@@ -630,7 +650,7 @@ class BaseAgent:
             model=config["model_name"], tools=self.tools,
             system_prompt=full_prompt, temperature=config["temperature"]
         )
-    
+  
     def _build_full_prompt(self) -> str:
         """构建完整 system_prompt：基础提示词 + Skill 提示词 + 自定义工具清单（含懒加载工具）"""
         skill_prompts = get_skill_prompts_for_agent(self.name)
@@ -643,7 +663,7 @@ class BaseAgent:
             parts.append(f"## 可用的自定义工具（通过 invoke_custom_tool 调用）\n{tools_desc}")
         separator = "\n\n---\n\n"
         return separator.join(parts)
-    
+  
     def chat(self, user_input: str) -> dict:
         """调用 Agent，返回回复和思考过程"""
         result = self.agent_graph.invoke({"messages": [HumanMessage(content=user_input)]})
@@ -749,9 +769,10 @@ flask-cors==6.0.2         # Flask 跨域支持
 
 ### 写作工作流
 
-- [X] `@写作 第1卷 第1章` 触发工作流：大纲审查 → 写作 → 逻辑审查
-- [X] 大纲审查能检测逻辑问题
-- [X] 逻辑审查能检测与前文的矛盾点
+- [X] `@写作 第1卷 第1章` 触发工作流：写作前审查 → 写作 → 写作后审查（最多重试3次）
+- [X] 写作前审查能匹配大纲章节并检测大纲质量问题
+- [X] 写作后审查能检测大纲偏离、剧情矛盾与前文冲突
+- [X] 自由写作模式下内容只在对话框输出，不写入文件
 - [X] 所有内置工具正常工作
 
 ### 自定义工具
