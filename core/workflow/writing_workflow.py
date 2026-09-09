@@ -9,7 +9,6 @@ from core.agents.novel_writer import NovelWriter
 from core.workflow.pre_writing import PreWritingReviewer
 from core.workflow.post_writing import PostWritingReviewer
 from core.agent_logger import logger
-from core.tools import get_all_tools
 
 
 class WritingWorkflow:
@@ -259,15 +258,3 @@ class WritingWorkflow:
         result = self.writer.chat(prompt, max_iterations=0)
         return result['response']
 
-
-if __name__ == '__main__':
-    writer = NovelWriter()
-    workflow = WritingWorkflow(writer)
-    
-    project = writer.create_project("测试小说")
-    project.write_outline("# 测试小说\n\n## 第1卷\n\n### 第1章：初入江湖\n\n主角离开家乡...")
-    
-    result = workflow.write_chapter(1, 1, "初入江湖")
-    
-    print(f"写作成功: {result['success']}")
-    print(f"章节内容长度: {len(result['chapter_content'])} 字符")

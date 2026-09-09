@@ -21,6 +21,7 @@ from core.workflow import WritingWorkflow
 from core.project_manager import ProjectManager
 from core.config_manager import config_manager
 from core.agent_logger import logger
+from core.tools import _skill_registry, reload_custom_tools
 
 
 app = Flask(__name__, 
@@ -159,8 +160,10 @@ class AgentWriter:
                         'workflow': True
                     }
                 else:
+                    pre_feedback = result.get('pre_writing_review', {}).get('feedback', '无')
+                    post_feedback = result.get('post_writing_review', {}).get('feedback', '无')
                     return {
-                        'response': f"✗ 写作失败\n\n大纲审查: {result['outline_review']['feedback']}\n\n逻辑审查: {result['logic_review']['feedback']}",
+                        'response': f"✗ 写作失败\n\n写作前审查: {pre_feedback}\n\n写作后审查: {post_feedback}",
                         'agent': agent_name,
                         'workflow': True
                     }
@@ -944,6 +947,159 @@ def api_test_connection():
             'success': False,
             'error': hint
         }), 200
+
+
+# ==================== Skill 管理 API ====================
+
+@app.route('/api/skills', methods=['GET'])
+def api_list_skills():
+    """获取所有已安装的自定义 Skill 列表（直接扫描 custom 目录）"""
+    try:
+        import re
+        custom_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'core', 'tools', 'custom')
+        
+        skills = []
+        if os.path.exists(custom_dir):
+            for item in os.listdir(custom_dir):
+                skill_dir = os.path.join(custom_dir, item)
+                # 只处理文件夹且不以 _ 开头
+                if os.path.isdir(skill_dir) and not item.startswith('_'):
+                    skill_md_path = os.path.join(skill_dir, 'SKILL.md')
+                    if os.path.exists(skill_md_path):
+                        # 读取 SKILL.md 提取描述
+                        try:
+                            with open(skill_md_path, 'r', encoding='utf-8') as f:
+                                content = f.read()
+                            
+                            # 解析 frontmatter 获取 description
+                            frontmatter_pattern = re.compile(r'^---\s*\n(.*?)\n---', re.DOTALL)
+                            match = frontmatter_pattern.match(content)
+                            description = ''
+                            if match:
+                                frontmatter = match.group(1)
+                                for line in frontmatter.split('\n'):
+                                    if line.startswith('description:'):
+                                        description = line.split(':', 1)[1].strip()
+                                        break
+                            
+                            skills.append({
+                                'name': item,  # 使用文件夹名称
+                                'description': description
+                            })
+                        except Exception as e:
+                            logger.warning(f"读取 Skill {item} 失败: {e}")
+                            skills.append({
+                                'name': item,
+                                'description': ''
+                            })
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'skills': skills
+            }
+        })
+    except Exception as e:
+        logger.error(f"获取 Skill 列表错误: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/skills/import', methods=['POST'])
+def api_import_skill():
+    """导入新的 Skill（创建目录、写入文件、热加载）"""
+    try:
+        data = request.json
+        skill_name = data.get('skillName', '').strip()
+        skill_content = data.get('skillContent', '')
+        scripts = data.get('scripts', [])
+        
+        if not skill_name:
+            return jsonify({'error': 'Skill 名称不能为空'}), 400
+        
+        if not skill_content:
+            return jsonify({'error': 'SKILL.md 内容不能为空'}), 400
+        
+        # 验证 frontmatter
+        import re
+        frontmatter_pattern = re.compile(r'^---\s*\n(.*?)\n---', re.DOTALL)
+        match = frontmatter_pattern.match(skill_content)
+        if not match:
+            return jsonify({'error': 'SKILL.md 必须包含 YAML frontmatter'}), 400
+        
+        frontmatter = match.group(1)
+        has_name = re.search(r'^name:\s*.+', frontmatter, re.MULTILINE)
+        has_description = re.search(r'^description:\s*.+', frontmatter, re.MULTILINE)
+        
+        if not has_name or not has_description:
+            return jsonify({'error': 'SKILL.md 的 frontmatter 必须包含 name 和 description 字段'}), 400
+        
+        # 检查是否同名已存在
+        custom_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'core', 'tools', 'custom')
+        skill_dir = os.path.join(custom_dir, skill_name)
+        
+        if os.path.exists(skill_dir):
+            return jsonify({'error': f'Skill "{skill_name}" 已存在'}), 400
+        
+        # 创建目录
+        os.makedirs(skill_dir, exist_ok=True)
+        
+        # 写入 SKILL.md
+        skill_md_path = os.path.join(skill_dir, 'SKILL.md')
+        with open(skill_md_path, 'w', encoding='utf-8') as f:
+            f.write(skill_content)
+        
+        # 写入 scripts（如果有）
+        if scripts:
+            scripts_dir = os.path.join(skill_dir, 'scripts')
+            os.makedirs(scripts_dir, exist_ok=True)
+            for script in scripts:
+                script_path = os.path.join(scripts_dir, script['filename'])
+                with open(script_path, 'w', encoding='utf-8') as f:
+                    f.write(script['content'])
+        
+        # 热加载
+        reload_custom_tools()
+        
+        logger.info(f"Skill 已导入: {skill_name}")
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'message': f'Skill "{skill_name}" 已导入'
+            }
+        })
+    except Exception as e:
+        logger.error(f"导入 Skill 错误: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/skills/<skill_name>', methods=['DELETE'])
+def api_delete_skill(skill_name):
+    """删除指定的 Skill"""
+    try:
+        custom_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'core', 'tools', 'custom')
+        skill_dir = os.path.join(custom_dir, skill_name)
+        
+        if not os.path.exists(skill_dir):
+            return jsonify({'error': f'Skill "{skill_name}" 不存在'}), 404
+        
+        # 删除整个 Skill 目录
+        shutil.rmtree(skill_dir)
+        
+        # 热加载
+        reload_custom_tools()
+        
+        logger.info(f"Skill 已删除: {skill_name}")
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'message': f'Skill "{skill_name}" 已删除'
+            }
+        })
+    except Exception as e:
+        logger.error(f"删除 Skill 错误: {e}")
+        return jsonify({'error': str(e)}), 500
 
 
 # ==================== 启动 ====================

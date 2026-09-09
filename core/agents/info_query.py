@@ -68,19 +68,19 @@ class InfoQuery(BaseAgent):
             chapters_dir = project.chapters_dir
             self.system_prompt = f"""## 当前项目信息
 
-**项目目录**：`{project.base_dir}`
-**大纲文件**：`{outline_path}`
-**章节目录**：`{chapters_dir}`
+                **项目目录**：`{project.base_dir}`
+                **大纲文件**：`{outline_path}`
+                **章节目录**：`{chapters_dir}`
 
-## 文件操作规则（必须严格遵守）
+                ## 文件操作规则（必须严格遵守）
 
-1. **只能查询、操作、更新当前小说目录下的文件**
-2. 大纲文件路径：`{outline_path}`
-3. 章节文件路径：`{chapters_dir}/...`
-4. **禁止**在项目目录外创建或修改任何文件
-5. 使用工具时必须使用上述绝对路径
+                1. **只能查询、操作、更新当前小说目录下的文件**
+                2. 大纲文件路径：`{outline_path}`
+                3. 章节文件路径：`{chapters_dir}/...`
+                4. **禁止**在项目目录外创建或修改任何文件
+                5. 使用工具时必须使用上述绝对路径
 
-{self._original_system_prompt}"""
+                {self._original_system_prompt}"""
             logger.info(f"已注入项目路径信息到 {self.name}: {project.base_dir}")
             
             self._init_agent_graph()
@@ -90,9 +90,3 @@ class InfoQuery(BaseAgent):
         else:
             logger.warning(f"项目不存在: {project_name}")
             return False
-
-
-if __name__ == '__main__':
-    query_agent = InfoQuery()
-    response = query_agent.chat("你好，请介绍一下你能做什么")
-    print(f"\nAgent: {response}")

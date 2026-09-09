@@ -13,6 +13,7 @@ Agent-Writer 是一个基于 langchain + langgraph + openai 实现的写作智�
 - 小说预览与导出
 - 小说内容优化与调整
 - 用户自定义 Skill（统一通过 invoke_skill 调用，支持热加载）
+- **Skill 管理**（Web 界面可视化导入/删除/查看自定义 Skill）
 - LLM 配置管理（Web 页面可修改 API URL / Key，支持切换本地离线模型如 Ollama）
 
 **交互方式：**
@@ -111,6 +112,12 @@ python main.py --web
 
 - 大纲和正文统一存储在 `output/{小说名}/` 目录下
 - 支持多卷、多章节的灵活组织
+
+**项目切换与上下文隔离：**
+
+- 切换项目时（`/project <名称>` 或 Web 端切换），系统会自动清空所有 Agent 的对话历史
+- 这确保了不同小说项目的上下文不会相互混淆，每个项目都从干净的对话状态开始
+- 如需在同一项目内清空当前对话，可使用 `/clear` 命令
 
 ### 预置 Agent
 
@@ -247,6 +254,33 @@ def word_count(text: str) -> str:
 **懒加载机制：** 带 `scripts/` 的自定义工具采用懒加载策略——启动时仅解析 `SKILL.md` 的 frontmatter 获取工具名称和描述，**不立即加载** `scripts/` 目录下的 Python 脚本。只有当 Agent 首次调用 `invoke_custom_tool` 时，才会动态加载对应的脚本文件。这样可以加快启动速度并减少内存占用。
 
 **热加载：** 修改自定义工具后，调用 `reload_custom_tools()` 即可重新加载，无需重启服务。
+
+详细说明参见 `core/tools/custom/README.md`。
+
+### Skill 管理（Web 界面）
+
+Web 界面提供可视化的 Skill 管理功能，点击侧边栏的 🔧 按钮打开管理面板：
+
+**功能特性：**
+
+- **查看已安装 Skill**：列表展示 `core/tools/custom/` 目录下所有 Skill（文件夹名称）
+- **导入新 Skill**：点击"+ 新增"按钮，选择 Skill 文件夹上传（支持 `webkitdirectory` 文件夹选择）
+  - 自动验证 SKILL.md 存在且包含有效的 YAML frontmatter（name + description）
+  - 自动检测重名 Skill，防止覆盖
+  - 限制文件夹大小不超过 5MB
+  - 导入后自动热加载，无需重启服务
+- **删除 Skill**：点击"🗑 删除"按钮进入删除模式，点击 Skill 旁的 × 按钮删除
+  - 删除前弹出确认对话框
+  - 删除后自动热加载
+- **查看详情**：鼠标悬停在 Skill 名称上 500ms 后显示详情弹窗（name + description）
+
+**API 接口：**
+
+| 方法   | 路径                       | 说明                   |
+| ------ | -------------------------- | ---------------------- |
+| GET    | `/api/skills`              | 获取已安装 Skill 列表  |
+| POST   | `/api/skills/import`       | 导入新 Skill           |
+| DELETE | `/api/skills/<skill_name>` | 删除指定 Skill         |
 
 详细说明参见 `core/tools/custom/README.md`。
 
@@ -818,5 +852,5 @@ flask-cors==6.0.2         # Flask 跨域支持
 1. Agent 间协作（如 `@大纲润色` 完成后自动触发 `@汇总说明`）
 2. 版本管理（大纲/章节的历史版本，支持回滚）
 3. 云同步（可选将小说同步到 GitHub Gist / 云盘）
-4. 对话历史持久化（当前对话历史仅存内存，重启后丢失）
+4. 对话历史持久化（当前对话历史仅存内存，重启后丢失；切换项目时自动清空）
 5. 流式输出（当前为完整响应后一次性返回）

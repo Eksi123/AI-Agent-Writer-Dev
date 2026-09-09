@@ -22,9 +22,3 @@ class ChatAgent(BaseAgent):
         )
         
         logger.info("自由对话 Agent 已初始化")
-
-
-if __name__ == '__main__':
-    agent = ChatAgent()
-    response = agent.chat("你好，你能做什么？")
-    print(f"\nAgent: {response}")

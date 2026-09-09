@@ -1134,3 +1134,221 @@ body {
     margin: 10px 0;
     font-size: 12px;
 }
+
+/* ==================== Skill 管理功能 ==================== */
+
+/* 侧边栏按钮组 */
+.sidebar-header-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Skill 管理按钮 */
+.btn-skill-manager {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-skill-manager:hover {
+    background: #f0f0f0;
+}
+
+.btn-skill-manager svg {
+    display: block;
+}
+
+/* Skill 管理弹窗操作按钮区 */
+.skill-manager-actions {
+    display: flex;
+    gap: 10px;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.btn-skill-add,
+.btn-skill-delete {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.btn-skill-add {
+    background: #28a745;
+    color: white;
+}
+
+.btn-skill-add:hover {
+    background: #218838;
+}
+
+.btn-skill-delete {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-skill-delete:hover {
+    background: #c82333;
+}
+
+.btn-skill-delete.active {
+    background: #6c757d;
+}
+
+/* Skill 列表 */
+.skill-list {
+    padding: 15px 20px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.skill-list-empty {
+    text-align: center;
+    color: #999;
+    padding: 40px 0;
+    font-size: 14px;
+}
+
+.skill-list-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    background: #f9f9f9;
+    border-radius: 6px;
+    transition: all 0.2s;
+    cursor: default;
+    user-select: none;
+}
+
+.skill-list-item:hover {
+    background: #f0f0f0;
+}
+
+.skill-list-item-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: default;
+    user-select: none;
+}
+
+.skill-list-item-name {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+    cursor: default;
+    user-select: none;
+}
+
+.skill-list-item-delete {
+    background: #dc3545;
+    color: white;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.skill-list-item-delete:hover {
+    background: #c82333;
+}
+
+/* Skill 详情弹窗 */
+.skill-detail-popover {
+    position: fixed;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 16px;
+    min-width: 280px;
+    max-width: 400px;
+    z-index: 1000;
+}
+
+.skill-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.skill-detail-header span {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.btn-close-small {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #999;
+    line-height: 1;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-close-small:hover {
+    color: #333;
+}
+
+.skill-detail-description {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+}
+
+/* 危险按钮（确认删除） */
+.btn-danger {
+    width: 100%;
+    padding: 12px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+}
+
+/* 弹窗操作按钮区 */
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.modal-actions .btn-secondary,
+.modal-actions .btn-danger {
+    flex: 1;
+    margin-bottom: 0;
+}

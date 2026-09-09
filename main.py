@@ -83,13 +83,21 @@ class AgentWriter:
             logger.info(f"已切换到 Agent: {agent_name}")
     
     def set_project(self, project_name: str) -> bool:
-        """设置当前项目，同步到所有需要项目上下文的 Agent"""
+        """设置当前项目，同步到所有需要项目上下文的 Agent，并清空历史对话"""
         project = self.project_manager.load_project(project_name)
         if project:
             self.current_project = project
+            
+            # 清空所有 Agent 的历史对话，避免不同项目上下文混淆
+            for agent_name in self.agents:
+                self.agents[agent_name].clear_history()
+            logger.info("已清空所有 Agent 的历史对话")
+            
+            # 同步项目信息到需要项目上下文的 Agent
             for agent_name in ['writer', 'outline_polisher', 'content_polisher', 
                              'summary', 'info_query']:
                 self.agents[agent_name].set_project(project_name)
+            
             logger.info(f"已设置项目: {project_name}")
             return True
         return False
@@ -127,7 +135,9 @@ class AgentWriter:
                 if result['success']:
                     return f"✓ 第{volume}卷第{chapter}章写作完成\n\n{result['chapter_content'][:500]}..."
                 else:
-                    return f"✗ 写作失败\n\n大纲审查: {result['outline_review']['feedback']}\n\n逻辑审查: {result['logic_review']['feedback']}"
+                    pre_feedback = result.get('pre_writing_review', {}).get('feedback', '无')
+                    post_feedback = result.get('post_writing_review', {}).get('feedback', '无')
+                    return f"✗ 写作失败\n\n写作前审查: {pre_feedback}\n\n写作后审查: {post_feedback}"
             except Exception as e:
                 logger.error(f"写作工作流错误: {e}")
                 return f"写作失败: {str(e)}"

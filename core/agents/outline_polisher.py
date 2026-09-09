@@ -91,24 +91,3 @@ class OutlinePolisher(BaseAgent):
         else:
             logger.warning(f"项目不存在: {project_name}")
             return False
-    
-    def get_outline(self) -> str:
-        """获取当前项目的大纲内容"""
-        if not self.current_project:
-            return "错误: 未选择项目"
-        
-        return self.current_project.read_outline()
-    
-    def update_outline(self, content: str) -> str:
-        """更新大纲内容并保存到文件"""
-        if not self.current_project:
-            return "错误: 未选择项目"
-        
-        self.current_project.write_outline(content)
-        return "大纲已更新"
-
-
-if __name__ == '__main__':
-    polisher = OutlinePolisher()
-    response = polisher.chat("你好，请介绍一下你能做什么")
-    print(f"\nAgent: {response}")

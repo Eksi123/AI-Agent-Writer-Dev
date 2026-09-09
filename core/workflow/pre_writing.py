@@ -163,30 +163,3 @@ class PreWritingReviewer:
             "warning": "",
             "write_to_file": True
         }
-
-
-if __name__ == '__main__':
-    reviewer = PreWritingReviewer()
-    
-    test_request = "基于大纲第1章生成小说"
-    test_outline = """
-    # 测试小说
-    
-    ## 第1卷
-    
-    ### 第1章：初入江湖
-    
-    主角李明是一个普通的大学生，意外获得了一本武功秘籍。
-    他决定离开家乡，踏入江湖。在途中遇到了第一位伙伴。
-    
-    ### 第2章：风云际会
-    
-    李明和伙伴一起前往京城，在路上遭遇了山贼...
-    """
-    
-    result = reviewer.review(test_request, test_outline)
-    print(f"匹配: {result['matched']}")
-    print(f"通过: {result['passed']}")
-    print(f"匹配章节: {result['matched_chapter']}")
-    print(f"写入文件: {result['write_to_file']}")
-    print(f"反馈:\n{result['feedback']}")

@@ -91,24 +91,4 @@ class SummaryGenerator(BaseAgent):
         else:
             logger.warning(f"项目不存在: {project_name}")
             return False
-    
-    def get_all_chapters_content(self) -> str:
-        """获取当前项目所有章节的内容，返回拼接后的完整文本"""
-        if not self.current_project:
-            return "错误: 未选择项目"
-        
-        chapters = self.current_project.list_chapters()
-        contents = []
-        
-        for chapter_path in chapters:
-            with open(chapter_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-                contents.append(f"\n\n{'='*50}\n文件: {chapter_path}\n{'='*50}\n\n{content}")
-        
-        return '\n'.join(contents)
 
-
-if __name__ == '__main__':
-    generator = SummaryGenerator()
-    response = generator.chat("你好，请介绍一下你能做什么")
-    print(f"\nAgent: {response}")

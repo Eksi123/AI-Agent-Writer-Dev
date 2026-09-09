@@ -93,25 +93,3 @@ class ContentPolisher(BaseAgent):
         else:
             logger.warning(f"项目不存在: {project_name}")
             return False
-    
-    def get_chapter_content(self, volume: int, chapter: int) -> str:
-        """获取指定章节的内容"""
-        if not self.current_project:
-            return "错误: 未选择项目"
-        
-        return self.current_project.read_chapter(volume, chapter)
-    
-    def update_chapter(self, volume: int, chapter: int, content: str, 
-                      chapter_name: str = "") -> str:
-        """更新章节内容并保存到文件"""
-        if not self.current_project:
-            return "错误: 未选择项目"
-        
-        self.current_project.write_chapter(volume, chapter, content, chapter_name)
-        return "章节已更新"
-
-
-if __name__ == '__main__':
-    polisher = ContentPolisher()
-    response = polisher.chat("你好，请介绍一下你能做什么")
-    print(f"\nAgent: {response}")

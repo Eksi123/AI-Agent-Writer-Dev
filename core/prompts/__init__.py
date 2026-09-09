@@ -65,13 +65,3 @@ CONTENT_POLISHER_PROMPT = "content_polisher"
 CHAT_AGENT_PROMPT = "chat_agent"
 INFO_QUERY_PROMPT = "info_query"
 SUMMARY_GENERATOR_PROMPT = "summary_generator"
-
-
-if __name__ == '__main__':
-    # 测试代码
-    print("写作提示词:")
-    print(get_prompt(WRITER_PROMPT))
-    print("\n" + "="*50 + "\n")
-    
-    print("写作前审查提示词:")
-    print(get_prompt(PRE_WRITING_PROMPT))

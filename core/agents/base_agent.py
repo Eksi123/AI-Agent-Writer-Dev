@@ -5,12 +5,11 @@ Agent 基类模块
 具体 Agent（如小说写作 Agent、大纲优化 Agent）应继承此基类。
 """
 from typing import List, Optional
-from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.tools import BaseTool
 from core.agent_graph import AgentGraph, create_agent_graph
 from core.config_manager import config_manager
 from core.agent_logger import logger
-from core.tools import get_all_tools, get_all_skills_info
+from core.tools import get_all_skills_info
 
 
 class BaseAgent:
@@ -167,16 +166,3 @@ class BaseAgent:
     def get_history_length(self) -> int:
         """获取对话历史中的消息数量。"""
         return len(self.chat_history)
-
-
-if __name__ == '__main__':
-    tools = get_all_tools()
-    
-    agent = BaseAgent(
-        name="测试Agent",
-        system_prompt="你是一个智能助手。",
-        tools=tools
-    )
-    
-    response = agent.chat("你好，请介绍一下自己")
-    print(f"\nAgent: {response}")

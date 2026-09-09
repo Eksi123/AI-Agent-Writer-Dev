@@ -203,6 +203,7 @@ START → llm_node → 有工具调用? → tool_node → llm_node（循环）
 - `web/js/outline.js` — 大纲面板管理
 - `web/js/chapters.js` — 章节目录树与内容管理
 - `web/js/settings.js` — 设置面板与配置向导
+- `web/js/skill-manager.js` — Skill 管理面板（导入/删除/查看详情）
 
 你需要掌握：
 
@@ -738,6 +739,21 @@ output/
 - `load_project(name)` - 加载项目
 - `delete_project(name)` - 删除项目
 
+**AgentWriter.set_project() 项目切换流程**：
+
+```python
+def set_project(self, project_name: str) -> bool:
+    # 1. 加载项目信息
+    # 2. 清空所有 Agent 的对话历史（避免不同项目上下文混淆）
+    for agent_name in self.agents:
+        self.agents[agent_name].clear_history()
+    # 3. 同步项目路径信息到需要项目上下文的 Agent
+    for agent_name in ['writer', 'outline_polisher', 'content_polisher', ...]:
+        self.agents[agent_name].set_project(project_name)
+```
+
+> **注意**：切换项目时会清空所有 Agent（包括 ChatAgent）的对话历史，确保每个项目从干净的上下文开始。
+
 **NovelProject 职责**：
 
 - `read_outline()` - 读取大纲
@@ -1113,6 +1129,29 @@ def reload_custom_tools() -> None:
 - 每个章节项悬浮：`✏`（重命名章节）、`✕`（删除章节）
 - 重命名/新建通过 `prompt()` 弹窗输入名称；删除通过 `confirm()` 二次确认
 
+**REST API（Skill 管理）**：
+
+- `GET    /api/skills` — 获取已安装 Skill 列表（扫描 `core/tools/custom/` 目录）
+- `POST   /api/skills/import` — 导入新 Skill（body: `{skillName, skillContent, scripts}`）
+- `DELETE /api/skills/{skill_name}` — 删除指定 Skill
+
+**前端交互（Skill 管理面板）**：
+
+- 入口：侧边栏标题区的 🔧 按钮（与 ⚙ 设置按钮并列）
+- 弹窗功能：
+  - 查看已安装 Skill 列表（文件夹名称）
+  - 点击"+ 新增"按钮上传 Skill 文件夹（支持 `webkitdirectory`）
+  - 点击"🗑 删除"按钮进入删除模式，点击 Skill 旁的 × 删除
+  - 鼠标悬停 Skill 名称 500ms 后显示详情弹窗（name + description）
+- 前端验证：
+  - SKILL.md 必须存在且包含 YAML frontmatter（name + description）
+  - 不允许重名 Skill
+  - 文件夹大小限制 5MB
+- 后端验证：
+  - 检查 SKILL.md 格式和必需字段
+  - 检查 Skill 名称是否已存在
+  - 创建目录、写入文件、调用 `reload_custom_tools()` 热加载
+
 ### 阶段 5：Web 界面整合（1-2 周）
 
 | 天    | 任务              |
@@ -1393,7 +1432,7 @@ python demo/demo-langgraph.py
 
 ### 6.3 性能优化
 
-- **对话历史过长**：定期调用 `agent.clear_history()`
+- **对话历史过长**：定期调用 `agent.clear_history()`（切换项目时会自动清空所有 Agent 的历史）
 - **工具调用过多**：优化提示词，让模型更精准
 - **响应慢**：降低 `max_tokens` 或换用更快的模型
 - **日志过多**：生产环境设为 WARNING

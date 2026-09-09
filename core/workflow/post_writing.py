@@ -119,27 +119,3 @@ class PostWritingReviewer:
             "should_regenerate": should_regenerate,
             "feedback": feedback
         }
-
-
-if __name__ == '__main__':
-    reviewer = PostWritingReviewer()
-    
-    test_outline = """
-    ## 第3章：风云际会
-    
-    李明和伙伴张伟一起前往京城，在路上遭遇了山贼。
-    他们联手击败了山贼，并救下了被掳的商人。
-    """
-    
-    test_previous = [
-        "第1章内容：李明离开了家乡，踏上了江湖之路...",
-        "第2章内容：李明遇到了第一位伙伴张伟..."
-    ]
-    
-    test_current = "第3章内容：李明和张伟一起前往京城，在路上遭遇了山贼。他们联手击败了山贼..."
-    
-    result = reviewer.review(test_current, test_outline, test_previous)
-    print(f"审查结果: {'通过' if result['passed'] else '需要重新生成'}")
-    print(f"问题: {result['issues']}")
-    print(f"需要重新生成: {result['should_regenerate']}")
-    print(f"反馈:\n{result['feedback']}")

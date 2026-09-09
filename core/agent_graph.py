@@ -11,15 +11,14 @@ LangGraph Agent 图模块
 - AgentGraph：封装 LangGraph 的 StateGraph，实现 Agent-Loop
 - create_agent_graph()：工厂函数，快速创建 Agent 图实例
 """
-from typing import Annotated, TypedDict, Literal, List, Optional
+from typing import Annotated, TypedDict, Literal, List
 from langchain_openai import ChatOpenAI
 from langchain_core.tools import BaseTool
-from langchain_core.messages import AIMessage, HumanMessage, ToolMessage, SystemMessage
+from langchain_core.messages import AIMessage, ToolMessage, SystemMessage
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
 from core.agent_logger import logger
 from core.config_manager import config_manager
-from core.tools import get_all_tools
 
 
 class AgentState(TypedDict):
@@ -331,29 +330,3 @@ def create_agent_graph(
     
     # 创建并返回 Agent 图
     return AgentGraph(llm, tools, system_prompt)
-
-
-if __name__ == '__main__':
-    # 测试代码
-    # 获取配置
-    config = config_manager.get_llm_config()
-    
-    # 获取所有工具
-    tools = get_all_tools()
-    
-    # 创建 Agent 图
-    agent = create_agent_graph(
-        base_url=config["api_url"],
-        api_key=config["api_key"],
-        model=config["model_name"],
-        tools=tools,
-        system_prompt="你是一个智能助手，可以帮助用户完成任务。"
-    )
-    
-    # 测试对话
-    messages = [HumanMessage(content="你好")]
-    
-    result = agent.invoke(messages)
-    response = agent.get_last_response(result)
-    
-    print(f"\nAgent: {response}")

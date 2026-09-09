@@ -752,19 +752,3 @@ class ProjectManager:
         """检查项目是否存在"""
         project_dir = os.path.join(self.output_dir, project_name)
         return os.path.exists(project_dir)
-
-
-if __name__ == '__main__':
-    pm = ProjectManager(config_manager.get_output_dir())
-    
-    projects = pm.list_projects()
-    print(f"现有项目: {projects}")
-    
-    test_project = pm.create_project("测试小说")
-    print(f"项目已创建: {test_project.name}")
-    
-    test_project.write_outline("# 测试小说\n\n这是一个测试大纲。")
-    test_project.write_chapter(1, 1, "# 第一章\n\n这是第一章的内容。", "初入江湖")
-    
-    chapters = test_project.list_chapters()
-    print(f"章节列表: {chapters}")
