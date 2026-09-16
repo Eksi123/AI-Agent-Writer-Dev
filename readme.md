@@ -296,6 +296,8 @@ ai-agent-writer-dev/
 │   ├── agent_graph.py                # LangGraph Agent 状态图（Agent-Loop 实现）
 │   ├── config_manager.py             # 配置管理（运行时动态修改 LLM 配置）
 │   ├── project_manager.py            # 小说项目管理器（创建/加载/切换/删除）
+│   ├── validators.py                 # 输入校验（卷章名、用户请求、LLM 参数、端口）
+│   ├── fallback_manager.py           # 降级管理（主模型失败自动切换 Ollama）
 │   │
 │   ├── agents/                       # Agent 定义
 │   │   ├── base_agent.py             # Agent 基类（封装 LangGraph 调用）
@@ -421,6 +423,37 @@ auto_open_browser = true
 ```
 
 > **API Key 不存储在配置文件中**，通过环境变量 `LLM_API_KEY` 读取。`config.ini` 中的其他值可在 Web 页面的**设置面板**中实时修改，无需重启服务。使用 Ollama 本地模型时无需设置 API Key。
+
+### config.ini 健壮性配置
+
+`[Robustness]` 节控制系统在异常条件下的行为，所有参数均有合理的默认值：
+
+```ini
+[Robustness]
+# LLM 单次请求超时（秒），超时后触发重试
+request_timeout = 120
+# 整个写作工作流超时（秒），超时后强制终止当前章节
+workflow_timeout = 600
+# LLM API 调用失败后的最大重试次数（指数退避）
+max_retries = 3
+# 重试基础延迟（秒），实际延迟 = base_delay × 2^attempt
+retry_base_delay = 1
+# 主模型连续失败多少次后自动降级到 Ollama（0 = 永不降级）
+fallback_threshold = 3
+```
+
+**降级机制说明：**
+
+- 主模型（在线 API）连续失败达到 `fallback_threshold` 次后，自动切换到 Ollama 本地模型
+- 切换为单向不可逆（一次会话内不会自动恢复），保证不反复失败
+- 若 Ollama 也未启用或不可用，则向用户返回友好的错误提示，不会无限重试
+- 降级事件会写入日志，方便排查
+
+**重试策略：**
+
+- 仅对网络错误（`ConnectionError`、`TimeoutError`）重试
+- 业务错误（如认证失败、参数错误）**不会重试**，直接报错
+- 采用指数退避：第1次等1秒，第2次等2秒，第3次等4秒（含随机抖动）
 
 ---
 
@@ -632,6 +665,70 @@ auto_open_browser = true
 - ✅ 多项目管理正常
 - ✅ 对话、工具调用等功能完整可用
 - ✅ Ollama 本地模型支持正常
+
+---
+
+### Phase 6: 健壮性与安全加固 ✅
+
+**已完成功能：**
+
+1. **输入校验模块** (`core/validators.py`)
+   - 卷章名合法性校验（特殊字符、长度限制）
+   - 用户请求校验（空字符串、长度限制）
+   - LLM 参数校验（temperature、top_p 范围）
+   - Web 端口校验（合法范围）
+
+2. **降级管理** (`core/fallback_manager.py`)
+   - 主模型连续失败自动降级到 Ollama
+   - 单向不可逆降级（避免反复失败）
+   - 集成到 BaseAgent，透明工作
+
+3. **超时控制** (`core/agent_graph.py`)
+   - LLM 单次请求超时（默认 120 秒）
+   - 整个写作工作流超时（默认 600 秒）
+   - 超时后优雅终止，返回友好错误提示
+
+4. **重试机制** (`core/agent_graph.py`)
+   - 仅对网络错误重试（ConnectionError、TimeoutError）
+   - 指数退避（1s → 2s → 4s）
+   - 最多重试 3 次（可配置）
+
+5. **对话历史管理** (`core/agents/base_agent.py`)
+   - 自动截断历史（MAX_HISTORY_TURNS=30）
+   - 防止上下文溢出
+   - 保留关键信息
+
+6. **工作流超时检查** (`core/workflow/writing_workflow.py`)
+   - 每个步骤检查剩余时间
+   - 超时前友好提示
+   - 修复重试耗尽 bug
+
+7. **全局错误处理** (`web/app.py`)
+   - 500/404/405/413 错误统一处理
+   - 请求体大小限制（10MB）
+   - 友好错误页面
+
+8. **路径安全加固** (`core/tools/builtin/*.py`)
+   - 所有文件工具限制在项目目录内
+   - 防止路径遍历攻击（`../` 攻击）
+   - 使用 `os.path.normpath` 统一路径比较
+
+9. **临时文件清理** (`web/app.py`)
+   - 导出 ZIP 后立即清理临时文件
+   - 防止磁盘泄漏
+
+10. **配置增强** (`core/config_manager.py`)
+    - `[Robustness]` 节读取与默认值
+    - 参数值范围钳制（防止非法值）
+    - API Key 强制从环境变量读取
+
+**已验证：**
+
+- ✅ 主模型失败后自动降级到 Ollama
+- ✅ 超时后优雅终止，不崩溃
+- ✅ 路径遍历攻击被拦截
+- ✅ 非法输入返回友好错误
+- ✅ 对话历史自动截断，无上下文溢出
 
 ---
 

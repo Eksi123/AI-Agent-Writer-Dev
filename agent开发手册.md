@@ -334,6 +334,8 @@ python demo/demo-langgraph.py
 | `core/workflow/*.py`        | 写作工作流                | 三阶段编排（写作前审查→写作→写作后审查）写作后审查） |
 | `core/project_manager.py`   | 项目管理                  | 文件读写、目录操作   |
 | `core/config_manager.py`    | 配置管理                  | ConfigParser         |
+| `core/validators.py`        | 输入校验                  | 参数范围校验、类型检查 |
+| `core/fallback_manager.py`  | 模型降级管理              | 滑动窗口、状态机     |
 | `core/prompts/*.md`         | 系统提示词                | Markdown 格式        |
 
 ### 2.3 数据流示例
@@ -768,6 +770,187 @@ def set_project(self, project_name: str) -> bool:
 - `delete_chapter(volume, chapter)` - 删除章节
 - `rename_chapter(volume, chapter, new_name)` - 重命名章节
 
+### 3.5 健壮性机制
+
+系统在"正常情况"下工作良好并不够——还需要在网络中断、API 限流、恶意输入、路径攻击等异常条件下稳定运行。以下是本项目的五大健壮性机制。
+
+#### 3.5.1 输入校验（core/validators.py）
+
+所有外部输入在进入业务逻辑前都必须经过校验：
+
+```python
+# 卷名/章节名校验
+validate_volume_chapter("第1卷")           # ✅ 通过
+validate_volume_chapter("../../etc")       # ❌ 包含 /
+validate_volume_chapter("A" * 51)          # ❌ 超过50字符
+
+# LLM 参数校验（会自动钳制到合法范围）
+validate_temperature(0.7)                 # ✅ → 0.7
+validate_temperature(-1.0)                # ❌ 低于 0.0
+validate_temperature("abc")               # ❌ 非数字
+
+# 用户请求校验
+validate_user_request("")                 # ❌ 空字符串
+validate_user_request("x" * 50001)        # ❌ 超长
+```
+
+**校验函数清单**：
+
+| 函数                      | 用途               | 校验内容                       |
+| ------------------------- | ------------------ | ------------------------------ |
+| `validate_volume_chapter` | 卷名/章节名        | 特殊字符、长度 ≤ 50           |
+| `validate_user_request`   | 用户对话输入       | 非空、长度 ≤ 50000            |
+| `validate_temperature`    | LLM temperature    | 数字、范围 0.0 ~ 2.0          |
+| `validate_top_p`          | LLM top_p          | 数字、范围 0.0 ~ 1.0          |
+| `validate_port`           | Web 服务端口       | 整数、范围 1024 ~ 65535       |
+
+#### 3.5.2 模型降级（core/fallback_manager.py）
+
+当主模型（在线 API）连续失败时，自动降级到 Ollama 本地模型：
+
+```
+主模型请求 → 失败 → record_failure() → 连续3次失败
+                                            ↓
+                                    activate_fallback()
+                                            ↓
+                                  后续请求走 Ollama
+```
+
+**关键设计**：
+
+- **滑动窗口计数**：连续失败次数达到阈值（默认3次）才触发
+- **单向不可逆**：降级后不会自动恢复，避免反复失败
+- **透明集成**：降级逻辑封装在 `BaseAgent` 中，业务代码无需感知
+- **日志记录**：每次降级事件都会写入日志
+
+```python
+# BaseAgent 中的降级集成
+class BaseAgent:
+    def __init__(self, ...):
+        self.fallback_manager = FallbackManager(threshold=fallback_threshold)
+    
+    def chat(self, user_input: str) -> dict:
+        try:
+            result = self.agent_graph.invoke(...)
+            self.fallback_manager.record_success()
+            return result
+        except Exception as e:
+            if self.fallback_manager.record_failure():
+                # 触发降级，重建 LLM 实例指向 Ollama
+                self._switch_to_ollama()
+            raise
+```
+
+#### 3.5.3 超时与重试（core/agent_graph.py）
+
+**超时控制**：
+
+- **请求级超时**：LLM 单次请求超时（默认 120 秒），防止 API 卡死
+- **工作流级超时**：整个写作工作流超时（默认 600 秒），在步骤间检查剩余时间
+
+**重试策略（tenacity）**：
+
+```python
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+
+@retry(
+    stop=stop_after_attempt(3),                              # 最多重试3次
+    wait=wait_exponential(multiplier=1, min=1, max=60),     # 指数退避：1s → 2s → 4s
+    retry=retry_if_exception_type((ConnectionError, TimeoutError)),  # 仅重试网络错误
+    reraise=True
+)
+def _llm_node(self, state):
+    response = self.llm_with_tools.invoke(messages)
+    return {"messages": [response]}
+```
+
+**重要**：仅对 `ConnectionError` 和 `TimeoutError` 重试。`AuthenticationError`（认证失败）、`BadRequestError`（参数错误）等业务错误**不会重试**，直接报错给用户。
+
+#### 3.5.4 对话历史管理（core/agents/base_agent.py）
+
+多轮对话会不断累积消息，过长的历史会导致 LLM 上下文溢出或响应变慢：
+
+```python
+MAX_HISTORY_TURNS = 30  # 保留最近30轮对话
+
+def _trim_history(self, state: dict) -> list:
+    """截断对话历史，保留最近 N 轮"""
+    messages = state["messages"]
+    if len(messages) > MAX_HISTORY_TURNS * 2:  # 每轮包含 user + assistant
+        return messages[-(MAX_HISTORY_TURNS * 2):]
+    return messages
+```
+
+每次 `chat()` 调用后自动检查并截断，无需手动管理。
+
+#### 3.5.5 工具路径安全（core/tools/builtin/*.py）
+
+文件操作工具（read、write、edit、glob、list）都受项目目录限制，防止路径遍历攻击：
+
+```python
+import os
+
+# 读取文件前检查路径是否在项目目录内
+def read_file(file_path: str, ...):
+    project_dir = get_allowed_project_dir()
+    norm_path = os.path.normpath(os.path.abspath(file_path))
+    norm_project = os.path.normpath(os.path.abspath(project_dir))
+    
+    if not norm_path.startswith(norm_project + os.sep):
+        return f"错误：文件路径必须在项目目录内"
+    
+    # 正常读取...
+```
+
+**安全加固覆盖的工具**：
+
+| 工具文件         | 加固方式                                         |
+| ---------------- | ------------------------------------------------ |
+| `read_tool.py`   | 新增项目目录限制（`normpath` + `startswith`）    |
+| `write_tool.py`  | 升级为 `normpath` 统一路径比较                   |
+| `edit_tool.py`   | 升级为 `normpath` 统一路径比较                   |
+| `glob_tool.py`   | 新增项目目录限制                                 |
+| `list_tool.py`   | 新增项目目录限制                                 |
+| `online_tool.py` | 修复 `content` 变量未赋值即使用的 NameError      |
+
+### 3.6 全局错误处理（web/app.py）
+
+Web 层统一捕获所有异常，防止原始错误堆栈暴露给前端：
+
+```python
+# 全局错误处理器
+@app.errorhandler(500)
+def internal_error(e):
+    return jsonify({"success": False, "error": "服务器内部错误，请稍后重试"}), 500
+
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify({"success": False, "error": "请求的资源不存在"}), 404
+
+@app.errorhandler(405)
+def method_not_allowed(e):
+    return jsonify({"success": False, "error": "请求方法不允许"}), 405
+
+@app.errorhandler(413)
+def too_large(e):
+    return jsonify({"success": False, "error": "请求内容过大，请减小请求体"}), 413
+
+# 请求体大小限制
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MB
+```
+
+**文件端点路径安全**：所有接受文件路径参数的 API 端点都使用 `os.path.normpath` 验证路径不超出项目目录：
+
+```python
+@app.route('/api/projects/<name>/chapter')
+def read_chapter(name):
+    file_path = request.args.get('file', '')
+    # 防止路径遍历
+    norm_path = os.path.normpath(os.path.join(output_dir, name, file_path))
+    if not norm_path.startswith(os.path.normpath(output_dir) + os.sep):
+        return jsonify({"success": False, "error": "非法路径"}), 403
+```
+
 ---
 
 ## 第四部分：分阶段开发计划
@@ -1179,6 +1362,270 @@ def api_chat():
     })
 ```
 
+### 阶段 6：健壮性与安全加固（1-2 周）
+
+**目标**：让系统在异常条件下（网络中断、API 限流、恶意输入、路径攻击）依然稳定运行，不崩溃、不泄漏数据。
+
+| 天   | 任务                               | 涉及文件                                    | 核心知识点                    |
+| ---- | ---------------------------------- | ------------------------------------------- | ----------------------------- |
+| D1   | 输入校验模块                       | `core/validators.py`                      | 正则、类型检查、边界值        |
+| D2   | 降级管理器                         | `core/fallback_manager.py`                | 滑动窗口、状态机              |
+| D3   | 超时控制 + 重试机制                | `core/agent_graph.py`                     | tenacity、asyncio.timeout     |
+| D4   | 对话历史管理 + 错误提示            | `core/agents/base_agent.py`               | 队列截断、提示工程            |
+| D5   | 工作流超时 + 重试 bug 修复         | `core/workflow/writing_workflow.py`       | 时间预算、边界条件            |
+| D6   | 审查模块返回值修复 + 重试条件收窄  | `pre_writing.py`、`post_writing.py`       | 函数返回值、异常分类          |
+| D7   | 全局错误处理 + 请求限制            | `web/app.py`                              | Flask errorhandler、CSP       |
+| D8   | 工具路径安全加固                   | `core/tools/builtin/*.py`（6 个文件）     | os.path.normpath、路径遍历    |
+| D9   | 配置增强 + 临时文件清理            | `config_manager.py`、`web/app.py`         | 值钳制、tempfile 清理         |
+| D10  | 集成测试 + 文档更新                | `readme.md`、`agent开发手册.md`           | 端到端验证                    |
+
+**D1：validators.py**
+
+```python
+import re
+
+def validate_volume_chapter(name: str, label: str = "名称") -> None:
+    """校验卷名或章节名的合法性"""
+    INVALID_CHARS = r'[/\\:*?"<>|_-]'
+    if not name or not name.strip():
+        raise ValueError(f"{label}不能为空")
+    if len(name) > 50:
+        raise ValueError(f"{label}不能超过50个字符")
+    if re.search(INVALID_CHARS, name):
+        raise ValueError(f"{label}不能包含特殊字符: / \\ : * ? \" < > | - _")
+
+def validate_temperature(value) -> float:
+    """校验 LLM temperature 参数"""
+    try:
+        v = float(value)
+    except (TypeError, ValueError):
+        raise ValueError("temperature 必须是数字")
+    if not (0.0 <= v <= 2.0):
+        raise ValueError("temperature 必须在 0.0 ~ 2.0 之间")
+    return v
+```
+
+**D2：fallback_manager.py**
+
+```python
+class FallbackManager:
+    """管理 LLM 模型降级策略"""
+    
+    def __init__(self, threshold: int = 3):
+        self.threshold = threshold       # 连续失败多少次触发降级
+        self._failures = 0               # 当前连续失败计数
+        self._fallback_active = False    # 是否已激活降级
+    
+    def record_failure(self) -> bool:
+        """记录一次失败，返回是否应触发降级"""
+        self._failures += 1
+        if self._failures >= self.threshold:
+            self._fallback_active = True
+            return True
+        return False
+    
+    def record_success(self):
+        """记录一次成功，重置计数（但不解除降级）"""
+        self._failures = 0
+    
+    def should_fallback(self) -> bool:
+        return self._fallback_active
+```
+
+**D3：超时与重试（tenacity）**
+
+```python
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+
+# 仅对网络错误重试，不对业务错误重试
+@retry(
+    stop=stop_after_attempt(max_retries),
+    wait=wait_exponential(multiplier=base_delay, min=1, max=60),
+    retry=retry_if_exception_type((ConnectionError, TimeoutError)),
+    reraise=True
+)
+def _llm_node(self, state):
+    response = self.llm_with_tools.invoke(messages)
+    return {"messages": [response]}
+```
+
+**D7：全局错误处理**
+
+```python
+from flask import Flask
+from werkzeug.exceptions import HTTPException
+
+app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MB
+
+@app.errorhandler(500)
+def internal_error(e):
+    return jsonify({"success": False, "error": "服务器内部错误，请稍后重试"}), 500
+
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify({"success": False, "error": "请求的资源不存在"}), 404
+
+@app.errorhandler(413)
+def too_large(e):
+    return jsonify({"success": False, "error": "请求内容过大，请减小请求体"}), 413
+```
+
+**D8：路径安全加固**
+
+```python
+import os
+
+def _is_path_safe(file_path: str, project_dir: str) -> bool:
+    """防止路径遍历攻击"""
+    norm_path = os.path.normpath(os.path.abspath(file_path))
+    norm_project = os.path.normpath(os.path.abspath(project_dir))
+    return norm_path.startswith(norm_project + os.sep)
+```
+
+**验证清单**：
+
+- [ ] 非法输入返回友好错误信息，不崩溃
+- [ ] 主模型连续失败后自动切换到 Ollama
+- [ ] LLM 超时后优雅终止，不卡死
+- [ ] 对话历史超过30轮后自动截断
+- [ ] 路径遍历攻击（`../../etc/passwd`）被拦截
+- [ ] 大文件上传超过10MB被拒绝
+- [ ] 导出 ZIP 后临时文件被清理
+- [ ] 所有重试仅针对网络错误，业务错误不重试
+
+### 阶段 6：健壮性与安全加固（1-2 周）
+
+**目标**：让系统在异常条件下（网络中断、API 限流、恶意输入、路径攻击）依然稳定运行，不崩溃、不泄漏数据。
+
+| 天   | 任务                               | 涉及文件                                    | 核心知识点                    |
+| ---- | ---------------------------------- | ------------------------------------------- | ----------------------------- |
+| D1   | 输入校验模块                       | `core/validators.py`                      | 正则、类型检查、边界值        |
+| D2   | 降级管理器                         | `core/fallback_manager.py`                | 滑动窗口、状态机              |
+| D3   | 超时控制 + 重试机制                | `core/agent_graph.py`                     | tenacity、asyncio.timeout     |
+| D4   | 对话历史管理 + 错误提示            | `core/agents/base_agent.py`               | 队列截断、提示工程            |
+| D5   | 工作流超时 + 重试 bug 修复         | `core/workflow/writing_workflow.py`       | 时间预算、边界条件            |
+| D6   | 审查模块返回值修复 + 重试条件收窄  | `pre_writing.py`、`post_writing.py`       | 函数返回值、异常分类          |
+| D7   | 全局错误处理 + 请求限制            | `web/app.py`                              | Flask errorhandler、请求限制  |
+| D8   | 工具路径安全加固                   | `core/tools/builtin/*.py`（6 个文件）     | os.path.normpath、路径遍历    |
+| D9   | 配置增强 + 临时文件清理            | `config_manager.py`、`web/app.py`         | 值钳制、tempfile 清理         |
+| D10  | 集成测试 + 文档更新                | `readme.md`、`agent开发手册.md`           | 端到端验证                    |
+
+**D1：validators.py**
+
+```python
+import re
+
+def validate_volume_chapter(name: str, label: str = "名称") -> None:
+    """校验卷名或章节名的合法性"""
+    INVALID_CHARS = r'[/\\:*?"<>|_-]'
+    if not name or not name.strip():
+        raise ValueError(f"{label}不能为空")
+    if len(name) > 50:
+        raise ValueError(f"{label}不能超过50个字符")
+    if re.search(INVALID_CHARS, name):
+        raise ValueError(f"{label}不能包含特殊字符: / \\ : * ? \" < > | - _")
+
+def validate_temperature(value) -> float:
+    """校验 LLM temperature 参数"""
+    try:
+        v = float(value)
+    except (TypeError, ValueError):
+        raise ValueError("temperature 必须是数字")
+    if not (0.0 <= v <= 2.0):
+        raise ValueError("temperature 必须在 0.0 ~ 2.0 之间")
+    return v
+```
+
+**D2：fallback_manager.py**
+
+```python
+class FallbackManager:
+    """管理 LLM 模型降级策略"""
+    
+    def __init__(self, threshold: int = 3):
+        self.threshold = threshold       # 连续失败多少次触发降级
+        self._failures = 0               # 当前连续失败计数
+        self._fallback_active = False    # 是否已激活降级
+    
+    def record_failure(self) -> bool:
+        """记录一次失败，返回是否应触发降级"""
+        self._failures += 1
+        if self._failures >= self.threshold:
+            self._fallback_active = True
+            return True
+        return False
+    
+    def record_success(self):
+        """记录一次成功，重置计数（但不解除降级）"""
+        self._failures = 0
+    
+    def should_fallback(self) -> bool:
+        return self._fallback_active
+```
+
+**D3：超时与重试（tenacity）**
+
+```python
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+
+# 仅对网络错误重试，不对业务错误重试
+@retry(
+    stop=stop_after_attempt(max_retries),
+    wait=wait_exponential(multiplier=base_delay, min=1, max=60),
+    retry=retry_if_exception_type((ConnectionError, TimeoutError)),
+    reraise=True
+)
+def _llm_node(self, state):
+    response = self.llm_with_tools.invoke(messages)
+    return {"messages": [response]}
+```
+
+**D7：全局错误处理**
+
+```python
+from flask import Flask, jsonify
+from werkzeug.exceptions import HTTPException
+
+app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MB
+
+@app.errorhandler(500)
+def internal_error(e):
+    return jsonify({"success": False, "error": "服务器内部错误，请稍后重试"}), 500
+
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify({"success": False, "error": "请求的资源不存在"}), 404
+
+@app.errorhandler(413)
+def too_large(e):
+    return jsonify({"success": False, "error": "请求内容过大，请减小请求体"}), 413
+```
+
+**D8：路径安全加固**
+
+```python
+import os
+
+def _is_path_safe(file_path: str, project_dir: str) -> bool:
+    """防止路径遍历攻击"""
+    norm_path = os.path.normpath(os.path.abspath(file_path))
+    norm_project = os.path.normpath(os.path.abspath(project_dir))
+    return norm_path.startswith(norm_project + os.sep)
+```
+
+**验证清单**：
+
+- [ ] 非法输入返回友好错误信息，不崩溃
+- [ ] 主模型连续失败后自动切换到 Ollama
+- [ ] LLM 超时后优雅终止，不卡死
+- [ ] 对话历史超过30轮后自动截断
+- [ ] 路径遍历攻击（`../../etc/passwd`）被拦截
+- [ ] 大文件上传超过10MB被拒绝
+- [ ] 导出 ZIP 后临时文件被清理
+- [ ] 所有重试仅针对网络错误，业务错误不重试
+
 ---
 
 ## 第五部分：关键技术实现
@@ -1408,15 +1855,22 @@ python demo/demo-langgraph.py
 
 ### 6.1 常见错误速查表
 
-| 错误现象                 | 可能原因       | 解决方案                     |
-| ------------------------ | -------------- | ---------------------------- |
-| `API Key 无效或已过期` | 环境变量未设置 | `$env:LLM_API_KEY = "xxx"` |
-| `无法连接到模型服务`   | API URL 错误   | 检查 config.ini              |
-| `工具 xxx 不存在`      | 工具未注册     | 检查 builtin/ 或 custom/     |
-| Agent 无限循环           | 提示词问题     | 设置`max_iterations`       |
-| `ModuleNotFoundError`  | 导入路径错误   | 检查`__init__.py`          |
-| 前端请求 404             | 路由未注册     | 检查`@app.route()`         |
-| 跨域错误                 | CORS 未启用    | 确保`CORS(app)`            |
+| 错误现象                       | 可能原因                 | 解决方案                                   |
+| ------------------------------ | ------------------------ | ------------------------------------------ |
+| `API Key 无效或已过期`       | 环境变量未设置           | `$env:LLM_API_KEY = "xxx"`               |
+| `无法连接到模型服务`         | API URL 错误             | 检查 config.ini                            |
+| `工具 xxx 不存在`            | 工具未注册               | 检查 builtin/ 或 custom/                   |
+| Agent 无限循环                 | 提示词问题               | 设置 `max_iterations`                     |
+| `ModuleNotFoundError`        | 导入路径错误             | 检查 `__init__.py`                        |
+| 前端请求 404                   | 路由未注册               | 检查 `@app.route()`                       |
+| 跨域错误                       | CORS 未启用              | 确保 `CORS(app)`                          |
+| `NameError: content`         | 变量未赋值即使用         | 检查 `online_tool.py` 的 `content` 赋值 |
+| LLM 请求卡死不返回             | 未设置超时               | 检查 `[Robustness] request_timeout`       |
+| 主模型反复失败不降级           | 降级阈值设为 0           | 检查 `fallback_threshold` > 0             |
+| `文件路径必须在项目目录内`   | 路径遍历被拦截           | 正常行为，工具安全防护生效                 |
+| 对话历史过长导致响应变慢       | 未启用历史截断           | 检查 `MAX_HISTORY_TURNS` 设置             |
+| 请求体过大被拒绝（413）        | 上传文件超过限制         | 默认限制 10MB，可调整 `MAX_CONTENT_LENGTH` |
+| 重试风暴（业务错误也重试）     | 重试条件过于宽泛         | 仅对 `ConnectionError`/`TimeoutError` 重试 |
 
 ### 6.2 调试流程
 
@@ -1483,6 +1937,8 @@ class PolishWorkflow:
 
 每个阶段完成时，对照以下清单：
 
+**基础检查：**
+
 - [ ] 代码能正常运行，无报错
 - [ ] 关键函数有注释
 - [ ] 提示词使用 Markdown 格式
@@ -1491,6 +1947,17 @@ class PolishWorkflow:
 - [ ] 新增 Agent 已注册到 `__init__.py`
 - [ ] 新增 API 已更新 readme.md
 - [ ] Ollama 模式下也能正常工作
+
+**健壮性与安全检查：**
+
+- [ ] 外部输入已使用 `validators.py` 校验
+- [ ] 文件操作工具的路径已限制在项目目录内
+- [ ] 新增的 API 端点有路径安全校验
+- [ ] 异常处理返回友好错误信息（不暴露堆栈）
+- [ ] LLM 调用已接入超时和重试机制
+- [ ] 新增的长时间操作有超时保护
+- [ ] 临时文件在使用后已清理
+- [ ] 降级场景（主模型不可用）已测试
 
 ---
 
