@@ -68,6 +68,11 @@ class ConfigManager:
             temperature = 0.7
             top_p = 0.9
         
+        # 配置值 clamp，确保在合法范围内
+        from core.validators import validate_temperature, validate_top_p
+        temperature = validate_temperature(temperature)
+        top_p = validate_top_p(top_p)
+
         return {
             "api_url": api_url,
             "model_name": model_name,
@@ -100,6 +105,11 @@ class ConfigManager:
             top_p = 0.9
             enabled = False
         
+        # 配置值 clamp，确保在合法范围内
+        from core.validators import validate_temperature, validate_top_p
+        temperature = validate_temperature(temperature)
+        top_p = validate_top_p(top_p)
+
         return {
             "api_url": api_url,
             "model_name": model_name,
@@ -244,6 +254,35 @@ class ConfigManager:
             "missing": missing
         }
     
+    def get_robustness_config(self) -> dict:
+        """
+        获取健壮性配置（超时、重试、降级等）
+
+        Returns:
+            配置字典，包含 request_timeout、workflow_timeout、max_retries、
+            retry_base_delay、fallback_threshold
+        """
+        if 'Robustness' in self.config:
+            request_timeout = self.config.getint('Robustness', 'request_timeout', fallback=120)
+            workflow_timeout = self.config.getint('Robustness', 'workflow_timeout', fallback=600)
+            max_retries = self.config.getint('Robustness', 'max_retries', fallback=3)
+            retry_base_delay = self.config.getint('Robustness', 'retry_base_delay', fallback=1)
+            fallback_threshold = self.config.getint('Robustness', 'fallback_threshold', fallback=3)
+        else:
+            request_timeout = 120
+            workflow_timeout = 600
+            max_retries = 3
+            retry_base_delay = 1
+            fallback_threshold = 3
+
+        return {
+            "request_timeout": request_timeout,
+            "workflow_timeout": workflow_timeout,
+            "max_retries": max_retries,
+            "retry_base_delay": retry_base_delay,
+            "fallback_threshold": fallback_threshold
+        }
+
     def get_output_dir(self) -> str:
         """获取输出目录路径"""
         return os.path.join(BASE_PATH, "output")

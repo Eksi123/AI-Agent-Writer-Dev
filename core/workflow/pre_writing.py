@@ -8,6 +8,7 @@
 from typing import Optional
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 from core.config_manager import config_manager
 from core.prompts import get_prompt, PRE_WRITING_PROMPT
 from core.agent_logger import logger
@@ -19,15 +20,20 @@ class PreWritingReviewer:
     def __init__(self):
         """初始化写作前审查器"""
         config = config_manager.get_llm_config()
+        robustness_config = config_manager.get_robustness_config()
         
-        # 使用较低温度保证审查的严谨性
+        # 使用较低温度保证审查的严谨性，加入超时控制
         self.llm = ChatOpenAI(
             api_key=config["api_key"],
             base_url=config["api_url"],
             model=config["model_name"],
             temperature=config.get("temperature", 0.3),
-            max_tokens=8192
+            max_tokens=8192,
+            timeout=robustness_config['request_timeout']
         )
+        
+        self._max_retries = robustness_config['max_retries']
+        self._retry_base_delay = robustness_config['retry_base_delay']
         
         logger.debug("写作前审查器已初始化")
     
@@ -60,7 +66,8 @@ class PreWritingReviewer:
             HumanMessage(content=review_prompt)
         ]
         
-        response = self.llm.invoke(messages)
+        # 带重试机制的 LLM 调用
+        response = self._invoke_with_retry(messages)
         feedback = response.content
         
         result = self._parse_review_result(feedback, outline)
@@ -71,6 +78,24 @@ class PreWritingReviewer:
             logger.debug("写作前审查: 自由写作模式")
         
         return result
+    
+    def _invoke_with_retry(self, messages: list):
+        """
+        带重试机制的 LLM 调用
+        
+        重试策略：
+        - 仅对 ConnectionError 和 TimeoutError 重试
+        - 认证错误（401）和其他异常不重试，直接抛出
+        """
+        @retry(
+            stop=stop_after_attempt(self._max_retries),
+            wait=wait_exponential(multiplier=self._retry_base_delay, max=60),
+            retry=retry_if_exception_type((ConnectionError, TimeoutError)),
+            reraise=True
+        )
+        def _invoke():
+            return self.llm.invoke(messages)
+        return _invoke()
     
     def _build_review_prompt(self, user_request: str, outline: str, previous_content: str) -> str:
         """构建审查提示"""

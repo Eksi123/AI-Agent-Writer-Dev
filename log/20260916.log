@@ -1,0 +1,220 @@
+[2026-09-16 22:59:26,543][config_manager.py 33][DEBUG]: 配置文件已加载: E:\Programs\Python\Python Code\ai-agent-writer-dev\config.ini
+[2026-09-16 22:59:26,547][fallback_manager.py 27][DEBUG]: 降级管理器已初始化（阈值: 3）
+[2026-09-16 22:59:26,557][__init__.py 43][DEBUG]: 工具已注册: ask_user
+[2026-09-16 22:59:26,559][__init__.py 196][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-09-16 22:59:26,565][__init__.py 43][DEBUG]: 工具已注册: edit_file
+[2026-09-16 22:59:26,565][__init__.py 196][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-09-16 22:59:26,573][__init__.py 43][DEBUG]: 工具已注册: glob_search
+[2026-09-16 22:59:26,573][__init__.py 196][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-09-16 22:59:26,578][__init__.py 43][DEBUG]: 工具已注册: invoke_skill
+[2026-09-16 22:59:26,578][__init__.py 196][DEBUG]: 内置工具模块已加载: invoke_skill
+[2026-09-16 22:59:26,584][__init__.py 43][DEBUG]: 工具已注册: list_directory
+[2026-09-16 22:59:26,584][__init__.py 196][DEBUG]: 内置工具模块已加载: list_tool
+[2026-09-16 22:59:26,587][__init__.py 43][DEBUG]: 工具已注册: fetch_url
+[2026-09-16 22:59:26,587][__init__.py 196][DEBUG]: 内置工具模块已加载: online_tool
+[2026-09-16 22:59:26,592][__init__.py 43][DEBUG]: 工具已注册: read_file
+[2026-09-16 22:59:26,592][__init__.py 196][DEBUG]: 内置工具模块已加载: read_tool
+[2026-09-16 22:59:26,593][__init__.py 43][DEBUG]: 工具已注册: write_file
+[2026-09-16 22:59:26,593][__init__.py 196][DEBUG]: 内置工具模块已加载: write_tool
+[2026-09-16 22:59:26,601][__init__.py 286][DEBUG]: Skill example-file-info 已注册（has_scripts=True, 377 字符）
+[2026-09-16 22:59:26,601][__init__.py 231][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-09-16 22:59:26,606][__init__.py 286][DEBUG]: Skill example-word-count 已注册（has_scripts=True, 348 字符）
+[2026-09-16 22:59:26,606][__init__.py 231][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-09-16 22:59:26,619][__init__.py 286][DEBUG]: Skill sumeru-finalize 已注册（has_scripts=False, 3208 字符）
+[2026-09-16 22:59:26,619][__init__.py 231][DEBUG]: 自定义 Skill 已加载: sumeru-finalize
+[2026-09-16 22:59:26,628][__init__.py 286][DEBUG]: Skill sumeru-outline 已注册（has_scripts=False, 8356 字符）
+[2026-09-16 22:59:26,628][__init__.py 231][DEBUG]: 自定义 Skill 已加载: sumeru-outline
+[2026-09-16 22:59:26,634][__init__.py 286][DEBUG]: Skill sumeru-polish 已注册（has_scripts=False, 2766 字符）
+[2026-09-16 22:59:26,636][__init__.py 231][DEBUG]: 自定义 Skill 已加载: sumeru-polish
+[2026-09-16 22:59:26,644][__init__.py 286][DEBUG]: Skill sumeru-review 已注册（has_scripts=True, 7008 字符）
+[2026-09-16 22:59:26,644][__init__.py 231][DEBUG]: 自定义 Skill 已加载: sumeru-review
+[2026-09-16 22:59:26,651][__init__.py 286][DEBUG]: Skill sumeru-topic 已注册（has_scripts=False, 2947 字符）
+[2026-09-16 22:59:26,651][__init__.py 231][DEBUG]: 自定义 Skill 已加载: sumeru-topic
+[2026-09-16 22:59:26,661][__init__.py 286][DEBUG]: Skill sumeru-worldbuilder 已注册（has_scripts=False, 13901 字符）
+[2026-09-16 22:59:26,661][__init__.py 231][DEBUG]: 自定义 Skill 已加载: sumeru-worldbuilder
+[2026-09-16 22:59:26,668][__init__.py 286][DEBUG]: Skill sumeru-write 已注册（has_scripts=False, 3839 字符）
+[2026-09-16 22:59:26,669][__init__.py 231][DEBUG]: 自定义 Skill 已加载: sumeru-write
+[2026-09-16 22:59:26,669][__init__.py 374][INFO]: 工具加载完成，共 8 个工具
+[2026-09-16 22:59:26,902][__init__.py 35][DEBUG]: 已加载提示词: chat_agent
+[2026-09-16 22:59:26,905][base_agent.py 91][INFO]: [ChatAgent] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 22:59:27,953][base_agent.py 73][DEBUG]: Agent 已初始化 [主配置]: ChatAgent (模型: qwen-plus)
+[2026-09-16 22:59:27,953][chat_agent.py 24][INFO]: 自由对话 Agent 已初始化
+[2026-09-16 22:59:27,986][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-09-16 22:59:27,986][base_agent.py 91][INFO]: [NovelWriter] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 22:59:27,995][base_agent.py 73][DEBUG]: Agent 已初始化 [主配置]: NovelWriter (模型: qwen-plus)
+[2026-09-16 22:59:27,995][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-09-16 22:59:28,004][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-09-16 22:59:28,004][base_agent.py 91][INFO]: [OutlinePolisher] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 22:59:28,007][base_agent.py 73][DEBUG]: Agent 已初始化 [主配置]: OutlinePolisher (模型: qwen-plus)
+[2026-09-16 22:59:28,007][outline_polisher.py 44][INFO]: 大纲润色 Agent 已初始化
+[2026-09-16 22:59:28,014][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-09-16 22:59:28,014][base_agent.py 91][INFO]: [ContentPolisher] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 22:59:28,023][base_agent.py 73][DEBUG]: Agent 已初始化 [主配置]: ContentPolisher (模型: qwen-plus)
+[2026-09-16 22:59:28,024][content_polisher.py 46][INFO]: 小说润色 Agent 已初始化
+[2026-09-16 22:59:28,031][__init__.py 35][DEBUG]: 已加载提示词: summary_generator
+[2026-09-16 22:59:28,031][base_agent.py 91][INFO]: [SummaryGenerator] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 22:59:28,038][base_agent.py 73][DEBUG]: Agent 已初始化 [主配置]: SummaryGenerator (模型: qwen-plus)
+[2026-09-16 22:59:28,038][summary_generator.py 44][INFO]: 汇总说明 Agent 已初始化
+[2026-09-16 22:59:28,052][__init__.py 35][DEBUG]: 已加载提示词: info_query
+[2026-09-16 22:59:28,053][base_agent.py 91][INFO]: [InfoQuery] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 22:59:28,057][base_agent.py 73][DEBUG]: Agent 已初始化 [主配置]: InfoQuery (模型: qwen-plus)
+[2026-09-16 22:59:28,057][info_query.py 43][INFO]: 信息查询 Agent 已初始化
+[2026-09-16 22:59:28,059][pre_writing.py 38][DEBUG]: 写作前审查器已初始化
+[2026-09-16 22:59:28,060][post_writing.py 41][DEBUG]: 写作后审查器已初始化
+[2026-09-16 22:59:28,060][writing_workflow.py 40][INFO]: 写作工作流已初始化（最大重试次数: 3，工作流超时: 600秒）
+[2026-09-16 22:59:28,061][novel_writer.py 88][INFO]: 已注入项目路径信息到 NovelWriter: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-09-16 22:59:28,061][base_agent.py 91][INFO]: [NovelWriter] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 22:59:28,065][base_agent.py 73][DEBUG]: Agent 已初始化 [主配置]: NovelWriter (模型: qwen-plus)
+[2026-09-16 22:59:28,065][novel_writer.py 92][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-09-16 22:59:28,065][outline_polisher.py 85][INFO]: 已注入项目路径信息到 OutlinePolisher: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-09-16 22:59:28,065][base_agent.py 91][INFO]: [OutlinePolisher] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 22:59:28,070][base_agent.py 73][DEBUG]: Agent 已初始化 [主配置]: OutlinePolisher (模型: qwen-plus)
+[2026-09-16 22:59:28,071][outline_polisher.py 89][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-09-16 22:59:28,071][content_polisher.py 87][INFO]: 已注入项目路径信息到 ContentPolisher: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-09-16 22:59:28,071][base_agent.py 91][INFO]: [ContentPolisher] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 22:59:28,076][base_agent.py 73][DEBUG]: Agent 已初始化 [主配置]: ContentPolisher (模型: qwen-plus)
+[2026-09-16 22:59:28,076][content_polisher.py 91][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-09-16 22:59:28,076][summary_generator.py 85][INFO]: 已注入项目路径信息到 SummaryGenerator: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-09-16 22:59:28,076][base_agent.py 91][INFO]: [SummaryGenerator] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 22:59:28,082][base_agent.py 73][DEBUG]: Agent 已初始化 [主配置]: SummaryGenerator (模型: qwen-plus)
+[2026-09-16 22:59:28,082][summary_generator.py 89][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-09-16 22:59:28,082][info_query.py 84][INFO]: 已注入项目路径信息到 InfoQuery: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-09-16 22:59:28,083][base_agent.py 91][INFO]: [InfoQuery] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 22:59:28,086][base_agent.py 73][DEBUG]: Agent 已初始化 [主配置]: InfoQuery (模型: qwen-plus)
+[2026-09-16 22:59:28,086][info_query.py 88][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-09-16 22:59:28,086][app.py 124][INFO]: 已设置项目: 霸道总裁爱上我
+[2026-09-16 22:59:28,086][app.py 79][INFO]: 已自动加载项目: 霸道总裁爱上我
+[2026-09-16 22:59:28,086][app.py 65][INFO]: Web Agent Writer 已初始化
+[2026-09-16 22:59:28,096][app.py 1125][INFO]: 启动 Web 服务器: http://127.0.0.1:8000
+[2026-09-16 22:59:37,257][project_manager.py 237][INFO]: 大纲已更新: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我\霸道总裁爱上我.md
+[2026-09-16 22:59:37,257][app.py 463][INFO]: 大纲已保存: 霸道总裁爱上我
+[2026-09-16 22:59:42,894][novel_writer.py 88][INFO]: 已注入项目路径信息到 NovelWriter: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-09-16 22:59:42,894][base_agent.py 91][INFO]: [NovelWriter] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 22:59:42,903][base_agent.py 73][DEBUG]: Agent 已初始化 [主配置]: NovelWriter (模型: qwen-plus)
+[2026-09-16 22:59:42,903][novel_writer.py 92][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-09-16 22:59:42,903][outline_polisher.py 85][INFO]: 已注入项目路径信息到 OutlinePolisher: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-09-16 22:59:42,903][base_agent.py 91][INFO]: [OutlinePolisher] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 22:59:42,911][base_agent.py 73][DEBUG]: Agent 已初始化 [主配置]: OutlinePolisher (模型: qwen-plus)
+[2026-09-16 22:59:42,913][outline_polisher.py 89][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-09-16 22:59:42,913][content_polisher.py 87][INFO]: 已注入项目路径信息到 ContentPolisher: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-09-16 22:59:42,913][base_agent.py 91][INFO]: [ContentPolisher] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 22:59:42,926][base_agent.py 73][DEBUG]: Agent 已初始化 [主配置]: ContentPolisher (模型: qwen-plus)
+[2026-09-16 22:59:42,926][content_polisher.py 91][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-09-16 22:59:42,926][summary_generator.py 85][INFO]: 已注入项目路径信息到 SummaryGenerator: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-09-16 22:59:42,926][base_agent.py 91][INFO]: [SummaryGenerator] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 22:59:42,935][base_agent.py 73][DEBUG]: Agent 已初始化 [主配置]: SummaryGenerator (模型: qwen-plus)
+[2026-09-16 22:59:42,935][summary_generator.py 89][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-09-16 22:59:42,935][info_query.py 84][INFO]: 已注入项目路径信息到 InfoQuery: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-09-16 22:59:42,935][base_agent.py 91][INFO]: [InfoQuery] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 22:59:42,951][base_agent.py 73][DEBUG]: Agent 已初始化 [主配置]: InfoQuery (模型: qwen-plus)
+[2026-09-16 22:59:42,951][info_query.py 88][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-09-16 22:59:42,951][app.py 124][INFO]: 已设置项目: 霸道总裁爱上我
+[2026-09-16 22:59:43,885][novel_writer.py 88][INFO]: 已注入项目路径信息到 NovelWriter: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-09-16 22:59:43,885][base_agent.py 91][INFO]: [NovelWriter] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 22:59:43,892][base_agent.py 73][DEBUG]: Agent 已初始化 [主配置]: NovelWriter (模型: qwen-plus)
+[2026-09-16 22:59:43,892][novel_writer.py 92][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-09-16 22:59:43,892][outline_polisher.py 85][INFO]: 已注入项目路径信息到 OutlinePolisher: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-09-16 22:59:43,892][base_agent.py 91][INFO]: [OutlinePolisher] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 22:59:43,904][base_agent.py 73][DEBUG]: Agent 已初始化 [主配置]: OutlinePolisher (模型: qwen-plus)
+[2026-09-16 22:59:43,904][outline_polisher.py 89][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-09-16 22:59:43,905][content_polisher.py 87][INFO]: 已注入项目路径信息到 ContentPolisher: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-09-16 22:59:43,905][base_agent.py 91][INFO]: [ContentPolisher] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 22:59:43,914][base_agent.py 73][DEBUG]: Agent 已初始化 [主配置]: ContentPolisher (模型: qwen-plus)
+[2026-09-16 22:59:43,914][content_polisher.py 91][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-09-16 22:59:43,914][summary_generator.py 85][INFO]: 已注入项目路径信息到 SummaryGenerator: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-09-16 22:59:43,914][base_agent.py 91][INFO]: [SummaryGenerator] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 22:59:43,923][base_agent.py 73][DEBUG]: Agent 已初始化 [主配置]: SummaryGenerator (模型: qwen-plus)
+[2026-09-16 22:59:43,923][summary_generator.py 89][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-09-16 22:59:43,924][info_query.py 84][INFO]: 已注入项目路径信息到 InfoQuery: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-09-16 22:59:43,924][base_agent.py 91][INFO]: [InfoQuery] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 22:59:43,933][base_agent.py 73][DEBUG]: Agent 已初始化 [主配置]: InfoQuery (模型: qwen-plus)
+[2026-09-16 22:59:43,933][info_query.py 88][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-09-16 22:59:43,933][app.py 124][INFO]: 已设置项目: 霸道总裁爱上我
+[2026-09-16 23:57:45,513][config_manager.py 33][DEBUG]: 配置文件已加载: E:\Programs\Python\Python Code\ai-agent-writer-dev\config.ini
+[2026-09-16 23:57:45,515][fallback_manager.py 27][DEBUG]: 降级管理器已初始化（阈值: 3）
+[2026-09-16 23:57:45,519][__init__.py 43][DEBUG]: 工具已注册: ask_user
+[2026-09-16 23:57:45,519][__init__.py 196][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-09-16 23:57:45,526][__init__.py 43][DEBUG]: 工具已注册: edit_file
+[2026-09-16 23:57:45,526][__init__.py 196][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-09-16 23:57:45,534][__init__.py 43][DEBUG]: 工具已注册: glob_search
+[2026-09-16 23:57:45,534][__init__.py 196][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-09-16 23:57:45,537][__init__.py 43][DEBUG]: 工具已注册: invoke_skill
+[2026-09-16 23:57:45,537][__init__.py 196][DEBUG]: 内置工具模块已加载: invoke_skill
+[2026-09-16 23:57:45,542][__init__.py 43][DEBUG]: 工具已注册: list_directory
+[2026-09-16 23:57:45,542][__init__.py 196][DEBUG]: 内置工具模块已加载: list_tool
+[2026-09-16 23:57:45,547][__init__.py 43][DEBUG]: 工具已注册: fetch_url
+[2026-09-16 23:57:45,547][__init__.py 196][DEBUG]: 内置工具模块已加载: online_tool
+[2026-09-16 23:57:45,552][__init__.py 43][DEBUG]: 工具已注册: read_file
+[2026-09-16 23:57:45,552][__init__.py 196][DEBUG]: 内置工具模块已加载: read_tool
+[2026-09-16 23:57:45,552][__init__.py 43][DEBUG]: 工具已注册: write_file
+[2026-09-16 23:57:45,552][__init__.py 196][DEBUG]: 内置工具模块已加载: write_tool
+[2026-09-16 23:57:45,553][__init__.py 286][DEBUG]: Skill example-file-info 已注册（has_scripts=True, 377 字符）
+[2026-09-16 23:57:45,553][__init__.py 231][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-09-16 23:57:45,553][__init__.py 286][DEBUG]: Skill example-word-count 已注册（has_scripts=True, 348 字符）
+[2026-09-16 23:57:45,553][__init__.py 231][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-09-16 23:57:45,554][__init__.py 286][DEBUG]: Skill sumeru-finalize 已注册（has_scripts=False, 3208 字符）
+[2026-09-16 23:57:45,554][__init__.py 231][DEBUG]: 自定义 Skill 已加载: sumeru-finalize
+[2026-09-16 23:57:45,555][__init__.py 286][DEBUG]: Skill sumeru-outline 已注册（has_scripts=False, 8356 字符）
+[2026-09-16 23:57:45,555][__init__.py 231][DEBUG]: 自定义 Skill 已加载: sumeru-outline
+[2026-09-16 23:57:45,556][__init__.py 286][DEBUG]: Skill sumeru-polish 已注册（has_scripts=False, 2766 字符）
+[2026-09-16 23:57:45,556][__init__.py 231][DEBUG]: 自定义 Skill 已加载: sumeru-polish
+[2026-09-16 23:57:45,557][__init__.py 286][DEBUG]: Skill sumeru-review 已注册（has_scripts=True, 7008 字符）
+[2026-09-16 23:57:45,557][__init__.py 231][DEBUG]: 自定义 Skill 已加载: sumeru-review
+[2026-09-16 23:57:45,557][__init__.py 286][DEBUG]: Skill sumeru-topic 已注册（has_scripts=False, 2947 字符）
+[2026-09-16 23:57:45,557][__init__.py 231][DEBUG]: 自定义 Skill 已加载: sumeru-topic
+[2026-09-16 23:57:45,557][__init__.py 286][DEBUG]: Skill sumeru-worldbuilder 已注册（has_scripts=False, 13901 字符）
+[2026-09-16 23:57:45,557][__init__.py 231][DEBUG]: 自定义 Skill 已加载: sumeru-worldbuilder
+[2026-09-16 23:57:45,558][__init__.py 286][DEBUG]: Skill sumeru-write 已注册（has_scripts=False, 3839 字符）
+[2026-09-16 23:57:45,558][__init__.py 231][DEBUG]: 自定义 Skill 已加载: sumeru-write
+[2026-09-16 23:57:45,558][__init__.py 374][INFO]: 工具加载完成，共 8 个工具
+[2026-09-16 23:57:45,709][__init__.py 35][DEBUG]: 已加载提示词: chat_agent
+[2026-09-16 23:57:45,709][base_agent.py 94][INFO]: [ChatAgent] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 23:57:46,546][base_agent.py 76][DEBUG]: Agent 已初始化 [主配置]: ChatAgent (模型: qwen-plus)
+[2026-09-16 23:57:46,546][chat_agent.py 24][INFO]: 自由对话 Agent 已初始化
+[2026-09-16 23:57:46,546][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-09-16 23:57:46,546][base_agent.py 94][INFO]: [NovelWriter] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 23:57:46,558][base_agent.py 76][DEBUG]: Agent 已初始化 [主配置]: NovelWriter (模型: qwen-plus)
+[2026-09-16 23:57:46,559][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-09-16 23:57:46,559][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-09-16 23:57:46,559][base_agent.py 94][INFO]: [OutlinePolisher] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 23:57:46,563][base_agent.py 76][DEBUG]: Agent 已初始化 [主配置]: OutlinePolisher (模型: qwen-plus)
+[2026-09-16 23:57:46,564][outline_polisher.py 44][INFO]: 大纲润色 Agent 已初始化
+[2026-09-16 23:57:46,564][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-09-16 23:57:46,566][base_agent.py 94][INFO]: [ContentPolisher] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 23:57:46,570][base_agent.py 76][DEBUG]: Agent 已初始化 [主配置]: ContentPolisher (模型: qwen-plus)
+[2026-09-16 23:57:46,570][content_polisher.py 46][INFO]: 小说润色 Agent 已初始化
+[2026-09-16 23:57:46,572][__init__.py 35][DEBUG]: 已加载提示词: summary_generator
+[2026-09-16 23:57:46,572][base_agent.py 94][INFO]: [SummaryGenerator] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 23:57:46,575][base_agent.py 76][DEBUG]: Agent 已初始化 [主配置]: SummaryGenerator (模型: qwen-plus)
+[2026-09-16 23:57:46,576][summary_generator.py 44][INFO]: 汇总说明 Agent 已初始化
+[2026-09-16 23:57:46,576][__init__.py 35][DEBUG]: 已加载提示词: info_query
+[2026-09-16 23:57:46,576][base_agent.py 94][INFO]: [InfoQuery] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 23:57:46,581][base_agent.py 76][DEBUG]: Agent 已初始化 [主配置]: InfoQuery (模型: qwen-plus)
+[2026-09-16 23:57:46,582][info_query.py 43][INFO]: 信息查询 Agent 已初始化
+[2026-09-16 23:57:46,584][pre_writing.py 38][DEBUG]: 写作前审查器已初始化
+[2026-09-16 23:57:46,585][post_writing.py 41][DEBUG]: 写作后审查器已初始化
+[2026-09-16 23:57:46,585][writing_workflow.py 40][INFO]: 写作工作流已初始化（最大重试次数: 3，工作流超时: 600秒）
+[2026-09-16 23:57:46,586][novel_writer.py 88][INFO]: 已注入项目路径信息到 NovelWriter: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-09-16 23:57:46,586][base_agent.py 94][INFO]: [NovelWriter] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 23:57:46,590][base_agent.py 76][DEBUG]: Agent 已初始化 [主配置]: NovelWriter (模型: qwen-plus)
+[2026-09-16 23:57:46,590][novel_writer.py 92][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-09-16 23:57:46,590][outline_polisher.py 85][INFO]: 已注入项目路径信息到 OutlinePolisher: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-09-16 23:57:46,591][base_agent.py 94][INFO]: [OutlinePolisher] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 23:57:46,595][base_agent.py 76][DEBUG]: Agent 已初始化 [主配置]: OutlinePolisher (模型: qwen-plus)
+[2026-09-16 23:57:46,596][outline_polisher.py 89][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-09-16 23:57:46,596][content_polisher.py 87][INFO]: 已注入项目路径信息到 ContentPolisher: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-09-16 23:57:46,596][base_agent.py 94][INFO]: [ContentPolisher] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 23:57:46,601][base_agent.py 76][DEBUG]: Agent 已初始化 [主配置]: ContentPolisher (模型: qwen-plus)
+[2026-09-16 23:57:46,601][content_polisher.py 91][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-09-16 23:57:46,601][summary_generator.py 85][INFO]: 已注入项目路径信息到 SummaryGenerator: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-09-16 23:57:46,601][base_agent.py 94][INFO]: [SummaryGenerator] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 23:57:46,606][base_agent.py 76][DEBUG]: Agent 已初始化 [主配置]: SummaryGenerator (模型: qwen-plus)
+[2026-09-16 23:57:46,607][summary_generator.py 89][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-09-16 23:57:46,607][info_query.py 84][INFO]: 已注入项目路径信息到 InfoQuery: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\霸道总裁爱上我
+[2026-09-16 23:57:46,607][base_agent.py 94][INFO]: [InfoQuery] system_prompt 已注入 9 个 Skill 信息
+[2026-09-16 23:57:46,611][base_agent.py 76][DEBUG]: Agent 已初始化 [主配置]: InfoQuery (模型: qwen-plus)
+[2026-09-16 23:57:46,611][info_query.py 88][INFO]: 已切换到项目: 霸道总裁爱上我
+[2026-09-16 23:57:46,611][app.py 154][INFO]: 已设置项目: 霸道总裁爱上我
+[2026-09-16 23:57:46,612][app.py 109][INFO]: 已自动加载项目: 霸道总裁爱上我
+[2026-09-16 23:57:46,612][app.py 95][INFO]: Web Agent Writer 已初始化
+[2026-09-16 23:57:46,624][app.py 1181][INFO]: 启动 Web 服务器: http://127.0.0.1:8000

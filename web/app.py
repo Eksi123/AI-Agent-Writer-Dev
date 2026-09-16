@@ -30,6 +30,36 @@ app = Flask(__name__,
             static_url_path='')
 CORS(app)
 
+# 请求体大小限制（10MB），防止超大请求导致内存溢出
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024
+
+
+# ==================== 全局异常处理 ====================
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    """全局异常处理：捕获未处理的异常，记录日志并返回友好提示，避免泄露堆栈信息。"""
+    logger.error(f"未捕获异常: {e}", exc_info=True)
+    return jsonify({"error": "服务器内部错误，请稍后重试"}), 500
+
+
+@app.errorhandler(404)
+def handle_404(e):
+    """404 错误处理"""
+    return jsonify({"error": "接口不存在"}), 404
+
+
+@app.errorhandler(405)
+def handle_405(e):
+    """405 方法不允许"""
+    return jsonify({"error": "请求方法不支持"}), 405
+
+
+@app.errorhandler(413)
+def handle_413(e):
+    """413 请求体过大"""
+    return jsonify({"error": "请求数据过大，请减少内容后重试"}), 413
+
 
 class AgentWriter:
     """
@@ -145,6 +175,12 @@ class AgentWriter:
             try:
                 if '卷' in actual_input:
                     parts = actual_input.replace('第', '').replace('卷', ' ').replace('章', ' ').split()
+                    if len(parts) < 2:
+                        return {
+                            'response': '格式错误，请使用：@写作 第1卷 第1章',
+                            'agent': agent_name,
+                            'workflow': True
+                        }
                     volume = int(parts[0])
                     chapter = int(parts[1])
                 else:
@@ -187,6 +223,10 @@ class AgentWriter:
             # 将错误标志传递给前端，用于 UI 错误提示
             if result.get('error'):
                 response_data['error'] = True
+            # 将降级状态传递给前端，让 UI 可以提示用户
+            if result.get('degraded'):
+                response_data['degraded'] = True
+                response_data['degraded_model'] = result.get('degraded_model', 'unknown')
             return response_data
         else:
             return {
@@ -366,7 +406,10 @@ def api_switch_project(project_name):
 def api_delete_project(project_name):
     """删除项目"""
     try:
-        project_dir = os.path.join(agent_writer.project_manager.base_dir, project_name)
+        # 路径安全校验：防止路径遍历攻击
+        project_dir = os.path.normpath(os.path.join(agent_writer.project_manager.base_dir, project_name))
+        if not project_dir.startswith(os.path.normpath(agent_writer.project_manager.base_dir)):
+            return jsonify({'error': '非法项目名称'}), 400
         
         if not os.path.exists(project_dir):
             return jsonify({'error': f'项目不存在: {project_name}'}), 404
@@ -391,6 +434,7 @@ def api_delete_project(project_name):
 @app.route('/api/projects/<project_name>/export', methods=['GET'])
 def api_export_project(project_name):
     """导出整个项目目录为ZIP"""
+    temp_file = None
     try:
         project = agent_writer.project_manager.load_project(project_name)
         if not project:
@@ -418,6 +462,14 @@ def api_export_project(project_name):
     except Exception as e:
         logger.error(f"导出项目错误: {e}")
         return jsonify({'error': str(e)}), 500
+    
+    finally:
+        # 清理临时文件（延迟删除，确保 send_file 完成）
+        if temp_file and os.path.exists(temp_file.name):
+            try:
+                os.remove(temp_file.name)
+            except Exception:
+                pass
 
 
 @app.route('/api/projects/<project_name>/outline', methods=['GET'])
@@ -537,7 +589,11 @@ def api_read_chapter(project_name):
         if not project:
             return jsonify({'error': f'项目不存在: {project_name}'}), 404
         
-        full_path = os.path.join(project.chapters_dir, file_path)
+        # 路径安全校验：防止路径遍历攻击
+        full_path = os.path.normpath(os.path.join(project.chapters_dir, file_path))
+        if not full_path.startswith(os.path.normpath(project.chapters_dir)):
+            return jsonify({'error': '非法路径'}), 400
+        
         if not os.path.exists(full_path):
             return jsonify({'error': '章节文件不存在'}), 404
         
@@ -571,7 +627,11 @@ def api_save_chapter(project_name):
         if not project:
             return jsonify({'error': f'项目不存在: {project_name}'}), 404
         
-        full_path = os.path.join(project.chapters_dir, file_path)
+        # 路径安全校验：防止路径遍历攻击
+        full_path = os.path.normpath(os.path.join(project.chapters_dir, file_path))
+        if not full_path.startswith(os.path.normpath(project.chapters_dir)):
+            return jsonify({'error': '非法路径'}), 400
+        
         if not os.path.exists(full_path):
             return jsonify({'error': '章节文件不存在'}), 404
         

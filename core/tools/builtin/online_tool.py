@@ -27,6 +27,7 @@ def fetch_url(url: str, timeout: int = 10) -> str:
         response.encoding = response.apparent_encoding or 'utf-8'
         
         # 截断过长内容，避免 Token 溢出
+        content = response.text
         max_length = 5000
         if len(content) > max_length:
             content = content[:max_length] + f"\n\n... (内容已截断，总长度: {len(response.text)} 字符)"

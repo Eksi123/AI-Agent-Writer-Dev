@@ -26,10 +26,12 @@ def edit_file(file_path: str, old_text: str, new_text: str, replace_all: bool = 
     try:
         abs_path = os.path.abspath(file_path)
         
-        # 安全检查：确保路径在允许的项目目录内
+        # 安全检查：确保路径在允许的项目目录内（使用 normpath 防止路径遍历攻击）
         allowed_dir = get_allowed_project_dir()
         if allowed_dir:
-            if not abs_path.startswith(allowed_dir + os.sep) and abs_path != allowed_dir:
+            norm_path = os.path.normpath(abs_path)
+            norm_allowed = os.path.normpath(allowed_dir)
+            if not norm_path.startswith(norm_allowed + os.sep) and norm_path != norm_allowed:
                 return f"错误: 不允许编辑项目目录外的文件。允许目录: {allowed_dir}，尝试编辑: {abs_path}"
         
         if not os.path.exists(abs_path):

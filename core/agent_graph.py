@@ -17,6 +17,7 @@ from langchain_core.tools import BaseTool
 from langchain_core.messages import AIMessage, ToolMessage, SystemMessage
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 from core.agent_logger import logger
 from core.config_manager import config_manager
 
@@ -80,7 +81,7 @@ class AgentGraph:
         
         职责：
         1. 在消息列表前添加系统提示词
-        2. 调用大模型进行推理
+        2. 调用大模型进行推理（带重试机制）
         3. 记录思考过程（用于调试和前端展示）
         4. 返回模型响应（LangGraph 会自动追加到 state["messages"]）
         
@@ -92,8 +93,8 @@ class AgentGraph:
         system_msg = SystemMessage(content=self.system_prompt)
         messages = [system_msg] + state["messages"]
         
-        # 调用 LLM 进行推理
-        response = self.llm_with_tools.invoke(messages)
+        # 调用 LLM 进行推理（带重试机制）
+        response = self._invoke_llm_with_retry(messages)
         
         # 记录思考过程（如果模型返回了文本内容）
         if response.content:
@@ -104,6 +105,31 @@ class AgentGraph:
         
         # 返回新消息，LangGraph 的 add_messages 注解会自动追加到 state
         return {"messages": [response]}
+    
+    def _invoke_llm_with_retry(self, messages: list):
+        """
+        带重试机制的 LLM 调用
+        
+        重试策略：
+        - 最大重试次数：从配置读取（默认 3 次）
+        - 等待策略：指数退避（base_delay * 2^attempt，最大 60 秒）
+        - 重试条件：仅对网络错误、超时、限流等可重试错误进行重试
+        - 不对认证错误（401）重试，因为重试无意义
+        """
+        robustness_config = config_manager.get_robustness_config()
+        max_retries = robustness_config['max_retries']
+        base_delay = robustness_config['retry_base_delay']
+        
+        @retry(
+            stop=stop_after_attempt(max_retries),
+            wait=wait_exponential(multiplier=base_delay, max=60),
+            retry=retry_if_exception_type((ConnectionError, TimeoutError)),
+            reraise=True
+        )
+        def _invoke():
+            return self.llm_with_tools.invoke(messages)
+        
+        return _invoke()
     
     def _tool_node(self, state: AgentState) -> dict:
         """
@@ -319,13 +345,18 @@ def create_agent_graph(
     Returns:
         AgentGraph 实例
     """
-    # 创建 LLM 实例
+    # 读取超时配置
+    robustness_config = config_manager.get_robustness_config()
+    request_timeout = robustness_config['request_timeout']
+    
+    # 创建 LLM 实例（带超时控制）
     llm = ChatOpenAI(
         api_key=api_key,
         base_url=base_url,
         model=model,
         temperature=temperature,
-        max_tokens=max_tokens
+        max_tokens=max_tokens,
+        timeout=request_timeout
     )
     
     # 创建并返回 Agent 图

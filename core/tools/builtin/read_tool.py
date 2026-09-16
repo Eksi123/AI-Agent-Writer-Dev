@@ -5,6 +5,7 @@
 """
 import os
 from langchain_core.tools import tool
+from core.tools.builtin.write_tool import get_allowed_project_dir
 
 
 @tool
@@ -22,6 +23,14 @@ def read_file(file_path: str, start_line: int = 1, end_line: int = -1) -> str:
     """
     try:
         abs_path = os.path.abspath(file_path)
+        
+        # 安全检查：确保路径在允许的项目目录内
+        allowed_dir = get_allowed_project_dir()
+        if allowed_dir:
+            norm_path = os.path.normpath(abs_path)
+            norm_allowed = os.path.normpath(allowed_dir)
+            if not norm_path.startswith(norm_allowed + os.sep) and norm_path != norm_allowed:
+                return f"错误: 不允许读取项目目录外的文件。允许目录: {allowed_dir}，尝试读取: {abs_path}"
         
         if not os.path.exists(abs_path):
             return f"错误: 文件不存在 - {abs_path}"

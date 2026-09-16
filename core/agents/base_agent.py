@@ -8,6 +8,8 @@ from typing import List, Optional
 from langchain_core.tools import BaseTool
 from core.agent_graph import AgentGraph, create_agent_graph
 from core.config_manager import config_manager
+from core.validators import validate_user_request
+from core.fallback_manager import fallback_manager
 from core.agent_logger import logger
 from core.tools import get_all_skills_info
 
@@ -21,6 +23,9 @@ class BaseAgent:
     - 绑定不同的 tools（工具列表）
     - 可选：继承并重写 chat() 方法添加自定义逻辑
     """
+    
+    # 对话历史最大保留轮数（一问一答算 2 条消息）
+    MAX_HISTORY_TURNS = 30
     
     def __init__(
         self,
@@ -46,11 +51,14 @@ class BaseAgent:
         self.chat_history: List[dict] = []
         self._init_agent_graph()
     
-    def _init_agent_graph(self) -> None:
+    def _init_agent_graph(self, override_config: dict = None) -> None:
         """初始化 Agent 图，从配置管理器读取 LLM 配置并创建 AgentGraph 实例。
         自动将匹配的 Skill 提示词追加到 system_prompt 末尾。
+        
+        Args:
+            override_config: 可选的配置覆盖（用于降级时传入 Ollama 配置）
         """
-        config = config_manager.get_llm_config()
+        config = override_config or config_manager.get_llm_config()
         
         # 拼接 Skill 提示词到 system_prompt
         full_prompt = self._build_full_prompt()
@@ -64,7 +72,8 @@ class BaseAgent:
             temperature=config["temperature"]
         )
         
-        logger.debug(f"Agent 已初始化: {self.name}")
+        source = "降级配置" if override_config else "主配置"
+        logger.debug(f"Agent 已初始化 [{source}]: {self.name} (模型: {config['model_name']})")
     
     def _build_full_prompt(self) -> str:
         """
@@ -87,6 +96,18 @@ class BaseAgent:
         separator = "\n\n---\n\n"
         return separator.join(parts)
     
+    def _trim_history(self) -> None:
+        """
+        截断对话历史，防止 token 超出模型上下文窗口限制。
+        保留最近 MAX_HISTORY_TURNS 轮对话（一问一答算 2 条消息），
+        移除最早的消息。
+        """
+        max_messages = self.MAX_HISTORY_TURNS * 2
+        if len(self.chat_history) > max_messages:
+            trimmed_count = len(self.chat_history) - max_messages
+            self.chat_history = self.chat_history[-max_messages:]
+            logger.info(f"[{self.name}] 对话历史已截断，移除 {trimmed_count} 条旧消息（保留最近 {self.MAX_HISTORY_TURNS} 轮）")
+    
     def reload_llm(self) -> None:
         """重新加载 LLM 配置，用于设置变更后刷新 Agent 的大模型连接。"""
         self._init_agent_graph()
@@ -107,14 +128,39 @@ class BaseAgent:
             - response: AI 回复文本
             - thought_process: 思考过程记录（用于调试和前端展示）
             - error: 是否发生错误（仅在出错时存在）
+            - degraded: 是否已降级到备用模型（仅在降级时存在）
         """
+        # 参数校验
+        valid, error_msg = validate_user_request(user_input)
+        if not valid:
+            logger.error(f"[{self.name}] 参数校验失败: {error_msg}")
+            return {
+                "response": f"❌ {error_msg}",
+                "thought_process": [],
+                "error": True
+            }
+        
+        if not isinstance(max_iterations, int) or max_iterations < 0:
+            logger.error(f"[{self.name}] max_iterations 参数无效: {max_iterations}")
+            return {
+                "response": "❌ max_iterations 必须为非负整数",
+                "thought_process": [],
+                "error": True
+            }
+        
         self.chat_history.append({"role": "user", "content": user_input})
+        
+        # 截断过长的对话历史，防止 token 超出模型上下文窗口
+        self._trim_history()
         
         try:
             result = self.agent_graph.invoke(self.chat_history, max_iterations=max_iterations)
             response = self.agent_graph.get_last_response(result)
             thought_process = result.get("thought_process", [])
             self.chat_history = result["messages"]
+            
+            # 调用成功，重置降级管理器
+            fallback_manager.record_success()
             
             logger.debug(f"[{self.name}] 用户: {user_input[:50]}...")
             logger.debug(f"[{self.name}] Agent: {response[:50]}...")
@@ -127,12 +173,41 @@ class BaseAgent:
             error_msg = str(e)
             logger.error(f"[{self.name}] LLM 调用失败: {error_msg}")
             
+            # 记录失败，检查是否需要降级
+            fallback_manager.record_failure()
+            
+            if fallback_manager.should_fallback():
+                logger.warning(f"[{self.name}] 连续失败达到阈值，自动降级到 Ollama")
+                fallback_config = fallback_manager.activate_fallback()
+                
+                # 用 Ollama 配置重建 Agent
+                self._init_agent_graph(override_config=fallback_config)
+                
+                # 用降级后的模型重试一次
+                try:
+                    result = self.agent_graph.invoke(self.chat_history, max_iterations=max_iterations)
+                    response = self.agent_graph.get_last_response(result)
+                    thought_process = result.get("thought_process", [])
+                    self.chat_history = result["messages"]
+                    
+                    logger.info(f"[{self.name}] 降级后调用成功")
+                    
+                    return {
+                        "response": response,
+                        "thought_process": thought_process,
+                        "degraded": True,
+                        "degraded_model": fallback_config['model_name']
+                    }
+                except Exception as retry_error:
+                    logger.error(f"[{self.name}] 降级后调用仍然失败: {retry_error}")
+            
             hint = self._generate_error_hint(error_msg)
             
             return {
                 "response": hint,
                 "thought_process": [],
-                "error": True
+                "error": True,
+                "degraded": fallback_manager.is_degraded
             }
     
     def _generate_error_hint(self, error_msg: str) -> str:

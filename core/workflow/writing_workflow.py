@@ -4,10 +4,13 @@
 协调完整的单章写作流程：写作前审查 → 章节写作 → 写作后审查（最多3次重试）→ 保存文件。
 每个步骤由独立的审查器或 Agent 执行，工作流负责编排和状态管理。
 """
+import time
 from typing import Optional, List
 from core.agents.novel_writer import NovelWriter
 from core.workflow.pre_writing import PreWritingReviewer
 from core.workflow.post_writing import PostWritingReviewer
+from core.config_manager import config_manager
+from core.validators import validate_volume_chapter, validate_user_request
 from core.agent_logger import logger
 
 
@@ -30,7 +33,11 @@ class WritingWorkflow:
         self.current_volume = 1
         self.current_chapter = 1
         
-        logger.info(f"写作工作流已初始化（最大重试次数: {max_retries}）")
+        # 读取工作流超时配置
+        robustness_config = config_manager.get_robustness_config()
+        self.workflow_timeout = robustness_config['workflow_timeout']
+        
+        logger.info(f"写作工作流已初始化（最大重试次数: {max_retries}，工作流超时: {self.workflow_timeout}秒）")
     
     def write_chapter(self, volume: int, chapter: int, chapter_name: str = "", 
                      user_request: str = "") -> dict:
@@ -61,6 +68,39 @@ class WritingWorkflow:
             }
         """
         logger.info(f"开始写作: 第{volume}卷 第{chapter}章")
+        
+        # 参数校验
+        valid, error_msg = validate_volume_chapter(volume, chapter)
+        if not valid:
+            logger.error(f"参数校验失败: {error_msg}")
+            return {
+                "success": False,
+                "chapter_content": "",
+                "pre_writing_review": None,
+                "post_writing_review": None,
+                "write_to_file": False,
+                "retry_count": 0,
+                "free_writing": False,
+                "error": error_msg
+            }
+        
+        if user_request:
+            valid, error_msg = validate_user_request(user_request)
+            if not valid:
+                logger.error(f"参数校验失败: {error_msg}")
+                return {
+                    "success": False,
+                    "chapter_content": "",
+                    "pre_writing_review": None,
+                    "post_writing_review": None,
+                    "write_to_file": False,
+                    "retry_count": 0,
+                    "free_writing": False,
+                    "error": error_msg
+                }
+        
+        # 记录工作流开始时间，用于超时检查
+        workflow_start_time = time.time()
         
         result = {
             "success": False,
@@ -105,10 +145,28 @@ class WritingWorkflow:
         # 使用审查器提取的大纲片段（如果有），否则使用默认提取
         outline_section = pre_writing_review.get("outline_section") or self._extract_outline_section(volume, chapter)
         
+        # 工作流超时检查
+        elapsed = time.time() - workflow_start_time
+        if elapsed > self.workflow_timeout:
+            logger.error(f"工作流超时: 写作前审查阶段已耗时 {elapsed:.1f}秒（限制: {self.workflow_timeout}秒）")
+            result["success"] = False
+            result["error"] = f"工作流超时（{elapsed:.1f}秒）"
+            result["timeout"] = True
+            return result
+        
         # Step 2: 章节写作（带重试机制）
         logger.info("Step 2: 章节写作")
         chapter_content = self._write_chapter_content(volume, chapter, chapter_name, outline_section)
         result["chapter_content"] = chapter_content
+        
+        # 工作流超时检查
+        elapsed = time.time() - workflow_start_time
+        if elapsed > self.workflow_timeout:
+            logger.error(f"工作流超时: 章节写作阶段已耗时 {elapsed:.1f}秒（限制: {self.workflow_timeout}秒）")
+            result["success"] = False
+            result["error"] = f"工作流超时（{elapsed:.1f}秒）"
+            result["timeout"] = True
+            return result
         
         # Step 3: 写作后审查（最多重试 max_retries 次）
         logger.info("Step 3: 写作后审查")
@@ -138,9 +196,13 @@ class WritingWorkflow:
                 logger.warning("写作后审查发现问题，但不需要重新生成")
                 break
         
-        # 如果重试后仍未通过，标记问题
+        # 如果重试后仍未通过，标记失败
         if retry_count >= self.max_retries and not post_writing_review["passed"]:
-            logger.error(f"重试 {self.max_retries} 次后仍未通过审查，标记问题待用户确认")
+            logger.error(f"重试 {self.max_retries} 次后仍未通过审查，标记失败待用户确认")
+            result["success"] = False
+            result["error"] = f"写作后审查重试 {self.max_retries} 次仍未通过"
+            result["last_review_feedback"] = post_writing_review.get("feedback", "")
+            return result
         
         # Step 4: 保存文件
         if result["write_to_file"] and self.writer.current_project:

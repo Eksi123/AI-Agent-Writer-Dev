@@ -6,6 +6,7 @@
 import os
 import glob
 from langchain_core.tools import tool
+from core.tools.builtin.write_tool import get_allowed_project_dir
 
 
 @tool
@@ -22,6 +23,14 @@ def glob_search(pattern: str, root_dir: str = ".") -> str:
     """
     try:
         abs_root = os.path.abspath(root_dir)
+        
+        # 安全检查：确保搜索目录在允许的项目目录内
+        allowed_dir = get_allowed_project_dir()
+        if allowed_dir:
+            norm_root = os.path.normpath(abs_root)
+            norm_allowed = os.path.normpath(allowed_dir)
+            if not norm_root.startswith(norm_allowed + os.sep) and norm_root != norm_allowed:
+                return f"错误: 不允许在项目目录外搜索文件。允许目录: {allowed_dir}，尝试搜索: {abs_root}"
         
         if not os.path.exists(abs_root):
             return f"错误: 目录不存在 - {abs_root}"
