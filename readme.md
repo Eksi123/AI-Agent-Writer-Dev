@@ -383,7 +383,9 @@ ai-agent-writer-dev/
 ├── demo/                             # 演示代码（教学示例）
 │   ├── demo.py                       # 原生 OpenAI API 实现
 │   ├── demo-langchain.py             # LangChain 框架实现
-│   └── demo-langgraph.py             # LangGraph 状态图实现
+│   ├── demo-langgraph.py             # LangGraph 状态图实现
+│   ├── demo-mcp.ipynb                # LangChain + MCP 实现（Notebook，自建/开源天气 MCP）
+│   └── weather_mcp_server.py         # 自建天气 MCP Server（由 Notebook 的 %%writefile 生成）
 │
 ├── config.ini                        # 配置文件（LLM / Ollama / Web Server）
 ├── requirements.txt                  # Python 依赖
