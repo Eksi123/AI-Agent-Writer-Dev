@@ -384,8 +384,7 @@ ai-agent-writer-dev/
 │   ├── demo.py                       # 原生 OpenAI API 实现
 │   ├── demo-langchain.py             # LangChain 框架实现
 │   ├── demo-langgraph.py             # LangGraph 状态图实现
-│   ├── demo-mcp.ipynb                # MCP 实现（Notebook，自建/远程天气 MCP Server）
-│   └── weather_mcp_server.py         # 自建天气 MCP Server（由 Notebook 第 2 个 cell 生成）
+│   └── demo-mcp.ipynb                # MCP 实现（Notebook，本地/远程天气 MCP Server + LangChain 融合）
 │
 ├── config.ini                        # 配置文件（LLM / Ollama / Web Server）
 ├── requirements.txt                  # Python 依赖
@@ -881,13 +880,14 @@ output/{小说名}/
 ## 依赖
 
 ```txt
-langchain==1.3.15         # LangChain 框架
-langchain-core==1.5.4     # LangChain 核心（工具装饰器等）
-langchain-openai==1.5.1   # OpenAI 兼容接口封装
-langgraph==1.2.11         # LangGraph 状态图框架
-openai==2.54.0            # OpenAI Python SDK
+langchain==1.4.7          # LangChain 框架
+langchain-core==1.6.13    # LangChain 核心（工具装饰器等）
+langchain-openai==1.7.2   # OpenAI 兼容接口封装
+langgraph==1.2.16         # LangGraph 状态图框架
+openai==3.36.1            # OpenAI Python SDK
 flask==3.1.3              # Flask Web 框架
-flask-cors==6.0.2         # Flask 跨域支持
+flask-cors==6.0.5         # Flask 跨域支持
+mcp==2.3.0                # Model Context Protocol SDK（demo-mcp.ipynb）
 ```
 
 ---
