@@ -1162,6 +1162,142 @@ def api_delete_skill(skill_name):
         return jsonify({'error': str(e)}), 500
 
 
+# ==================== 天气 API ====================
+
+@app.route('/api/weather', methods=['GET'])
+def api_weather():
+    """获取指定城市的当前天气（通过远程 MCP 天气服务）"""
+    import asyncio
+    from mcp import Client
+
+    city = request.args.get('city', '')
+    if not city:
+        city = config_manager.config.get('Weather', 'default_city', fallback='北京')
+
+    remote_url = "https://www.modelmarket.dev/tools/mcp/weather"
+
+    # 常见城市英文名到中文的映射
+    CITY_NAME_MAP = {
+        'Beijing': '北京', 'Shanghai': '上海', 'Guangzhou': '广州', 'Shenzhen': '深圳',
+        'Chengdu': '成都', 'Hangzhou': '杭州', 'Wuhan': '武汉', 'Xi\'an': '西安',
+        'Nanjing': '南京', 'Chongqing': '重庆', 'Tianjin': '天津', 'Suzhou': '苏州',
+        'Zhengzhou': '郑州', 'Changsha': '长沙', 'Kunming': '昆明', 'Qingdao': '青岛',
+        'Dalian': '大连', 'Xiamen': '厦门', 'Hefei': '合肥', 'Fuzhou': '福州',
+        'Jinan': '济南', 'Harbin': '哈尔滨', 'Shenyang': '沈阳', 'Changchun': '长春',
+        'Nanning': '南宁', 'Guiyang': '贵阳', 'Lanzhou': '兰州', 'Haikou': '海口',
+        'Yinchuan': '银川', 'Xining': '西宁', 'Hohhot': '呼和浩特', 'Lhasa': '拉萨',
+        'Urumqi': '乌鲁木齐', 'Shijiazhuang': '石家庄', 'Taiyuan': '太原', 'Nanchang': '南昌',
+    }
+
+    async def fetch_weather():
+        async with Client(remote_url) as client:
+            result = await client.call_tool("weather_now", {"city": city})
+            sc = result.structured_content
+            if not sc or "result" not in sc:
+                return None
+            reading = sc["result"].get("reading", {})
+            resolved = sc["result"].get("resolved", {})
+            return {
+                "city": resolved.get("matched_place", city),
+                "ts": reading.get("ts", ""),
+                "values": reading.get("values", {}),
+            }
+
+    async def fetch_air_quality():
+        """获取空气质量数据"""
+        async with Client(remote_url) as client:
+            result = await client.call_tool("air_quality_now", {"city": city})
+            sc = result.structured_content
+            if not sc or "result" not in sc:
+                return None
+            reading = sc["result"].get("reading", {})
+            return reading.get("values", {})
+
+    try:
+        loop = asyncio.new_event_loop()
+        weather_data = loop.run_until_complete(fetch_weather())
+        air_quality_data = loop.run_until_complete(fetch_air_quality())
+        loop.close()
+
+        if not weather_data:
+            return jsonify({"error": "天气服务返回数据为空"}), 502
+
+        vals = weather_data["values"]
+        city_en = weather_data["city"]
+        city_zh = CITY_NAME_MAP.get(city_en, city)  # 转换为中文城市名
+        
+        # 计算空气质量等级
+        aqi_us = air_quality_data.get("aqi_us") if air_quality_data else None
+        aqi_eu = air_quality_data.get("aqi_eu") if air_quality_data else None
+        pm25 = air_quality_data.get("pm2_5_ugm3") if air_quality_data else None
+        
+        # 根据欧盟标准计算空气质量等级
+        air_quality_level = ""
+        aqi_eu_value = None
+        
+        if aqi_eu is not None:
+            # 如果MCP返回了EU AQI，直接使用
+            aqi_eu_value = aqi_eu
+            if aqi_eu <= 20:
+                air_quality_level = "优"
+            elif aqi_eu <= 40:
+                air_quality_level = "良"
+            elif aqi_eu <= 60:
+                air_quality_level = "轻度污染"
+            elif aqi_eu <= 80:
+                air_quality_level = "中度污染"
+            elif aqi_eu <= 100:
+                air_quality_level = "重度污染"
+            else:
+                air_quality_level = "严重污染"
+        elif pm25 is not None:
+            # 根据PM2.5计算欧盟AQI
+            # 欧盟AQI标准（基于PM2.5）
+            if pm25 <= 10:
+                aqi_eu_value = pm25 * 2  # 0-20
+                air_quality_level = "优"
+            elif pm25 <= 20:
+                aqi_eu_value = 20 + (pm25 - 10) * 2  # 20-40
+                air_quality_level = "良"
+            elif pm25 <= 25:
+                aqi_eu_value = 40 + (pm25 - 20) * 4  # 40-60
+                air_quality_level = "轻度污染"
+            elif pm25 <= 50:
+                aqi_eu_value = 60 + (pm25 - 25) * 0.8  # 60-80
+                air_quality_level = "中度污染"
+            elif pm25 <= 75:
+                aqi_eu_value = 80 + (pm25 - 50) * 0.8  # 80-100
+                air_quality_level = "重度污染"
+            else:
+                aqi_eu_value = 100 + (pm25 - 75) * 2  # >100
+                air_quality_level = "严重污染"
+        
+        return jsonify({
+            "date": weather_data["ts"][:10] if weather_data["ts"] else "",
+            "city": city_en,
+            "city_zh": city_zh,  # 中文城市名
+            "temperature": vals.get("temperature_c"),
+            "humidity": vals.get("humidity_pct"),
+            "wind": vals.get("wind_mps"),
+            "air_quality": {
+                "aqi_us": aqi_us,
+                "aqi_eu": aqi_eu_value,  # 使用计算后的EU AQI
+                "pm25": pm25,
+                "level": air_quality_level
+            }
+        })
+    except Exception as e:
+        logger.error(f"天气 API 调用失败: {e}", exc_info=True)
+        return jsonify({"error": f"获取天气失败: {e}"}), 502
+
+
+@app.route('/api/weather/default-city', methods=['GET'])
+def api_weather_default_city():
+    """获取配置的默认城市名称（用于前端定位失败时的降级）"""
+    city = config_manager.config.get('Weather', 'default_city', fallback='北京')
+    return jsonify({"city": city})
+
+
 # ==================== 启动 ====================
 
 def run_web_server(host='127.0.0.1', port=None, debug=False):

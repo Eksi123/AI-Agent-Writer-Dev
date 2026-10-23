@@ -1352,3 +1352,99 @@ body {
     flex: 1;
     margin-bottom: 0;
 }
+
+/* ==================== 天气卡片样式 ==================== */
+
+.weather-card {
+    margin-top: auto;
+    padding: 25px;
+    background: #fff;
+    color: #333;
+    border-top: 2px solid #e0e0e0;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.weather-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    padding: 15px 0;
+    color: #666;
+}
+
+.weather-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #e0e0e0;
+    border-top-color: #007bff;
+    border-radius: 50%;
+    animation: weather-spin 0.8s linear infinite;
+}
+
+@keyframes weather-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.weather-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.weather-date {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+.weather-city {
+    font-size: 13px;
+    color: #666;
+}
+
+.weather-info {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin: 4px 0;
+}
+
+.weather-temp {
+    font-size: 36px;
+    font-weight: 600;
+    color: #007bff;
+    line-height: 1;
+}
+
+.weather-condition {
+    font-size: 14px;
+    color: #555;
+    background: #f0f4f8;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.weather-detail {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: #666;
+    padding-top: 6px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.weather-error {
+    text-align: center;
+    font-size: 13px;
+    padding: 15px 0;
+    color: #999;
+}
+

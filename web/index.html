@@ -30,6 +30,26 @@
                     <!-- 项目列表将在这里动态生成 -->
                 </ul>
             </div>
+            <!-- 天气卡片 -->
+            <div class="weather-card" id="weatherCard">
+                <div class="weather-loading" id="weatherLoading">
+                    <span class="weather-spinner"></span> 获取天气中...
+                </div>
+                <div class="weather-content" id="weatherContent" style="display: none;">
+                    <div class="weather-date" id="weatherDate"></div>
+                    <div class="weather-city" id="weatherCity"></div>
+                    <div class="weather-info">
+                        <span class="weather-temp" id="weatherTemp"></span>
+                        <span class="weather-condition" id="weatherCondition"></span>
+                    </div>
+                    <div class="weather-detail">
+                        <span id="weatherHumidity"></span>
+                        <span id="weatherWind"></span>
+                        <span id="weatherQuality"></span>
+                    </div>
+                </div>
+                <div class="weather-error" id="weatherError" style="display: none;"></div>
+            </div>
         </div>
 
         <!-- 主内容区 -->
@@ -293,5 +313,7 @@
     <script src="/js/chapters.js"></script>
     <script src="/js/settings.js"></script>
     <script src="/js/skill-manager.js"></script>
+    <script src="/js/weather.js"></script>
+    <script src="/js/weather.js"></script>
 </body>
 </html>
