@@ -1,0 +1,88 @@
+[2026-10-25 19:15:47,754][config_manager.py 33][DEBUG]: 配置文件已加载: E:\Programs\Python\Python Code\ai-agent-writer-dev\config.ini
+[2026-10-25 19:15:47,760][fallback_manager.py 27][DEBUG]: 降级管理器已初始化（阈值: 3）
+[2026-10-25 19:15:47,795][__init__.py 43][DEBUG]: 工具已注册: ask_user
+[2026-10-25 19:15:47,795][__init__.py 196][DEBUG]: 内置工具模块已加载: ask_tool
+[2026-10-25 19:15:47,824][__init__.py 43][DEBUG]: 工具已注册: edit_file
+[2026-10-25 19:15:47,825][__init__.py 196][DEBUG]: 内置工具模块已加载: edit_tool
+[2026-10-25 19:15:47,841][__init__.py 43][DEBUG]: 工具已注册: glob_search
+[2026-10-25 19:15:47,842][__init__.py 196][DEBUG]: 内置工具模块已加载: glob_tool
+[2026-10-25 19:15:47,874][__init__.py 43][DEBUG]: 工具已注册: invoke_skill
+[2026-10-25 19:15:47,874][__init__.py 196][DEBUG]: 内置工具模块已加载: invoke_skill
+[2026-10-25 19:15:47,884][__init__.py 43][DEBUG]: 工具已注册: list_directory
+[2026-10-25 19:15:47,884][__init__.py 196][DEBUG]: 内置工具模块已加载: list_tool
+[2026-10-25 19:15:47,902][__init__.py 43][DEBUG]: 工具已注册: fetch_url
+[2026-10-25 19:15:47,902][__init__.py 196][DEBUG]: 内置工具模块已加载: online_tool
+[2026-10-25 19:15:47,921][__init__.py 43][DEBUG]: 工具已注册: read_file
+[2026-10-25 19:15:47,922][__init__.py 196][DEBUG]: 内置工具模块已加载: read_tool
+[2026-10-25 19:15:47,922][__init__.py 43][DEBUG]: 工具已注册: write_file
+[2026-10-25 19:15:47,922][__init__.py 196][DEBUG]: 内置工具模块已加载: write_tool
+[2026-10-25 19:15:47,930][__init__.py 286][DEBUG]: Skill example-file-info 已注册（has_scripts=True, 377 字符）
+[2026-10-25 19:15:47,930][__init__.py 231][DEBUG]: 自定义 Skill 已加载: example-file-info
+[2026-10-25 19:15:47,939][__init__.py 286][DEBUG]: Skill example-word-count 已注册（has_scripts=True, 348 字符）
+[2026-10-25 19:15:47,939][__init__.py 231][DEBUG]: 自定义 Skill 已加载: example-word-count
+[2026-10-25 19:15:47,948][__init__.py 286][DEBUG]: Skill sumeru-finalize 已注册（has_scripts=False, 3208 字符）
+[2026-10-25 19:15:47,948][__init__.py 231][DEBUG]: 自定义 Skill 已加载: sumeru-finalize
+[2026-10-25 19:15:47,955][__init__.py 286][DEBUG]: Skill sumeru-outline 已注册（has_scripts=False, 8356 字符）
+[2026-10-25 19:15:47,955][__init__.py 231][DEBUG]: 自定义 Skill 已加载: sumeru-outline
+[2026-10-25 19:15:47,963][__init__.py 286][DEBUG]: Skill sumeru-polish 已注册（has_scripts=False, 2766 字符）
+[2026-10-25 19:15:47,963][__init__.py 231][DEBUG]: 自定义 Skill 已加载: sumeru-polish
+[2026-10-25 19:15:47,971][__init__.py 286][DEBUG]: Skill sumeru-review 已注册（has_scripts=True, 7008 字符）
+[2026-10-25 19:15:47,971][__init__.py 231][DEBUG]: 自定义 Skill 已加载: sumeru-review
+[2026-10-25 19:15:47,979][__init__.py 286][DEBUG]: Skill sumeru-topic 已注册（has_scripts=False, 2947 字符）
+[2026-10-25 19:15:47,979][__init__.py 231][DEBUG]: 自定义 Skill 已加载: sumeru-topic
+[2026-10-25 19:15:47,984][__init__.py 286][DEBUG]: Skill sumeru-worldbuilder 已注册（has_scripts=False, 13901 字符）
+[2026-10-25 19:15:47,984][__init__.py 231][DEBUG]: 自定义 Skill 已加载: sumeru-worldbuilder
+[2026-10-25 19:15:47,998][__init__.py 286][DEBUG]: Skill sumeru-write 已注册（has_scripts=False, 3839 字符）
+[2026-10-25 19:15:48,000][__init__.py 231][DEBUG]: 自定义 Skill 已加载: sumeru-write
+[2026-10-25 19:15:48,000][__init__.py 374][INFO]: 工具加载完成，共 8 个工具
+[2026-10-25 19:15:48,072][__init__.py 35][DEBUG]: 已加载提示词: chat_agent
+[2026-10-25 19:15:48,072][base_agent.py 94][INFO]: [ChatAgent] system_prompt 已注入 9 个 Skill 信息
+[2026-10-25 19:15:48,409][base_agent.py 76][DEBUG]: Agent 已初始化 [主配置]: ChatAgent (模型: qwen-plus)
+[2026-10-25 19:15:48,409][chat_agent.py 24][INFO]: 自由对话 Agent 已初始化
+[2026-10-25 19:15:48,424][__init__.py 35][DEBUG]: 已加载提示词: being_writer
+[2026-10-25 19:15:48,430][base_agent.py 94][INFO]: [NovelWriter] system_prompt 已注入 9 个 Skill 信息
+[2026-10-25 19:15:48,439][base_agent.py 76][DEBUG]: Agent 已初始化 [主配置]: NovelWriter (模型: qwen-plus)
+[2026-10-25 19:15:48,440][novel_writer.py 47][INFO]: 写作 Agent 已初始化
+[2026-10-25 19:15:48,452][__init__.py 35][DEBUG]: 已加载提示词: outline_polisher
+[2026-10-25 19:15:48,453][base_agent.py 94][INFO]: [OutlinePolisher] system_prompt 已注入 9 个 Skill 信息
+[2026-10-25 19:15:48,456][base_agent.py 76][DEBUG]: Agent 已初始化 [主配置]: OutlinePolisher (模型: qwen-plus)
+[2026-10-25 19:15:48,456][outline_polisher.py 44][INFO]: 大纲润色 Agent 已初始化
+[2026-10-25 19:15:48,469][__init__.py 35][DEBUG]: 已加载提示词: content_polisher
+[2026-10-25 19:15:48,469][base_agent.py 94][INFO]: [ContentPolisher] system_prompt 已注入 9 个 Skill 信息
+[2026-10-25 19:15:48,472][base_agent.py 76][DEBUG]: Agent 已初始化 [主配置]: ContentPolisher (模型: qwen-plus)
+[2026-10-25 19:15:48,472][content_polisher.py 46][INFO]: 小说润色 Agent 已初始化
+[2026-10-25 19:15:48,481][__init__.py 35][DEBUG]: 已加载提示词: summary_generator
+[2026-10-25 19:15:48,481][base_agent.py 94][INFO]: [SummaryGenerator] system_prompt 已注入 9 个 Skill 信息
+[2026-10-25 19:15:48,483][base_agent.py 76][DEBUG]: Agent 已初始化 [主配置]: SummaryGenerator (模型: qwen-plus)
+[2026-10-25 19:15:48,483][summary_generator.py 44][INFO]: 汇总说明 Agent 已初始化
+[2026-10-25 19:15:48,495][__init__.py 35][DEBUG]: 已加载提示词: info_query
+[2026-10-25 19:15:48,495][base_agent.py 94][INFO]: [InfoQuery] system_prompt 已注入 9 个 Skill 信息
+[2026-10-25 19:15:48,499][base_agent.py 76][DEBUG]: Agent 已初始化 [主配置]: InfoQuery (模型: qwen-plus)
+[2026-10-25 19:15:48,499][info_query.py 43][INFO]: 信息查询 Agent 已初始化
+[2026-10-25 19:15:48,501][pre_writing.py 38][DEBUG]: 写作前审查器已初始化
+[2026-10-25 19:15:48,501][post_writing.py 41][DEBUG]: 写作后审查器已初始化
+[2026-10-25 19:15:48,503][writing_workflow.py 40][INFO]: 写作工作流已初始化（最大重试次数: 3，工作流超时: 600秒）
+[2026-10-25 19:15:48,503][novel_writer.py 88][INFO]: 已注入项目路径信息到 NovelWriter: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\潇湘龙女再续尘缘
+[2026-10-25 19:15:48,503][base_agent.py 94][INFO]: [NovelWriter] system_prompt 已注入 9 个 Skill 信息
+[2026-10-25 19:15:48,506][base_agent.py 76][DEBUG]: Agent 已初始化 [主配置]: NovelWriter (模型: qwen-plus)
+[2026-10-25 19:15:48,506][novel_writer.py 92][INFO]: 已切换到项目: 潇湘龙女再续尘缘
+[2026-10-25 19:15:48,506][outline_polisher.py 85][INFO]: 已注入项目路径信息到 OutlinePolisher: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\潇湘龙女再续尘缘
+[2026-10-25 19:15:48,506][base_agent.py 94][INFO]: [OutlinePolisher] system_prompt 已注入 9 个 Skill 信息
+[2026-10-25 19:15:48,509][base_agent.py 76][DEBUG]: Agent 已初始化 [主配置]: OutlinePolisher (模型: qwen-plus)
+[2026-10-25 19:15:48,509][outline_polisher.py 89][INFO]: 已切换到项目: 潇湘龙女再续尘缘
+[2026-10-25 19:15:48,509][content_polisher.py 87][INFO]: 已注入项目路径信息到 ContentPolisher: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\潇湘龙女再续尘缘
+[2026-10-25 19:15:48,509][base_agent.py 94][INFO]: [ContentPolisher] system_prompt 已注入 9 个 Skill 信息
+[2026-10-25 19:15:48,513][base_agent.py 76][DEBUG]: Agent 已初始化 [主配置]: ContentPolisher (模型: qwen-plus)
+[2026-10-25 19:15:48,513][content_polisher.py 91][INFO]: 已切换到项目: 潇湘龙女再续尘缘
+[2026-10-25 19:15:48,513][summary_generator.py 85][INFO]: 已注入项目路径信息到 SummaryGenerator: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\潇湘龙女再续尘缘
+[2026-10-25 19:15:48,513][base_agent.py 94][INFO]: [SummaryGenerator] system_prompt 已注入 9 个 Skill 信息
+[2026-10-25 19:15:48,517][base_agent.py 76][DEBUG]: Agent 已初始化 [主配置]: SummaryGenerator (模型: qwen-plus)
+[2026-10-25 19:15:48,517][summary_generator.py 89][INFO]: 已切换到项目: 潇湘龙女再续尘缘
+[2026-10-25 19:15:48,517][info_query.py 84][INFO]: 已注入项目路径信息到 InfoQuery: E:\Programs\Python\Python Code\ai-agent-writer-dev\output\潇湘龙女再续尘缘
+[2026-10-25 19:15:48,518][base_agent.py 94][INFO]: [InfoQuery] system_prompt 已注入 9 个 Skill 信息
+[2026-10-25 19:15:48,519][base_agent.py 76][DEBUG]: Agent 已初始化 [主配置]: InfoQuery (模型: qwen-plus)
+[2026-10-25 19:15:48,519][info_query.py 88][INFO]: 已切换到项目: 潇湘龙女再续尘缘
+[2026-10-25 19:15:48,521][app.py 154][INFO]: 已设置项目: 潇湘龙女再续尘缘
+[2026-10-25 19:15:48,521][app.py 109][INFO]: 已自动加载项目: 潇湘龙女再续尘缘
+[2026-10-25 19:15:48,521][app.py 95][INFO]: Web Agent Writer 已初始化
+[2026-10-25 19:15:48,531][app.py 1317][INFO]: 启动 Web 服务器: http://127.0.0.1:8000
